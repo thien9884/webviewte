@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -108,6 +110,15 @@ class _WebViewExampleState extends State<WebViewExample> {
                 _controller.complete(webViewController);
               },
               onProgress: (int progress) {
+                if (progress != 100) {
+                  if (!EasyLoading.isShow) {
+                    EasyLoading.show();
+                  }
+                } else {
+                  if (EasyLoading.isShow) {
+                    EasyLoading.dismiss();
+                  }
+                }
                 print('WebView is loading (progress : $progress%)');
               },
               javascriptChannels: <JavascriptChannel>{
@@ -559,13 +570,14 @@ class LoadUrl extends StatelessWidget {
                 onTap: !webViewReady
                     ? null
                     : () async {
-                        await controller!.loadUrl('https://beta.shopdunk.com');
+                        await controller!.loadUrl('https://shopdunk.com');
                       },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.network(
-                      'https://beta.shopdunk.com/images/uploaded/icon/IC_home.png',
+                    SvgPicture.asset(
+                      'assets/icons/ic_home.svg',
+                      color: const Color(0xFF777777),
                       width: 22,
                       height: 22,
                     ),
@@ -574,7 +586,10 @@ class LoadUrl extends StatelessWidget {
                     ),
                     const Text(
                       'Trang chủ',
-                      style: TextStyle(color: Colors.pink, fontSize: 16),
+                      style: TextStyle(
+                          color: Color(0xFF777777),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
@@ -584,13 +599,14 @@ class LoadUrl extends StatelessWidget {
                     ? null
                     : () async {
                         await controller!
-                            .loadUrl('https://beta.shopdunk.com/iphone');
+                            .loadUrl('https://shopdunk.com/iphone');
                       },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.network(
-                      'https://beta.shopdunk.com/images/uploaded/icon/Products.png',
+                    SvgPicture.asset(
+                      'assets/icons/ic_products.svg',
+                      color: const Color(0xFF777777),
                       width: 22,
                       height: 22,
                     ),
@@ -599,7 +615,10 @@ class LoadUrl extends StatelessWidget {
                     ),
                     const Text(
                       'Sản phẩm',
-                      style: TextStyle(color: Colors.pink, fontSize: 16),
+                      style: TextStyle(
+                          color: Color(0xFF777777),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
@@ -609,13 +628,14 @@ class LoadUrl extends StatelessWidget {
                     ? null
                     : () async {
                         await controller!
-                            .loadUrl('https://beta.shopdunk.com/dia-chi');
+                            .loadUrl('https://shopdunk.com/he-thong-cua-hang');
                       },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.network(
-                      'https://beta.shopdunk.com/images/uploaded/icon/Shop.png',
+                    SvgPicture.asset(
+                      'assets/icons/ic_store.svg',
+                      color: const Color(0xFF777777),
                       width: 22,
                       height: 22,
                     ),
@@ -624,7 +644,10 @@ class LoadUrl extends StatelessWidget {
                     ),
                     const Text(
                       'Cửa hàng',
-                      style: TextStyle(color: Colors.pink, fontSize: 16),
+                      style: TextStyle(
+                          color: Color(0xFF777777),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
@@ -634,13 +657,14 @@ class LoadUrl extends StatelessWidget {
                     ? null
                     : () async {
                         await controller!
-                            .loadUrl('https://beta.shopdunk.com/tin-tuc');
+                            .loadUrl('https://shopdunk.com/tin-tuc');
                       },
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.network(
-                      'https://beta.shopdunk.com/images/uploaded/icon/News.png',
+                    SvgPicture.asset(
+                      'assets/icons/ic_news.svg',
+                      color: const Color(0xFF777777),
                       width: 22,
                       height: 22,
                     ),
@@ -649,7 +673,10 @@ class LoadUrl extends StatelessWidget {
                     ),
                     const Text(
                       'Tin tức',
-                      style: TextStyle(color: Colors.pink, fontSize: 16),
+                      style: TextStyle(
+                          color: Color(0xFF777777),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),

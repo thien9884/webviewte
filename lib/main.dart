@@ -5,12 +5,57 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:webviewtest/webviewex.dart';
 
-void main() => runApp(const MaterialApp(
-      home: HomePage(),
-      debugShowCheckedModeBanner: false,
-    ));
+void main() {
+  configLoading();
+  runApp(MaterialApp(
+    home: const HomePage(),
+    debugShowCheckedModeBanner: false,
+    builder: EasyLoading.init(
+      builder: (context, widget) {
+        widget = GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: widget,
+        );
+        return widget;
+      },
+    ),
+  ));
+}
+
+void configLoading() {
+  EasyLoading.instance
+    ..indicatorColor = const Color(0xff07A0B8)
+    ..backgroundColor = Colors.transparent
+    ..userInteractions = false
+    ..loadingStyle = EasyLoadingStyle.custom
+    // ..indicatorWidget = SizedBox(
+    //   width: 80,
+    //   height: 80,
+    //   child: Stack(
+    //     alignment: Alignment.center,
+    //     children: [
+    //       Image.asset(
+    //         'assets/icons/ic_app_logo.jpg',
+    //         width: 20,
+    //         height: 20,
+    //       ),
+    //       // you can replace
+    //       const CircularProgressIndicator(
+    //         valueColor: AlwaysStoppedAnimation<Color>(Color(0xff0E879E)),
+    //         strokeWidth: 0.9,
+    //       ),
+    //     ],
+    //   ),
+    // )
+    ..textColor = Colors.white
+    ..maskType = EasyLoadingMaskType.custom
+    ..boxShadow = <BoxShadow>[]
+    ..maskColor = const Color(0xff0E879E).withOpacity(0.15)
+    ..dismissOnTap = false;
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -21,7 +66,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController urlController =
-      TextEditingController(text: 'https://beta.shopdunk.com');
+      TextEditingController(text: 'https://shopdunk.com');
 
   @override
   Widget build(BuildContext context) {
