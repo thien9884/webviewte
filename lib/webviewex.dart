@@ -571,26 +571,30 @@ class LoadUrl extends StatelessWidget {
                     : () async {
                         await controller!.loadUrl('https://shopdunk.com');
                       },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/ic_home.svg',
-                      color: const Color(0xFF777777),
-                      width: 22,
-                      height: 22,
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    const Text(
-                      'Trang chủ',
-                      style: TextStyle(
-                          color: Color(0xFF777777),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
+                child: Container(
+                  color: Colors.transparent,
+                  margin: const EdgeInsets.all(0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/ic_home.svg',
+                        color: const Color(0xFF777777),
+                        width: 22,
+                        height: 22,
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      const Text(
+                        'Trang chủ',
+                        style: TextStyle(
+                            color: Color(0xFF777777),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               GestureDetector(
@@ -600,26 +604,30 @@ class LoadUrl extends StatelessWidget {
                         await controller!
                             .loadUrl('https://shopdunk.com/iphone');
                       },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/ic_products.svg',
-                      color: const Color(0xFF777777),
-                      width: 22,
-                      height: 22,
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    const Text(
-                      'Sản phẩm',
-                      style: TextStyle(
-                          color: Color(0xFF777777),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
+                child: Container(
+                  color: Colors.transparent,
+                  margin: const EdgeInsets.all(0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/ic_products.svg',
+                        color: const Color(0xFF777777),
+                        width: 22,
+                        height: 22,
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      const Text(
+                        'Sản phẩm',
+                        style: TextStyle(
+                            color: Color(0xFF777777),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               GestureDetector(
@@ -629,26 +637,30 @@ class LoadUrl extends StatelessWidget {
                         await controller!
                             .loadUrl('https://shopdunk.com/he-thong-cua-hang');
                       },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/ic_store.svg',
-                      color: const Color(0xFF777777),
-                      width: 22,
-                      height: 22,
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    const Text(
-                      'Cửa hàng',
-                      style: TextStyle(
-                          color: Color(0xFF777777),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
+                child: Container(
+                  color: Colors.transparent,
+                  margin: const EdgeInsets.all(0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/ic_store.svg',
+                        color: const Color(0xFF777777),
+                        width: 22,
+                        height: 22,
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      const Text(
+                        'Cửa hàng',
+                        style: TextStyle(
+                            color: Color(0xFF777777),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               GestureDetector(
@@ -658,26 +670,30 @@ class LoadUrl extends StatelessWidget {
                         await controller!
                             .loadUrl('https://shopdunk.com/tin-tuc');
                       },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/ic_news.svg',
-                      color: const Color(0xFF777777),
-                      width: 22,
-                      height: 22,
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    const Text(
-                      'Tin tức',
-                      style: TextStyle(
-                          color: Color(0xFF777777),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ),
-                  ],
+                child: Container(
+                  color: Colors.transparent,
+                  margin: const EdgeInsets.all(0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/ic_news.svg',
+                        color: const Color(0xFF777777),
+                        width: 22,
+                        height: 22,
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      const Text(
+                        'Tin tức',
+                        style: TextStyle(
+                            color: Color(0xFF777777),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
