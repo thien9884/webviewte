@@ -64,9 +64,8 @@ const String kTransparentBackgroundPage = '''
 ''';
 
 class WebViewExample extends StatefulWidget {
-  final String url;
 
-  const WebViewExample({Key? key, this.cookieManager, required this.url})
+  const WebViewExample({Key? key, this.cookieManager})
       : super(key: key);
 
   final CookieManager? cookieManager;
@@ -104,7 +103,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           clipBehavior: Clip.none,
           children: [
             WebView(
-              initialUrl: widget.url,
+              initialUrl: 'https://shopdunk.com',
               javascriptMode: JavascriptMode.unrestricted,
               onWebViewCreated: (WebViewController webViewController) {
                 _controller.complete(webViewController);
