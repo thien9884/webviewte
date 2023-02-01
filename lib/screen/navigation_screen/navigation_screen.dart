@@ -131,9 +131,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
           ),
           SvgPicture.asset('assets/icons/ic_logo_home_page.svg'),
           SvgPicture.asset('assets/icons/ic_search_home.svg'),
-          GestureDetector(
-              onTap: () => Navigator.of(context).pushNamed('/'),
-              child: SvgPicture.asset('assets/icons/ic_search_home.svg')),
         ],
       ),
     );

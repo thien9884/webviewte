@@ -240,9 +240,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
   }
 
   Widget _titleProduct(String nameProduct) {
-    return Text(
-      nameProduct,
-      style: CommonStyles.size24W700Black1D(context),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Text(
+        nameProduct,
+        style: CommonStyles.size24W700Black1D(context),
+      ),
     );
   }
 
