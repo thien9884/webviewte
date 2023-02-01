@@ -64,8 +64,9 @@ const String kTransparentBackgroundPage = '''
 ''';
 
 class WebViewExample extends StatefulWidget {
+  final String? url;
 
-  const WebViewExample({Key? key, this.cookieManager})
+  const WebViewExample({Key? key, this.url, this.cookieManager})
       : super(key: key);
 
   final CookieManager? cookieManager;
@@ -103,7 +104,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           clipBehavior: Clip.none,
           children: [
             WebView(
-              initialUrl: 'https://shopdunk.com',
+              initialUrl: widget.url,
               javascriptMode: JavascriptMode.unrestricted,
               onWebViewCreated: (WebViewController webViewController) {
                 _controller.complete(webViewController);
@@ -140,10 +141,10 @@ class _WebViewExampleState extends State<WebViewExample> {
               gestureNavigationEnabled: true,
               backgroundColor: const Color(0x00000000),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: LoadUrl(_controller.future),
-            ),
+            // Align(
+            //   alignment: Alignment.bottomCenter,
+            //   child: LoadUrl(_controller.future),
+            // ),
           ],
         ),
       ),
@@ -677,7 +678,7 @@ class LoadUrl extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SvgPicture.asset(
-                        'assets/icons/ic_news.svg',
+                        'assets/icons/ic_news_un.svg',
                         color: const Color(0xFF777777),
                         width: 22,
                         height: 22,
