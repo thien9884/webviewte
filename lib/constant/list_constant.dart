@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:webviewtest/screen/user/account_info.dart';
-import 'package:webviewtest/test.dart';
+import 'package:webviewtest/screen/user/account_info/account_info.dart';
+import 'package:webviewtest/screen/user/account_order/account_order.dart';
+import 'package:webviewtest/screen/user/account_address/user_address.dart';
 
 class Resource {
   Widget? screen;
@@ -88,31 +89,37 @@ class ListCustom {
       id: 0,
       img: 'assets/icons/ic_iphone.png',
       name: 'iPhone',
+      linkUrl: 'iphone'
     ),
     Resource(
       id: 1,
       img: 'assets/icons/ic_ipad.png',
       name: 'iPad',
+      linkUrl: 'ipad'
     ),
     Resource(
       id: 2,
       img: 'assets/icons/ic_mac.png',
       name: 'Mac',
+      linkUrl: 'mac'
     ),
     Resource(
       id: 3,
       img: 'assets/icons/ic_watch.png',
       name: 'Watch',
+      linkUrl: 'apple-watch'
     ),
     Resource(
       id: 4,
       img: 'assets/icons/ic_sound.png',
       name: 'Âm thanh',
+      linkUrl: 'am-thanh'
     ),
     Resource(
       id: 5,
       img: 'assets/icons/ic_accessory.png',
       name: 'Phụ kiện',
+      linkUrl: 'phu-kien'
     ),
   ];
 
@@ -127,31 +134,31 @@ class ListCustom {
       id: 1,
       img: 'assets/icons/ic_address.svg',
       name: 'Địa chỉ nhận hàng',
-      screen: Test(),
+      screen: const UserAddress(),
     ),
     Resource(
       id: 2,
       img: 'assets/icons/ic_order.svg',
       name: 'Đơn đặt hàng',
-      screen: Test(),
+      screen: const AccountOrder(),
     ),
     Resource(
       id: 3,
       img: 'assets/icons/ic_refund.svg',
       name: 'Hoàn trả hàng',
-      screen: Test(),
+      screen: const AccountInfo(),
     ),
     Resource(
       id: 4,
       img: 'assets/icons/ic_change_password.svg',
       name: 'Đổi mật khẩu',
-      screen: Test(),
+      screen: const AccountInfo(),
     ),
     Resource(
       id: 5,
       img: 'assets/icons/ic_history.svg',
       name: 'Lịch sử đánh giá sản phẩm',
-      screen: Test(),
+      screen: const AccountInfo(),
     ),
   ];
 

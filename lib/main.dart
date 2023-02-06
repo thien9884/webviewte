@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:webviewtest/blocs/main_bloc.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 
@@ -15,8 +16,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: MainBloc.allBlocs(),
-      child: const MaterialApp(
-        home: NavigationScreen(),
+      child: MaterialApp(
+        builder: EasyLoading.init(),
+        home: const NavigationScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );

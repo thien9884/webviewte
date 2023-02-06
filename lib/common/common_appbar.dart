@@ -20,23 +20,26 @@ class CommonAppbar extends StatelessWidget {
               style: CommonStyles.size18W700Black1D(context),
             ),
           ),
-          Container(
-            height: 25,
-            alignment: Alignment.centerLeft,
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 16,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  'Trở lại',
-                  style: CommonStyles.size16W400Blue00(context),
-                ),
-              ],
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              height: 25,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 16,
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    'Trở lại',
+                    style: CommonStyles.size16W400Blue00(context),
+                  ),
+                ],
+              ),
             ),
           )
         ],

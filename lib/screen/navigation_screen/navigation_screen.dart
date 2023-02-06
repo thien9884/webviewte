@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
-import 'package:webviewtest/model/web_view_model.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/user/user_screen.dart';
-import 'package:webviewtest/shopdunk_webview.dart';
+import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({Key? key}) : super(key: key);
@@ -20,32 +19,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   String url = '';
 
   final pages = [
-    Navigator(
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/':
-            return MaterialPageRoute(builder: (_) => const HomePageScreen());
-          case '/web':
-            final args = settings.arguments as WebViewModel;
-            return MaterialPageRoute(
-              builder: (context) {
-                return WebViewExample(
-                  url: args.url,
-                );
-              },
-            );
-        }
-        // Widget page = const HomePageScreen();
-        // if (settings.name == 'web') {
-        //   page =
-        //       WebViewExample(webViewModel: settings.arguments as WebViewModel,);
-        // }
-        // return MaterialPageRoute(builder: (_) => page);
-        assert(false, 'Need to implement ${settings.name}');
-        return null;
-      },
-    ),
-    // const HomePageScreen(),
+    const HomePageScreen(),
     const SizedBox(),
     const UserScreen(),
     const SizedBox(),
@@ -88,9 +62,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
                 itemBuilder: (context, index) {
                   final item = ListCustom.listDrawers[index];
                   return GestureDetector(
-                    onTap: () => Navigator.of(context).pushNamed('/web',
-                        arguments:
-                            WebViewModel(url: 'https://shopdunk.com/iphone')),
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => WebViewExample(
+                              url: item.linkUrl,
+                            ))),
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: const BoxDecoration(
@@ -203,11 +178,4 @@ class SlideRightRoute extends PageRouteBuilder {
             );
           },
         );
-}
-
-class ScreenArguments {
-  final String title;
-  final String message;
-
-  ScreenArguments(this.title, this.message);
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:webviewtest/blocs/categories/categories_bloc.dart';
 import 'package:webviewtest/blocs/categories/categories_event.dart';
@@ -12,6 +13,7 @@ import 'package:webviewtest/constant/text_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category_model.dart';
 import 'package:webviewtest/model/web_view_model.dart';
+import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({Key? key}) : super(key: key);
@@ -26,9 +28,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
   var rating = 0.0;
   Timer? _timer;
   int _currentIndex = 0;
-
-  // Loading flag
-  bool _isLoading = false;
 
   // Posts
   List<Categories> _listCategories = [];
@@ -68,16 +67,20 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<CategoriesBloc, CategoriesState>(
         builder: (context, state) => _buildHomeUI(context),
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is CategoriesLoading) {
-            _isLoading = true;
+            await EasyLoading.show();
           } else if (state is CategoriesLoaded) {
-            _isLoading = false;
             _listCategories = state.categories
                 .where((element) => element.showOnHomePage == true)
                 .toList();
+            if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
           } else if (state is CategoriesLoadError) {
-            _isLoading = false;
+            if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
             AlertUtils.displayErrorAlert(context, state.message);
           }
         });
@@ -234,6 +237,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     ),
                     _allProduct(
                       _listCategories[index].name.toString(),
+                      _listCategories[index].seName.toString().toLowerCase(),
                     ),
                   ],
                 )));
@@ -256,60 +260,67 @@ class _HomePageScreenState extends State<HomePageScreen> {
         delegate: SliverChildBuilderDelegate(
           childCount: 4,
           (context, index) {
-            return Card(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    alignment: Alignment.centerRight,
-                    margin: const EdgeInsets.only(top: 5, right: 5),
-                    child: Image.asset(
-                      'assets/images/tet_2023.png',
-                      scale: 10,
+            return GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const WebViewExample(
+                        url: 'iphone-14-pro-max',
+                      ))),
+              child: Card(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      alignment: Alignment.centerRight,
+                      margin: const EdgeInsets.only(top: 5, right: 5),
+                      child: Image.asset(
+                        'assets/images/tet_2023.png',
+                        scale: 10,
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Image.asset('assets/images/ip_14_pro.png'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'iPhone 14 Pro Max 128GB',
-                          style: CommonStyles.size14W700Black1D(context),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 25, bottom: 10),
-                          child: SmoothStarRating(
-                            rating: rating,
-                            size: 20,
-                            starCount: 5,
-                            onRated: (value) {
-                              setState(() {
-                                rating = value;
-                              });
-                            },
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Image.asset('assets/images/ip_14_pro.png'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'iPhone 14 Pro Max 128GB',
+                            style: CommonStyles.size14W700Black1D(context),
                           ),
-                        ),
-                        Text(
-                          '29.990.000₫',
-                          style: CommonStyles.size14W400Blue00(context),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          '36.990.000₫',
-                          style: CommonStyles.size14W400Grey66(context)
-                              .copyWith(decoration: TextDecoration.lineThrough),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                          Padding(
+                            padding: const EdgeInsets.only(top: 25, bottom: 10),
+                            child: SmoothStarRating(
+                              rating: rating,
+                              size: 20,
+                              starCount: 5,
+                              onRated: (value) {
+                                setState(() {
+                                  rating = value;
+                                });
+                              },
+                            ),
+                          ),
+                          Text(
+                            '29.990.000₫',
+                            style: CommonStyles.size14W400Blue00(context),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            '36.990.000₫',
+                            style: CommonStyles.size14W400Grey66(context)
+                                .copyWith(
+                                    decoration: TextDecoration.lineThrough),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             );
           },
@@ -324,12 +335,14 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
-  Widget _allProduct(String nameProduct) {
+  Widget _allProduct(String nameProduct, String allProduct) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/web',
-            arguments: WebViewModel(url: 'https://shopdunk.com/iphone')),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => WebViewExample(
+                  url: allProduct,
+                ))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

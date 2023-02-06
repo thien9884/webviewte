@@ -22,32 +22,35 @@ class _AccountInfoState extends State<AccountInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                children: [
-                  const CommonAppbar(title: 'Thông tin tài khoản'),
-                  _nameField(),
-                  _emailField(),
-                  _genderSelect(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Flexible(child: _listDropDownDay()),
-                      const SizedBox(width: 10),
-                      Flexible(child: _listDropDownMonth()),
-                      const SizedBox(width: 10),
-                      Flexible(child: _listDropDownYear()),
-                    ],
-                  ),
-                ],
-              ),
-              _buttonBuild(),
-            ],
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    const CommonAppbar(title: 'Thông tin tài khoản'),
+                    _nameField(),
+                    _emailField(),
+                    _genderSelect(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(child: _listDropDownDay()),
+                        const SizedBox(width: 10),
+                        Flexible(child: _listDropDownMonth()),
+                        const SizedBox(width: 10),
+                        Flexible(child: _listDropDownYear()),
+                      ],
+                    ),
+                  ],
+                ),
+                _buttonBuild(),
+              ],
+            ),
           ),
         ),
       ),

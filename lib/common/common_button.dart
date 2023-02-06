@@ -21,7 +21,7 @@ class CommonButton extends StatelessWidget {
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
           child: Center(
             child: Text(
-              'Lưu lại',
+              title,
               style: onTap != null
                   ? CommonStyles.size14W700White(context)
                   : CommonStyles.size14W400Black1D(context),

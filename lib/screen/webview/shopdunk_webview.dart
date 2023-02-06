@@ -104,7 +104,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           clipBehavior: Clip.none,
           children: [
             WebView(
-              initialUrl: widget.url,
+              initialUrl: 'https://shopdunk.com/${widget.url}',
               javascriptMode: JavascriptMode.unrestricted,
               onWebViewCreated: (WebViewController webViewController) {
                 _controller.complete(webViewController);
