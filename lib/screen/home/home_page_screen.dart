@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:webviewtest/blocs/categories/categories_bloc.dart';
 import 'package:webviewtest/blocs/categories/categories_event.dart';
 import 'package:webviewtest/blocs/categories/categories_state.dart';
@@ -277,7 +276,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Image.asset('assets/images/ip_14_pro.png'),
                     ),
                     Padding(
@@ -285,27 +284,13 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'iPhone 14 Pro Max 128GB',
-                            style: CommonStyles.size14W700Black1D(context),
-                          ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 25, bottom: 10),
-                            child: RatingBar.builder(
-                              initialRating: 3,
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              allowHalfRating: true,
-                              itemCount: 5,
-                              itemPadding:
-                                  const EdgeInsets.symmetric(horizontal: 4.0),
-                              itemBuilder: (context, _) => const Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                              ),
-                              onRatingUpdate: (rating) {
-                                print(rating);
-                              },
+                            padding: const EdgeInsets.only(top: 10, bottom: 20),
+                            child: Text(
+                              'iPhone 14 Pro Max 128GB',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: CommonStyles.size14W700Black1D(context),
                             ),
                           ),
                           Text(
