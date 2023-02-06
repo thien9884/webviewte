@@ -90,7 +90,7 @@ class _WebViewExampleState extends State<WebViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.white,
       // appBar: AppBar(
       //   title: const Text('Flutter WebView example'),
       //   // This drop down menu demonstrates that Flutter widgets can be shown over the web view.

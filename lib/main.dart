@@ -5,6 +5,7 @@ import 'package:webviewtest/blocs/main_bloc.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 
 void main() {
+  configLoading();
   runApp(const MyApp());
 }
 
@@ -23,4 +24,17 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+}
+
+void configLoading() {
+  EasyLoading.instance
+    ..indicatorColor = Colors.black
+    ..backgroundColor = Colors.transparent
+    ..userInteractions = false
+    ..loadingStyle = EasyLoadingStyle.custom
+    ..textColor = Colors.white
+    ..maskType = EasyLoadingMaskType.custom
+    ..boxShadow = <BoxShadow>[]
+    ..maskColor = const Color(0xff0E879E).withOpacity(0.15)
+    ..dismissOnTap = false;
 }
