@@ -1,9 +1,8 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:smooth_star_rating/smooth_star_rating.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:webviewtest/blocs/categories/categories_bloc.dart';
 import 'package:webviewtest/blocs/categories/categories_event.dart';
 import 'package:webviewtest/blocs/categories/categories_state.dart';
@@ -292,14 +291,20 @@ class _HomePageScreenState extends State<HomePageScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 25, bottom: 10),
-                            child: SmoothStarRating(
-                              rating: rating,
-                              size: 20,
-                              starCount: 5,
-                              onRated: (value) {
-                                setState(() {
-                                  rating = value;
-                                });
+                            child: RatingBar.builder(
+                              initialRating: 3,
+                              minRating: 1,
+                              direction: Axis.horizontal,
+                              allowHalfRating: true,
+                              itemCount: 5,
+                              itemPadding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              itemBuilder: (context, _) => const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                              ),
+                              onRatingUpdate: (rating) {
+                                print(rating);
                               },
                             ),
                           ),

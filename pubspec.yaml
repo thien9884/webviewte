@@ -42,10 +42,10 @@ dependencies:
   flutter_easyloading: ^3.0.5
   carousel_indicator: ^1.0.6
   liquid_swipe: ^3.0.0
-  smooth_star_rating: ^1.1.1
   flutter_bloc: ^8.1.1
   equatable: ^2.0.5
   dio: ^4.0.6
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:
