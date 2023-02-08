@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/categories/categories_bloc.dart';
 import 'package:webviewtest/blocs/categories/categories_event.dart';
 import 'package:webviewtest/blocs/categories/categories_state.dart';
@@ -9,7 +10,8 @@ import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
-import 'package:webviewtest/model/category_model.dart';
+import 'package:webviewtest/model/category/category_model.dart';
+import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/web_view_model.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
@@ -26,17 +28,70 @@ class _HomePageScreenState extends State<HomePageScreen> {
   var rating = 0.0;
   Timer? _timer;
   int _currentIndex = 0;
+  var priceFormat = NumberFormat.decimalPattern('vi_VN');
 
-  // Posts
+  // Categories
   List<Categories> _listCategories = [];
+
 
   // Sync data
   _getCategories() async {
     BlocProvider.of<CategoriesBloc>(context).add(const RequestGetCategories());
   }
 
+  _getListIpad() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'ipad');
+    BlocProvider.of<CategoriesBloc>(context)
+        .add(RequestGetIpad(idIpad: _listCategories[index].id));
+  }
+
+  _getListIphone() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'iphone');
+    BlocProvider.of<CategoriesBloc>(context)
+        .add(RequestGetIphone(idIphone: _listCategories[index].id));
+  }
+
+  _getListMac() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'mac');
+    BlocProvider.of<CategoriesBloc>(context)
+        .add(RequestGetMac(idMac: _listCategories[index].id));
+  }
+
+  _getListWatch() async {
+    int index = _listCategories
+        .indexWhere((element) => element.seName == 'apple-watch');
+    BlocProvider.of<CategoriesBloc>(context)
+        .add(RequestGetAppleWatch(idWatch: _listCategories[index].id));
+  }
+
+  _getListSound() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'am-thanh');
+    BlocProvider.of<CategoriesBloc>(context)
+        .add(RequestGetSound(idSound: _listCategories[index].id));
+  }
+
+  _getListAccessories() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'phu-kien');
+    BlocProvider.of<CategoriesBloc>(context)
+        .add(RequestGetAccessories(idAccessories: _listCategories[index].id));
+  }
+
+  _getListProduct() async {
+    await _getListIpad();
+    await _getListIphone();
+    await _getListMac();
+    await _getListWatch();
+    await _getListSound();
+    await _getListAccessories();
+  }
+
   _autoSlidePage() {
-    _timer = Timer.periodic(const Duration(seconds: 2), (Timer timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       if (_currentIndex < ListCustom.listIcon.length + 1) {
         _currentIndex++;
       } else {
@@ -65,17 +120,106 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<CategoriesBloc, CategoriesState>(
         builder: (context, state) => _buildHomeUI(context),
-        listener: (context, state) async {
+        listener: (context, state) {
           if (state is CategoriesLoading) {
-            await EasyLoading.show();
+            EasyLoading.show();
           } else if (state is CategoriesLoaded) {
             _listCategories = state.categories
                 .where((element) => element.showOnHomePage == true)
                 .toList();
+            _getListProduct();
             if (EasyLoading.isShow) {
               EasyLoading.dismiss();
             }
           } else if (state is CategoriesLoadError) {
+            if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+
+          if (state is IpadLoading) {
+            EasyLoading.show();
+          } else if (state is IpadLoaded) {
+            int index = _listCategories
+                .indexWhere((element) => element.seName == 'ipad');
+
+            _listCategories[index].listProduct = state.ipad;
+          } else if (state is IpadLoadError) {
+            if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+
+          if (state is IphoneLoading) {
+            EasyLoading.show();
+          } else if (state is IphoneLoaded) {
+            int index = _listCategories
+                .indexWhere((element) => element.seName == 'iphone');
+
+            _listCategories[index].listProduct = state.iphone;
+          } else if (state is IphoneLoadError) {
+            if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+
+          if (state is MacLoading) {
+            EasyLoading.show();
+          } else if (state is MacLoaded) {
+            int index = _listCategories
+                .indexWhere((element) => element.seName == 'mac');
+
+            _listCategories[index].listProduct = state.mac;
+          } else if (state is MacLoadError) {
+            if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+
+          if (state is AppleWatchLoading) {
+            EasyLoading.show();
+          } else if (state is AppleWatchLoaded) {
+            int index = _listCategories
+                .indexWhere((element) => element.seName == 'apple-watch');
+
+            _listCategories[index].listProduct = state.watch;
+          } else if (state is AppleWatchLoadError) {
+            if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+
+          if (state is SoundLoading) {
+            EasyLoading.show();
+          } else if (state is SoundLoaded) {
+            int index = _listCategories
+                .indexWhere((element) => element.seName == 'am-thanh');
+
+            _listCategories[index].listProduct = state.sound;
+          } else if (state is SoundLoadError) {
+            if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+
+          if (state is AccessoriesLoading) {
+            EasyLoading.show();
+          } else if (state is AccessoriesLoaded) {
+            int index = _listCategories
+                .indexWhere((element) => element.seName == 'phu-kien');
+
+            _listCategories[index].listProduct = state.accessories;
+
+            if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
+          } else if (state is AccessoriesLoadError) {
             if (EasyLoading.isShow) {
               EasyLoading.dismiss();
             }
@@ -92,35 +236,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
           _topPageView(),
           _topListDeal(),
           _buildCategoriesUI(),
-          // // list iPhone
-          // _titleProduct('iPhone'),
-          // _listProduct(),
-          // _allProduct('iPhone'),
-          //
-          // // list iPad
-          // _titleProduct('iPad'),
-          // _listProduct(),
-          // _allProduct('iPad'),
-          //
-          // // list Mac
-          // _titleProduct('Mac'),
-          // _listProduct(),
-          // _allProduct('Mac'),
-          //
-          // // list Watch
-          // _titleProduct('Watch'),
-          // _listProduct(),
-          // _allProduct('Watch'),
-          //
-          // // list Âm thanh
-          // _titleProduct('Âm thanh'),
-          // _listProduct(),
-          // _allProduct('Âm thanh'),
-          //
-          // // list Phụ kiện
-          // _titleProduct('Phụ kiện'),
-          // _listProduct(),
-          // _allProduct('Phụ kiện'),
           SliverToBoxAdapter(
             child: Image.asset('assets/images/banner_doanh_nghiep.png'),
           ),
@@ -182,17 +297,51 @@ class _HomePageScreenState extends State<HomePageScreen> {
       sliver: SliverToBoxAdapter(
         child: SizedBox(
             height: MediaQuery.of(context).size.height * 0.5,
-            child: PageView.builder(
-              controller: _pageController,
-              scrollDirection: Axis.horizontal,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentIndex = index % ListCustom.listIcon.length;
-                });
-              },
-              itemBuilder: (context, index) {
-                return ListCustom.listIcon[index % ListCustom.listIcon.length];
-              },
+            child: Stack(
+              children: [
+                PageView.builder(
+                  controller: _pageController,
+                  scrollDirection: Axis.horizontal,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentIndex = index % ListCustom.listIcon.length;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const WebViewExample(
+                                url: 'iphone',
+                              ))),
+                      child: ListCustom
+                          .listIcon[index % ListCustom.listIcon.length],
+                    );
+                  },
+                ),
+                Positioned(
+                  bottom: 20,
+                  width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: List.generate(
+                          ListCustom.listIcon.length,
+                          (index) => Container(
+                                height: 10,
+                                width: 10,
+                                decoration: BoxDecoration(
+                                    color: _currentIndex == index
+                                        ? const Color(0xff4AB2F1)
+                                            .withOpacity(0.7)
+                                        : const Color(0xff515154)
+                                            .withOpacity(0.7),
+                                    shape: BoxShape.circle),
+                              )),
+                    ),
+                  ),
+                )
+              ],
             )),
       ),
     );
@@ -225,12 +374,13 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   children: [
                     _titleProduct(
                       _listCategories[index].name.toString(),
+                      _listCategories[index].seName.toString().toLowerCase(),
                     ),
                     CustomScrollView(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       slivers: [
-                        _listProduct(),
+                        _listProduct(_listCategories[index].listProduct ?? []),
                       ],
                     ),
                     _allProduct(
@@ -241,75 +391,113 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 )));
   }
 
-  Widget _titleProduct(String nameProduct) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Text(
-        nameProduct,
-        style: CommonStyles.size24W700Black1D(context),
+  Widget _titleProduct(String nameProduct, String allProduct) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => WebViewExample(
+                url: allProduct,
+              ))),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Text(
+          nameProduct,
+          style: CommonStyles.size24W700Black1D(context),
+        ),
       ),
     );
   }
 
-  Widget _listProduct() {
+  Widget _listProduct(List<ProductsModel> listProduct) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate(
-          childCount: 4,
+          childCount: listProduct.length,
           (context, index) {
-            return GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const WebViewExample(
-                        url: 'iphone-14-pro-max',
-                      ))),
-              child: Card(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      alignment: Alignment.centerRight,
-                      margin: const EdgeInsets.only(top: 5, right: 5),
-                      child: Image.asset(
-                        'assets/images/tet_2023.png',
-                        scale: 10,
+            var item = listProduct[index];
+            return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Material(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(4),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const WebViewExample(
+                            url: 'iphone-14-pro-max',
+                          ))),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerRight,
+                        margin: const EdgeInsets.only(top: 5, right: 5),
+                        child: Image.asset(
+                          'assets/images/tet_2023.png',
+                          scale: 10,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Image.asset('assets/images/ip_14_pro.png'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10, bottom: 20),
-                            child: Text(
-                              'iPhone 14 Pro Max 128GB',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: CommonStyles.size14W700Black1D(context),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Image.asset('assets/images/ip_14_pro.png'),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
+                                child: Text(
+                                  item.name ?? '',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      CommonStyles.size14W700Black1D(context),
+                                ),
+                              ),
                             ),
-                          ),
-                          Text(
-                            '29.990.000₫',
-                            style: CommonStyles.size14W400Blue00(context),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            '36.990.000₫',
-                            style: CommonStyles.size14W400Grey66(context)
-                                .copyWith(
-                                    decoration: TextDecoration.lineThrough),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        priceFormat.format(item.price),
+                                        style: CommonStyles.size16W700Blue00(
+                                            context),
+                                      ),
+                                      Text(
+                                        '₫',
+                                        style: CommonStyles.size12W400Blue00(
+                                            context),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    '${priceFormat.format(item.oldPrice)}₫',
+                                    style:
+                                        CommonStyles.size12W400Grey66(context)
+                                            .copyWith(
+                                                decoration:
+                                                    TextDecoration.lineThrough),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             );
@@ -319,38 +507,55 @@ class _HomePageScreenState extends State<HomePageScreen> {
           maxCrossAxisExtent: 200,
           mainAxisSpacing: 5,
           crossAxisSpacing: 5,
-          childAspectRatio: 0.48,
+          childAspectRatio: 0.5,
         ),
       ),
     );
   }
 
   Widget _allProduct(String nameProduct, String allProduct) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: GestureDetector(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => WebViewExample(
-                  url: allProduct,
-                ))),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Xem tất cả $nameProduct',
-              style: CommonStyles.size14W400Blue00(context),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Material(
+            child: InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => WebViewExample(
+                        url: allProduct,
+                      ))),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xff0066CC), width: 1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Xem tất cả $nameProduct',
+                      style: CommonStyles.size14W400Blue00(context),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: Color(0xff0066CC),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            const SizedBox(
-              width: 5,
-            ),
-            const Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: Color(0xff0066CC),
-            ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 
@@ -540,9 +745,16 @@ class _HomePageScreenState extends State<HomePageScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                item.name,
-                style: CommonStyles.size13W400Grey86(context),
+              GestureDetector(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => WebViewExample(
+                          baseUrl: item.baseUrl,
+                          url: item.linkUrl,
+                        ))),
+                child: Text(
+                  item.name,
+                  style: CommonStyles.size13W400Grey86(context),
+                ),
               ),
               item.showAddress ? _itemFooterInfo() : const SizedBox(),
             ],

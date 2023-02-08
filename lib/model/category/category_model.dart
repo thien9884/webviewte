@@ -1,3 +1,5 @@
+import 'package:webviewtest/model/product/products_model.dart';
+
 class CategoryModel {
   List<Categories>? categories;
 
@@ -46,32 +48,35 @@ class Categories {
   ImageProduct? image;
   String? seName;
   int? id;
+  List<ProductsModel>? listProduct;
 
-  Categories(
-      {this.name,
-      this.description,
-      this.categoryTemplateId,
-      this.metaKeywords,
-      this.metaDescription,
-      this.metaTitle,
-      this.parentCategoryId,
-      this.pageSize,
-      this.pageSizeOptions,
-      this.priceRanges,
-      this.showOnHomePage,
-      this.includeInTopMenu,
-      this.hasDiscountsApplied,
-      this.published,
-      this.deleted,
-      this.displayOrder,
-      this.createdOnUtc,
-      this.updatedOnUtc,
-      this.roleIds,
-      this.discountIds,
-      this.storeIds,
-      this.image,
-      this.seName,
-      this.id});
+  Categories({
+    this.name,
+    this.description,
+    this.categoryTemplateId,
+    this.metaKeywords,
+    this.metaDescription,
+    this.metaTitle,
+    this.parentCategoryId,
+    this.pageSize,
+    this.pageSizeOptions,
+    this.priceRanges,
+    this.showOnHomePage,
+    this.includeInTopMenu,
+    this.hasDiscountsApplied,
+    this.published,
+    this.deleted,
+    this.displayOrder,
+    this.createdOnUtc,
+    this.updatedOnUtc,
+    this.roleIds,
+    this.discountIds,
+    this.storeIds,
+    this.image,
+    this.seName,
+    this.id,
+    this.listProduct,
+  });
 
   Categories.fromJson(Map<String, dynamic> json) {
     name = json['name'];

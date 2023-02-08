@@ -9,6 +9,22 @@ class CommonStyles {
     );
   }
 
+  static TextStyle size12W400Blue00(BuildContext context) {
+    return const TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      color: Color(0xff0066CC),
+    );
+  }
+
+  static TextStyle size12W400Grey66(BuildContext context) {
+    return const TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      color: Color(0xff666666),
+    );
+  }
+
   static TextStyle size12W400White(BuildContext context) {
     return const TextStyle(
       fontSize: 12,
@@ -165,6 +181,14 @@ class CommonStyles {
     return const TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.w400,
+      color: Color(0xff0066CC),
+    );
+  }
+
+  static TextStyle size16W700Blue00(BuildContext context) {
+    return const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w700,
       color: Color(0xff0066CC),
     );
   }

@@ -129,25 +129,26 @@ class _NavigationScreenState extends State<NavigationScreen> {
         children: List.generate(ListCustom.listBottomBar.length, (index) {
           final item = ListCustom.listBottomBar[index];
           return GestureDetector(
+            behavior: HitTestBehavior.translucent,
             onTap: () => setState(() => _isSelected = item.id),
-            child: Container(
-              decoration: const BoxDecoration(color: Colors.white),
-              child: Column(
-                children: [
-                  SvgPicture.asset(
-                    _isSelected == item.id
-                        ? item.img.toString()
-                        : item.imgUnselect.toString(),
-                  ),
-                  Text(
-                    item.name,
-                    style: _isSelected == item.id
-                        ? CommonStyles.size12W400Grey86(context)
-                            .copyWith(color: const Color(0xff0066CC))
-                        : CommonStyles.size12W400Grey86(context),
-                  ),
-                ],
-              ),
+            child: Column(
+              children: [
+                SvgPicture.asset(
+                  _isSelected == item.id
+                      ? item.img.toString()
+                      : item.imgUnselect.toString(),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  item.name,
+                  style: _isSelected == item.id
+                      ? CommonStyles.size12W400Grey86(context)
+                          .copyWith(color: const Color(0xff0066CC))
+                      : CommonStyles.size12W400Grey86(context),
+                ),
+              ],
             ),
           );
         }).toList(),

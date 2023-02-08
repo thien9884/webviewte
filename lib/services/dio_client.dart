@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:webviewtest/services/app_exceptions.dart';
 
 class DioClient {
-  static const int timeOutDuration = 20;
+  static const int timeOutDuration = 40;
 
   //GET
   Future<dynamic> get(String baseUrl, String api) async {
