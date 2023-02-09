@@ -114,13 +114,13 @@ class _NavigationScreenState extends State<NavigationScreen> {
   Widget _buildBottomBar() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey,
-            blurRadius: 7,
-            offset: Offset(0, -1),
+            color: Colors.grey.withOpacity(0.5),
+            blurRadius: 25,
+            offset: const Offset(0, -20),
           ),
         ],
       ),

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/categories/categories_bloc.dart';
 import 'package:webviewtest/blocs/categories/categories_event.dart';
 import 'package:webviewtest/blocs/categories/categories_state.dart';
+import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_constant.dart';
@@ -32,7 +33,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   // Categories
   List<Categories> _listCategories = [];
-
 
   // Sync data
   _getCategories() async {
@@ -237,7 +237,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
           _topListDeal(),
           _buildCategoriesUI(),
           SliverToBoxAdapter(
-            child: Image.asset('assets/images/banner_doanh_nghiep.png'),
+            child: Image.asset(
+              'assets/images/banner_doanh_nghiep.png',
+              scale: 0.5,
+            ),
           ),
           SliverPadding(
             padding: const EdgeInsets.only(top: 20),
@@ -254,33 +257,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
             ),
           ),
           _listNews(),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            sliver: SliverToBoxAdapter(
-              child: GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/web',
-                    arguments:
-                        WebViewModel(url: 'https://shopdunk.com/iphone')),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Xem tất cả Tin Tức',
-                      style: CommonStyles.size14W400Blue00(context),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 16,
-                      color: Color(0xff0066CC),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          _allNews(),
           _receiveInfo(),
           _footerShop(),
           _listFooterExpand(),
@@ -319,23 +296,25 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   },
                 ),
                 Positioned(
-                  bottom: 20,
+                  bottom: Responsive.isMobile(context) ? 30 : 20,
                   width: MediaQuery.of(context).size.width,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
                           ListCustom.listIcon.length,
                           (index) => Container(
-                                height: 10,
-                                width: 10,
+                                height: Responsive.isMobile(context) ? 10 : 15,
+                                width: Responsive.isMobile(context) ? 10 : 15,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
                                     color: _currentIndex == index
                                         ? const Color(0xff4AB2F1)
-                                            .withOpacity(0.7)
+                                            .withOpacity(0.5)
                                         : const Color(0xff515154)
-                                            .withOpacity(0.7),
+                                            .withOpacity(0.5),
                                     shape: BoxShape.circle),
                               )),
                     ),
@@ -431,14 +410,17 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     children: [
                       Container(
                         alignment: Alignment.centerRight,
-                        margin: const EdgeInsets.only(top: 5, right: 5),
+                        margin: EdgeInsets.only(
+                            top: Responsive.isMobile(context) ? 5 : 10,
+                            right: Responsive.isMobile(context) ? 5 : 10),
                         child: Image.asset(
                           'assets/images/tet_2023.png',
-                          scale: 10,
+                          scale: Responsive.isMobile(context) ? 10 : 6,
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        padding: EdgeInsets.symmetric(
+                            vertical: Responsive.isMobile(context) ? 10 : 20),
                         child: Image.asset('assets/images/ip_14_pro.png'),
                       ),
                       Expanded(
@@ -503,11 +485,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
             );
           },
         ),
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200,
-          mainAxisSpacing: 5,
-          crossAxisSpacing: 5,
-          childAspectRatio: 0.5,
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
+          mainAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
+          crossAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
+          childAspectRatio: 0.53,
         ),
       ),
     );
@@ -574,7 +556,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8)),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Image.asset('assets/images/news_sale.jpeg'),
                           Padding(
@@ -582,17 +564,32 @@ class _HomePageScreenState extends State<HomePageScreen> {
                               vertical: 30,
                               horizontal: 20,
                             ),
-                            child: Text(
-                              'Airpods Pro 2 thay đổi nhỏ ngoại hình, cải tiến lớn tính năng',
-                              style: CommonStyles.size16W700Grey33(context),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Airpods Pro 2 thay đổi nhỏ ngoại hình, cải tiến lớn tính năng',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        CommonStyles.size16W700Grey33(context),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           Padding(
                             padding:
                                 const EdgeInsets.only(bottom: 20, left: 20),
-                            child: Text(
-                              '14/12/2022',
-                              style: CommonStyles.size13W400Grey86(context),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '14/12/2022',
+                                  style: CommonStyles.size13W400Grey86(context),
+                                ),
+                              ],
                             ),
                           )
                         ],
@@ -608,7 +605,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
       child: Container(
         color: const Color(0xffF2F2F2),
         padding: const EdgeInsets.symmetric(vertical: 40),
-        margin: const EdgeInsets.only(top: 20),
+        margin: EdgeInsets.only(
+          top: 20,
+          left: Responsive.isMobile(context) ? 0 : 150,
+          right: Responsive.isMobile(context) ? 0 : 150,
+        ),
         child: Column(
           children: [
             Text(
@@ -666,7 +667,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
             children: [
               Image.asset(
                 'assets/icons/ic_sd_white.png',
-                scale: 3,
+                scale: Responsive.isMobile(context) ? 3 : 1.5,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 30),
@@ -679,10 +680,22 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/icons/ic_face.png'),
-                  Image.asset('assets/icons/ic_tiktok.png'),
-                  Image.asset('assets/icons/ic_zalo.png'),
-                  Image.asset('assets/icons/ic_youtube.png'),
+                  Image.asset(
+                    'assets/icons/ic_face.png',
+                    scale: Responsive.isMobile(context) ? 1 : 0.6,
+                  ),
+                  Image.asset(
+                    'assets/icons/ic_tiktok.png',
+                    scale: Responsive.isMobile(context) ? 1 : 0.6,
+                  ),
+                  Image.asset(
+                    'assets/icons/ic_zalo.png',
+                    scale: Responsive.isMobile(context) ? 1 : 0.6,
+                  ),
+                  Image.asset(
+                    'assets/icons/ic_youtube.png',
+                    scale: Responsive.isMobile(context) ? 1 : 0.6,
+                  ),
                 ],
               ),
               // const SizedBox(
@@ -847,6 +860,35 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   CommonStyles.size13W400Grey51(context).copyWith(height: 1.2),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _allNews() {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      sliver: SliverToBoxAdapter(
+        child: GestureDetector(
+          onTap: () => Navigator.pushNamed(context, '/web',
+              arguments: WebViewModel(url: 'https://shopdunk.com/iphone')),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Xem tất cả Tin Tức',
+                style: CommonStyles.size14W400Blue00(context),
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16,
+                color: Color(0xff0066CC),
+              ),
+            ],
+          ),
         ),
       ),
     );
