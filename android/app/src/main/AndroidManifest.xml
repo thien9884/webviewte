@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.webviewtest">
+    package="com.hesman.shopdunk">
    <application
         android:label="ShopDunk"
         android:name="${applicationName}"

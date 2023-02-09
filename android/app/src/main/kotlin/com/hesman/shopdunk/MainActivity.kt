@@ -1,4 +1,4 @@
-package com.example.webviewtest
+package com.hesman.shopdunk
 
 import io.flutter.embedding.android.FlutterActivity
 
