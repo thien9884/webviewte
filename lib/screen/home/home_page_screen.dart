@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/categories/categories_bloc.dart';
 import 'package:webviewtest/blocs/categories/categories_event.dart';
@@ -233,6 +234,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
       color: const Color(0xffF5F5F7),
       child: CustomScrollView(
         slivers: <Widget>[
+          _buildAppbar(),
           _topPageView(),
           _topListDeal(),
           _buildCategoriesUI(),
@@ -243,15 +245,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.only(top: 20),
-            sliver: SliverPadding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              sliver: SliverToBoxAdapter(
-                child: Center(
-                  child: Text(
-                    'Tin Tức',
-                    style: CommonStyles.size24W700Black1D(context),
-                  ),
+            padding: const EdgeInsets.only(top: 35, bottom: 15),
+            sliver: SliverToBoxAdapter(
+              child: Center(
+                child: Text(
+                  'Tin Tức',
+                  style: CommonStyles.size24W700Black1D(context),
                 ),
               ),
             ),
@@ -263,6 +262,27 @@ class _HomePageScreenState extends State<HomePageScreen> {
           _listFooterExpand(),
           _infoShop(),
         ],
+      ),
+    );
+  }
+
+  // home app bar
+  Widget _buildAppbar() {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 23, vertical: 10),
+      sliver: SliverToBoxAdapter(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Builder(
+              builder: (context) => GestureDetector(
+                  onTap: () => Scaffold.of(context).openDrawer(),
+                  child: const Icon(Icons.menu)),
+            ),
+            SvgPicture.asset('assets/icons/ic_logo_home_page.svg'),
+            SvgPicture.asset('assets/icons/ic_search_home.svg'),
+          ],
+        ),
       ),
     );
   }

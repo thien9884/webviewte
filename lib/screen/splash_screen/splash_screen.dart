@@ -1,7 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:webviewtest/blocs/login/login_bloc.dart';
+import 'package:webviewtest/blocs/login/login_event.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/screen/login/login_screen.dart';
+import 'package:webviewtest/screen/login/register_screen.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
+import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -11,18 +20,35 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool _showProgress = false;
   bool _showButtonLogin = false;
 
   Future<void> _checkVersion() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    bool rememberMe = sPref.rememberMe;
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
-        _showProgress = true;
+        EasyLoading.show();
         Future.delayed(
             const Duration(seconds: 2),
             () => setState(() {
-                  _showProgress = false;
-                  _showButtonLogin = true;
+                  if (EasyLoading.isShow) {
+                    EasyLoading.dismiss();
+                  }
+                  if (rememberMe) {
+                    var login = LoginModel(
+                      guest: true,
+                      username: sPref.userName,
+                      password: sPref.password,
+                      rememberMe: sPref.rememberMe,
+                    );
+                    if (!mounted) return;
+                    BlocProvider.of<LoginBloc>(context)
+                        .add(RequestPostLogin(loginModel: login));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const NavigationScreen()));
+                  } else {
+                    _showButtonLogin = true;
+                  }
                 }));
       });
     });
@@ -79,24 +105,20 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(),
-                  _showProgress
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 250),
-                          child: Image.asset('assets/icons/ic_loading.png'),
-                        )
-                      : const SizedBox(),
+                  const SizedBox(
+                    height: 250,
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 50),
                     child: Column(
                       children: [
-                        _showProgress
+                        EasyLoading.isShow
                             ? Text(
                                 "Version 1.0.3",
                                 style: CommonStyles.size16W700Grey33(context),
                               )
                             : const SizedBox(),
-                        _showProgress
+                        EasyLoading.isShow
                             ? Padding(
                                 padding:
                                     const EdgeInsets.only(top: 8, bottom: 24),
@@ -135,7 +157,21 @@ class _SplashScreenState extends State<SplashScreen> {
                                 padding:
                                     const EdgeInsets.fromLTRB(20, 12, 20, 40),
                                 child: GestureDetector(
-                                  onTap: () {},
+                                  onTap: () => showDialog(
+                                    context: context,
+                                    builder: (context) => CupertinoAlertDialog(
+                                      content: const Text('under development'),
+                                      actions: <CupertinoDialogAction>[
+                                        CupertinoDialogAction(
+                                          isDestructiveAction: false,
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Ok'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                   child: Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
@@ -144,7 +180,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                         borderRadius: BorderRadius.circular(8)),
                                     alignment: Alignment.center,
                                     child: Text(
-                                      'Đăng nhập',
+                                      'Đăng ký',
                                       style:
                                           CommonStyles.size14W700Blue(context),
                                     ),

@@ -1,4 +1,6 @@
 import 'package:webviewtest/model/category/category_model.dart';
+import 'package:webviewtest/model/login/login_model.dart';
+import 'package:webviewtest/model/login/user_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 
 abstract class ApiInterface {
@@ -7,4 +9,7 @@ abstract class ApiInterface {
 
   // Get list product
   Future<List<ProductsModel>> requestGetProduct(int? id);
+
+  // Login
+  Future<UserModel?> login(LoginModel? loginModel);
 }

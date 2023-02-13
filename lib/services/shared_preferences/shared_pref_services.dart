@@ -1,31 +1,54 @@
-import 'package:webviewtest/services/shared_preferences/base_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefKeys {
   SharedPrefKeys._();
 
   static const String token = 'token';
-  static const String refreshToken = 'refreshToken';
+  static const String userName = 'userName';
+  static const String password = 'password';
+  static const String rememberMe = 'rememberMe';
 }
 
-class SharedPreferencesService extends BasePreference {
-  static final SharedPreferencesService _instance =
-      SharedPreferencesService._internal();
-
-  static SharedPreferencesService get instance => _instance;
+class SharedPreferencesService {
+  static late SharedPreferencesService _instance;
+  static late SharedPreferences _preferences;
 
   SharedPreferencesService._internal();
 
+  static Future<SharedPreferencesService> get instance async {
+    _instance = SharedPreferencesService._internal();
+
+    _preferences = await SharedPreferences.getInstance();
+
+    return _instance;
+  }
+
   // Set token
-  Future setToken(String token) async =>
-      await setValue(SharedPrefKeys.token, token);
+  Future<void> setToken(String token) async =>
+      await _preferences.setString(SharedPrefKeys.token, token);
 
   // Get token
-  Future<dynamic> get token => getValue(SharedPrefKeys.token);
+  String get token => _preferences.getString(SharedPrefKeys.token) ?? '';
 
-  // Set refresh token
-  Future setRefreshToken(String token) async =>
-      await setValue(SharedPrefKeys.refreshToken, token);
+  // Set user name
+  Future<void> setUserName(String userName) async =>
+      await _preferences.setString(SharedPrefKeys.userName, userName);
 
-  // Get refresh token
-  Future<dynamic> get refreshToken => getValue(SharedPrefKeys.refreshToken);
+  // Get user name
+  String get userName => _preferences.getString(SharedPrefKeys.userName) ?? '';
+
+  // Set password
+  Future<void> setPassword(String password) async =>
+      await _preferences.setString(SharedPrefKeys.password, password);
+
+  // Get password
+  String get password => _preferences.getString(SharedPrefKeys.password) ?? '';
+
+  // Set remember me
+  Future<void> setRememberMe(bool rememberMe) async =>
+      await _preferences.setBool(SharedPrefKeys.rememberMe, rememberMe);
+
+  // Get remember me
+  bool get rememberMe =>
+      _preferences.getBool(SharedPrefKeys.rememberMe) ?? false;
 }

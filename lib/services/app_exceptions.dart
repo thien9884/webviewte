@@ -24,4 +24,19 @@ class UnAuthorizedException extends AppException {
 
 class NotFoundException extends AppException {
   NotFoundException([String? message, String? url]) : super(message, 'Request Not Found', url);
+
+}
+
+class ResponseException extends AppException {
+  ResponseException([String? message, String? url]) : super(message, 'Response Not Found', url);
+
+}
+
+class CancelRequestException extends AppException {
+  CancelRequestException([String? message, String? url])
+      : super(message, 'Cancel Request', url);
+}
+
+class FileTooLargeException extends AppException {
+  FileTooLargeException([String? message]) : super(message, 'File too large');
 }

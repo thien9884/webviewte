@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
+import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/user/user_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
@@ -20,7 +21,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   final pages = [
     const HomePageScreen(),
-    const SizedBox(),
+    const NewsScreen(),
     const UserScreen(),
     const SizedBox(),
   ];
@@ -35,7 +36,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              _buildAppbar(),
               Expanded(child: pages[_isSelected]),
               _buildBottomBar(),
             ],
@@ -88,24 +88,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   );
                 }),
           )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAppbar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 23, vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Builder(
-            builder: (context) => GestureDetector(
-                onTap: () => Scaffold.of(context).openDrawer(),
-                child: const Icon(Icons.menu)),
-          ),
-          SvgPicture.asset('assets/icons/ic_logo_home_page.svg'),
-          SvgPicture.asset('assets/icons/ic_search_home.svg'),
         ],
       ),
     );

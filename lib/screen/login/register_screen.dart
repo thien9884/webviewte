@@ -13,10 +13,11 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   int _selectGender = -1;
-  final String _day = '1';
-  final String _month = '1';
-  final String _year = '1990';
+  String _day = '1';
+  String _month = '1';
+  String _year = '1990';
   bool _showPassword = false;
+  bool _showComfirmPassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +27,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Text(
+                    'Đăng nhập',
+                    style: CommonStyles.size24W700Black1D(context),
+                  ),
+                ),
+              ),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -40,13 +50,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       TextFormField(
                         decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 1,
-                            color: Color(0xffEBEBEB),
+                          enabled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 1,
+                              color: Color(0xffEBEBEB),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          borderRadius: BorderRadius.circular(8),
-                        )),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 1,
+                              color: Color(0xffEBEBEB),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 18),
@@ -108,13 +127,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Flexible(child: _listDropDown(31, 1, _day, 'Ngày')),
+                          Flexible(child: _listDropDownDay()),
                           const SizedBox(width: 10),
-                          Flexible(
-                              child: _listDropDown(12, 1, _month, 'Tháng')),
+                          Flexible(child: _listDropDownMonth()),
                           const SizedBox(width: 10),
-                          Flexible(
-                              child: _listDropDown(50, 1990, _year, 'Năm')),
+                          Flexible(child: _listDropDownYear()),
                         ],
                       ),
                       Padding(
@@ -126,13 +143,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       TextFormField(
                         decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 1,
-                            color: Color(0xffEBEBEB),
+                          enabled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 1,
+                              color: Color(0xffEBEBEB),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          borderRadius: BorderRadius.circular(8),
-                        )),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 1,
+                              color: Color(0xffEBEBEB),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 20, bottom: 5),
@@ -143,13 +169,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       TextFormField(
                         decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            width: 1,
-                            color: Color(0xffEBEBEB),
+                          enabled: true,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 1,
+                              color: Color(0xffEBEBEB),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          borderRadius: BorderRadius.circular(8),
-                        )),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 1,
+                              color: Color(0xffEBEBEB),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -160,20 +195,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       TextFormField(
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(
+                          suffixIcon: GestureDetector(
+                            onTap: () => setState(
+                              () => _showPassword = !_showPassword,
+                            ),
+                            child: Icon(
+                              Icons.remove_red_eye_outlined,
+                              color: _showPassword ? Colors.blue : Colors.grey,
+                            ),
+                          ),
+                          enabled: true,
+                          enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                               width: 1,
                               color: Color(0xffEBEBEB),
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          suffixIcon: GestureDetector(
-                            onTap: () =>
-                                setState(() => _showPassword = !_showPassword),
-                            child: Icon(
-                              Icons.remove_red_eye_outlined,
-                              color: _showPassword ? Colors.blue : Colors.grey,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 1,
+                              color: Color(0xffEBEBEB),
                             ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                         obscureText: !_showPassword,
@@ -191,23 +235,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       TextFormField(
                         decoration: InputDecoration(
-                          border: OutlineInputBorder(
+                          suffixIcon: GestureDetector(
+                            onTap: () => setState(
+                              () =>
+                                  _showComfirmPassword = !_showComfirmPassword,
+                            ),
+                            child: Icon(
+                              Icons.remove_red_eye_outlined,
+                              color: _showComfirmPassword
+                                  ? Colors.blue
+                                  : Colors.grey,
+                            ),
+                          ),
+                          enabled: true,
+                          enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                               width: 1,
                               color: Color(0xffEBEBEB),
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          suffixIcon: GestureDetector(
-                            onTap: () =>
-                                setState(() => _showPassword = !_showPassword),
-                            child: Icon(
-                              Icons.remove_red_eye_outlined,
-                              color: _showPassword ? Colors.blue : Colors.grey,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 1,
+                              color: Color(0xffEBEBEB),
                             ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        obscureText: !_showPassword,
+                        obscureText: !_showComfirmPassword,
                       ),
                       Row(
                         children: [
@@ -256,42 +312,133 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _listDropDown(int length, int count, String type, String name) {
+  Widget _listDropDownDay() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 5),
           child: Text(
-            name,
+            'Ngày',
             style: CommonStyles.size14W400Black1D(context),
           ),
         ),
-        SizedBox(
-          height: 60,
-          child: Center(
-            child: DropdownButtonFormField<String>(
-              value: type,
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xffEBEBEB), width: 1),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _day,
               menuMaxHeight: 300,
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                borderSide:
-                    const BorderSide(width: 1, color: Color(0xffEBEBEB)),
-                borderRadius: BorderRadius.circular(8),
-              )),
               elevation: 16,
-              style: const TextStyle(color: Colors.deepPurple),
+              isDense: true,
+              style: CommonStyles.size14W400Grey86(context),
               onChanged: (String? value) {
+                // This is called when the user selects an item.
                 setState(() {
-                  type = value!;
+                  _day = value!;
                 });
               },
               items: List.generate(
-                  length,
+                  31,
                   (index) => DropdownMenuItem<String>(
-                        value: (index + count).toString(),
-                        child: Center(child: Text((index + count).toString())),
+                        value: (index + 1).toString(),
+                        child: Center(child: Text((index + 1).toString())),
+                      )).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _listDropDownMonth() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(
+            'Tháng',
+            style: CommonStyles.size14W400Black1D(context),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xffEBEBEB), width: 1),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _month,
+              menuMaxHeight: 300,
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+              elevation: 16,
+              isDense: true,
+              style: CommonStyles.size14W400Grey86(context),
+              onChanged: (String? value) {
+                // This is called when the user selects an item.
+                setState(() {
+                  _month = value!;
+                });
+              },
+              items: List.generate(
+                  12,
+                  (index) => DropdownMenuItem<String>(
+                        value: (index + 1).toString(),
+                        child: Center(child: Text((index + 1).toString())),
+                      )).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _listDropDownYear() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: Text(
+            'Năm',
+            style: CommonStyles.size14W400Black1D(context),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xffEBEBEB), width: 1),
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _year,
+              menuMaxHeight: 300,
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
+              elevation: 16,
+              isDense: true,
+              style: CommonStyles.size14W400Grey86(context),
+              onChanged: (String? value) {
+                // This is called when the user selects an item.
+                setState(() {
+                  _year = value!;
+                });
+              },
+              items: List.generate(
+                  50,
+                  (index) => DropdownMenuItem<String>(
+                        value: (index + 1990).toString(),
+                        child: Center(child: Text((index + 1990).toString())),
                       )).toList(),
             ),
           ),
