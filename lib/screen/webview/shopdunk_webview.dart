@@ -110,17 +110,20 @@ class _WebViewExampleState extends State<WebViewExample> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (int progress) {
-            EasyLoading.show();
+          onProgress: (int progress) async {
+            await EasyLoading.show();
             debugPrint('WebView is loading (progress : $progress%)');
+            if (progress == 100) {
+              if (EasyLoading.isShow) {
+                await EasyLoading.dismiss();
+              }
+            }
           },
           onPageStarted: (String url) {
             debugPrint('Page started loading: $url');
           },
-          onPageFinished: (String url) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
+          onPageFinished: (String url) async {
+            _controller.clearCache();
             debugPrint('Page finished loading: $url');
           },
           onWebResourceError: (WebResourceError error) {
@@ -184,7 +187,6 @@ Page resource error:
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(child: WebViewWidget(controller: _controller)),
-        // floatingActionButton: favoriteButton(),
       ),
     );
   }

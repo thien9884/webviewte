@@ -24,8 +24,9 @@ class LoginBloc extends BaseBloc<LoginEvent, LoginState> {
       sPref.setRememberMe(loginModel.rememberMe);
       sPref.setUserName(loginModel.username ?? '');
       sPref.setPassword(loginModel.password ?? '');
+      print(user?.accessToken);
       emit(
-        LoginLoaded(userModel: user ?? UserModel()),
+        LoginLoaded(userModel: user ?? UserModel(), isLogin: user != null),
       );
     } catch (e) {
       emit(

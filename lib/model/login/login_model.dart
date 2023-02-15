@@ -1,14 +1,14 @@
 class LoginModel {
-  bool guest = true;
+  bool guest = false;
   String? username;
   String? password;
-  bool rememberMe = true;
+  bool rememberMe = false;
 
   LoginModel({
-    this.guest = true,
+    this.guest = false,
     this.username,
     this.password,
-    this.rememberMe = true,
+    this.rememberMe = false,
   });
 
   LoginModel.fromJson(Map<String, dynamic> json) {

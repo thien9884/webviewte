@@ -8,7 +8,6 @@ import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/login/login_model.dart';
-import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -34,8 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (EasyLoading.isShow) {
               EasyLoading.dismiss();
             }
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const NavigationScreen()));
+            Navigator.of(context).pop(state.isLogin);
           } else if (state is LoginLoadError) {
             if (EasyLoading.isShow) {
               EasyLoading.dismiss();
@@ -225,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: CommonButton(
         onTap: () async {
           var login = LoginModel(
-            guest: true,
+            guest: false,
             username: _emailController.text,
             password: _passwordController.text,
             rememberMe: _savePassword,

@@ -22,9 +22,10 @@ class LoginLoading extends LoginState {
 }
 
 class LoginLoaded extends LoginState {
+  final bool isLogin;
   final UserModel userModel;
 
-  const LoginLoaded({required this.userModel});
+  const LoginLoaded({required this.userModel, required this.isLogin});
 
   @override
   List<Object?> get props => [userModel];

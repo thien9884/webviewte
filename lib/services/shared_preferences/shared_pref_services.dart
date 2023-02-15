@@ -7,6 +7,7 @@ class SharedPrefKeys {
   static const String userName = 'userName';
   static const String password = 'password';
   static const String rememberMe = 'rememberMe';
+  static const String isLogin = 'isLogin';
 }
 
 class SharedPreferencesService {
@@ -21,6 +22,14 @@ class SharedPreferencesService {
     _preferences = await SharedPreferences.getInstance();
 
     return _instance;
+  }
+
+  Future<bool> remove(String key) async {
+    return await _preferences.remove(key);
+  }
+
+  Future<bool> clear() async {
+    return await _preferences.clear();
   }
 
   // Set token
@@ -51,4 +60,12 @@ class SharedPreferencesService {
   // Get remember me
   bool get rememberMe =>
       _preferences.getBool(SharedPrefKeys.rememberMe) ?? false;
+
+  // Set is login
+  Future<void> setIsLogin(bool isLogin) async =>
+      await _preferences.setBool(SharedPrefKeys.isLogin, isLogin);
+
+  // Get login
+  bool get isLogin =>
+      _preferences.getBool(SharedPrefKeys.isLogin) ?? false;
 }
