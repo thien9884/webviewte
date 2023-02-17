@@ -229,6 +229,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         });
   }
 
+  // home UI
   Widget _buildHomeUI(BuildContext context) {
     return Container(
       color: const Color(0xffF5F5F7),
@@ -239,9 +240,15 @@ class _HomePageScreenState extends State<HomePageScreen> {
           _topListDeal(),
           _buildCategoriesUI(),
           SliverToBoxAdapter(
-            child: Image.asset(
-              'assets/images/banner_doanh_nghiep.png',
-              scale: 0.5,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const ShopDunkWebView(
+                        baseUrl: 'https://doanhnghiep.shopdunk.com/',
+                      ))),
+              child: Image.asset(
+                'assets/images/banner_doanh_nghiep.png',
+                scale: 0.5,
+              ),
             ),
           ),
           SliverPadding(
@@ -307,7 +314,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const WebViewExample(
+                          builder: (context) => const ShopDunkWebView(
                                 url: 'iphone',
                               ))),
                       child: ListCustom
@@ -390,10 +397,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 )));
   }
 
+  // title product
   Widget _titleProduct(String nameProduct, String allProduct) {
     return GestureDetector(
       onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => WebViewExample(
+          builder: (context) => ShopDunkWebView(
                 url: allProduct,
               ))),
       child: Padding(
@@ -406,6 +414,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
+  // list product
   Widget _listProduct(List<ProductsModel> listProduct) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -422,7 +431,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(4),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const WebViewExample(
+                      builder: (context) => const ShopDunkWebView(
                             url: 'iphone-14-pro-max',
                           ))),
                   child: Column(
@@ -515,6 +524,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
+  // all product
   Widget _allProduct(String nameProduct, String allProduct) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -526,7 +536,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
             child: InkWell(
               borderRadius: BorderRadius.circular(8),
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => WebViewExample(
+                  builder: (context) => ShopDunkWebView(
                         url: allProduct,
                       ))),
               child: Container(
@@ -718,9 +728,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   ),
                 ],
               ),
-              // const SizedBox(
-              //   height: 30,
-              // ),
             ],
           ),
         ),
@@ -728,7 +735,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
-  // list expand information
+  // list footer expand information
   Widget _listFooterExpand() {
     return SliverList(
         delegate: SliverChildBuilderDelegate(
@@ -767,6 +774,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
     }));
   }
 
+  // list item expand
   Widget _listItemExpand(List<Resource> listResource) {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
@@ -780,7 +788,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
             children: [
               GestureDetector(
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => WebViewExample(
+                    builder: (context) => ShopDunkWebView(
                           baseUrl: item.baseUrl,
                           url: item.linkUrl,
                         ))),
@@ -798,6 +806,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
+  // item footer info
   Widget _itemFooterInfo() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -850,6 +859,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
+  // info shop
   Widget _infoShop() {
     return SliverToBoxAdapter(
       child: Container(
@@ -885,6 +895,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
     );
   }
 
+  // all news
   Widget _allNews() {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 20),

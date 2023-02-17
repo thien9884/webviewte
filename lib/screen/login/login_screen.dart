@@ -222,6 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: const EdgeInsets.only(bottom: 10),
       child: CommonButton(
         onTap: () async {
+          FocusScope.of(context).unfocus();
           var login = LoginModel(
             guest: false,
             username: _emailController.text,

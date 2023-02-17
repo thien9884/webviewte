@@ -16,7 +16,7 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 // #enddocregion platform_imports
 
-void main() => runApp(const MaterialApp(home: WebViewExample()));
+void main() => runApp(const MaterialApp(home: ShopDunkWebView()));
 
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
@@ -73,17 +73,17 @@ const String kTransparentBackgroundPage = '''
   </html>
 ''';
 
-class WebViewExample extends StatefulWidget {
+class ShopDunkWebView extends StatefulWidget {
   final String? baseUrl;
   final String? url;
 
-  const WebViewExample({this.baseUrl, this.url, super.key});
+  const ShopDunkWebView({this.baseUrl, this.url, super.key});
 
   @override
-  State<WebViewExample> createState() => _WebViewExampleState();
+  State<ShopDunkWebView> createState() => _ShopDunkWebViewState();
 }
 
-class _WebViewExampleState extends State<WebViewExample> {
+class _ShopDunkWebViewState extends State<ShopDunkWebView> {
   late final WebViewController _controller;
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:webviewtest/common/flip_widget.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
@@ -63,7 +64,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   final item = ListCustom.listDrawers[index];
                   return GestureDetector(
                     onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => WebViewExample(
+                        builder: (context) => ShopDunkWebView(
                               url: item.linkUrl,
                             ))),
                     child: Container(
@@ -115,11 +116,14 @@ class _NavigationScreenState extends State<NavigationScreen> {
             onTap: () => setState(() => _isSelected = item.id),
             child: Column(
               children: [
-                SvgPicture.asset(
-                  _isSelected == item.id
-                      ? item.img.toString()
-                      : item.imgUnselect.toString(),
-                ),
+                FlipWidget(
+                    flip: _isSelected == item.id,
+                    backWidget: SvgPicture.asset(
+                      item.imgUnselect.toString(),
+                    ),
+                    frontWidget: SvgPicture.asset(
+                      item.img.toString(),
+                    )),
                 const SizedBox(
                   height: 5,
                 ),
