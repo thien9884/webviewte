@@ -265,9 +265,21 @@ class _HomePageScreenState extends State<HomePageScreen> {
           _listNews(),
           _allNews(),
           _receiveInfo(),
-          _footerShop(),
-          _listFooterExpand(),
-          _infoShop(),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  childCount: 1,
+                  (context, index) => Container(
+                        color: Colors.black,
+                        child: CustomScrollView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          slivers: [
+                            _footerShop(),
+                            _listFooterExpand(),
+                            _infoShop(),
+                          ],
+                        ),
+                      ))),
         ],
       ),
     );

@@ -4,8 +4,6 @@ import 'package:webviewtest/common/flip_widget.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
-import 'package:webviewtest/screen/news/news_screen.dart';
-import 'package:webviewtest/screen/user/user_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class NavigationScreen extends StatefulWidget {
@@ -22,9 +20,21 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   final pages = [
     const HomePageScreen(),
-    const NewsScreen(),
-    const UserScreen(),
-    const SizedBox(),
+    // const NewsScreen(),
+    // const UserScreen(),
+    // const SizedBox(),
+    const ShopDunkWebView(
+      key: Key('news'),
+      url: 'tin-tuc',
+    ),
+    const ShopDunkWebView(
+      key: Key('info'),
+      url: 'customer/info',
+    ),
+    const ShopDunkWebView(
+      key: Key('cart'),
+      url: 'cart',
+    ),
   ];
 
   @override
