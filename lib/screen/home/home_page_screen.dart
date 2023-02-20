@@ -443,8 +443,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(4),
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ShopDunkWebView(
-                            url: 'iphone-14-pro-max',
+                      builder: (context) => ShopDunkWebView(
+                            url: item.seName,
                           ))),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,7 +462,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: Responsive.isMobile(context) ? 10 : 20),
-                        child: Image.asset('assets/images/ip_14_pro.png'),
+                        child: Image.network(
+                            item.defaultPictureModel?.imageUrl ?? ''),
                       ),
                       Expanded(
                         child: Column(
@@ -491,7 +492,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        priceFormat.format(item.price),
+                                        priceFormat.format(
+                                            item.productPrice?.priceValue ?? 0),
                                         style: CommonStyles.size16W700Blue00(
                                             context),
                                       ),
@@ -506,7 +508,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                     height: 5,
                                   ),
                                   Text(
-                                    '${priceFormat.format(item.oldPrice)}₫',
+                                    '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
                                     style:
                                         CommonStyles.size12W400Grey66(context)
                                             .copyWith(
