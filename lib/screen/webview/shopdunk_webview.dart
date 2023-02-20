@@ -4,6 +4,8 @@
 
 // ignore_for_file: public_member_api_docs
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -175,19 +177,41 @@ Page resource error:
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (await _controller.canGoBack()) {
-          await _controller.goBack();
-          return false;
-        } else {
-          return true;
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(child: WebViewWidget(controller: _controller)),
-      ),
-    );
+    if (!Platform.isIOS) {
+      return WillPopScope(
+        onWillPop: () async {
+          if (await _controller.canGoBack()) {
+            await _controller.goBack();
+            return false;
+          } else {
+            return true;
+          }
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(child: WebViewWidget(controller: _controller)),
+        ),
+      );
+    } else {
+      return GestureDetector(
+        onHorizontalDragUpdate: (detail) async {
+          if (await _controller.canGoBack()) {
+            await _controller.goBack();
+          } else {
+            if (!mounted) return;
+            if(detail.delta.dx > 0) {
+              Navigator.pop(context);
+            }
+          }
+        },
+        child: WillPopScope(
+          onWillPop: () async => false,
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(child: WebViewWidget(controller: _controller)),
+          ),
+        ),
+      );
+    }
   }
 }
