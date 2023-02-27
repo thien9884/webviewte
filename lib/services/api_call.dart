@@ -2,17 +2,27 @@ import 'package:webviewtest/constant/api_constant.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
+import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/services/api_interfaces.dart';
 import 'package:webviewtest/services/dio_client.dart';
 
 class ApiCall implements ApiInterface {
+
   @override
   Future<List<Categories>> requestGetCategories() async {
     var response = await DioClient().get(ApiConstant.categories);
     if (response == null) return [];
     Iterable list = response['categories'];
     return list.map((e) => Categories.fromJson(e)).toList();
+  }
+
+  @override
+  Future<List<NewsGroup>> requestGetNews() async {
+    var response = await DioClient().get(ApiConstant.news);
+    if (response == null) return [];
+    Iterable list = response['Data']['NewsGroup'];
+    return list.map((e) => NewsGroup.fromJson(e)).toList();
   }
 
   @override

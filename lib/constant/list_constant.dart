@@ -63,7 +63,7 @@ class ListCustom {
         imgUnselect: 'assets/icons/ic_user_un.svg'),
     Resource(
         id: 3,
-        name: 'Bag',
+        name: 'Store',
         img: 'assets/icons/ic_bag.svg',
         imgUnselect: 'assets/icons/ic_bag_un.svg'),
   ];
@@ -343,6 +343,25 @@ class ListCustom {
         'assets/images/banner_flash_sale_mb.jpeg',
         fit: BoxFit.cover,
       )),
+    ),
+  ];
+
+  static List listScrollBar = [
+    Resource(
+      id: 0,
+      name: 'Tài khoản của tôi',
+    ),
+    Resource(
+      id: 1,
+      name: 'Đơn đặt hàng',
+    ),
+    Resource(
+      id: 2,
+      name: 'Hệ thống cửa hàng',
+    ),
+    Resource(
+      id: 3,
+      name: 'Tìm Store trên Google Map',
     ),
   ];
 }

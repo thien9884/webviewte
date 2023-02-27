@@ -7,7 +7,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // #docregion platform_imports
@@ -16,9 +16,10 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 // Import for iOS features.
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:webviewtest/constant/list_constant.dart';
+import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 // #enddocregion platform_imports
-
-void main() => runApp(const MaterialApp(home: ShopDunkWebView()));
 
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
@@ -76,10 +77,13 @@ const String kTransparentBackgroundPage = '''
 ''';
 
 class ShopDunkWebView extends StatefulWidget {
+  final bool hideBottom;
+  final int? index;
   final String? baseUrl;
   final String? url;
 
-  const ShopDunkWebView({this.baseUrl, this.url, super.key});
+  const ShopDunkWebView(
+      {this.baseUrl, this.url, this.index, this.hideBottom = true, super.key});
 
   @override
   State<ShopDunkWebView> createState() => _ShopDunkWebViewState();
@@ -113,13 +117,7 @@ class _ShopDunkWebViewState extends State<ShopDunkWebView> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) async {
-            await EasyLoading.show();
             debugPrint('WebView is loading (progress : $progress%)');
-            if (progress == 100) {
-              if (EasyLoading.isShow) {
-                await EasyLoading.dismiss();
-              }
-            }
           },
           onPageStarted: (String url) {
             debugPrint('Page started loading: $url');
@@ -129,9 +127,6 @@ class _ShopDunkWebViewState extends State<ShopDunkWebView> {
             debugPrint('Page finished loading: $url');
           },
           onWebResourceError: (WebResourceError error) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
             debugPrint('''
 Page resource error:
   code: ${error.errorCode}
@@ -141,9 +136,6 @@ Page resource error:
           ''');
           },
           onNavigationRequest: (NavigationRequest request) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
             if (request.url.startsWith('https://www.youtube.com/')) {
               debugPrint('blocking navigation to ${request.url}');
               return NavigationDecision.prevent;
@@ -187,10 +179,7 @@ Page resource error:
             return true;
           }
         },
-        child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SafeArea(child: WebViewWidget(controller: _controller)),
-        ),
+        child: _buildUI(),
       );
     } else {
       return GestureDetector(
@@ -199,19 +188,75 @@ Page resource error:
             await _controller.goBack();
           } else {
             if (!mounted) return;
-            if(detail.delta.dx > 0) {
+            if (detail.delta.dx > 0) {
               Navigator.pop(context);
             }
           }
         },
         child: WillPopScope(
           onWillPop: () async => false,
-          child: Scaffold(
-            backgroundColor: Colors.white,
-            body: SafeArea(child: WebViewWidget(controller: _controller)),
-          ),
+          child: _buildUI(),
         ),
       );
     }
+  }
+
+  Widget _buildUI() {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+          child: Column(
+        children: [
+          Expanded(child: WebViewWidget(controller: _controller)),
+          Visibility(visible: widget.hideBottom, child: _buildBottomBar()),
+        ],
+      )),
+    );
+  }
+
+  Widget _buildBottomBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            blurRadius: 25,
+            offset: const Offset(0, -20),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(ListCustom.listBottomBar.length, (index) {
+          final item = ListCustom.listBottomBar[index];
+          return GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => NavigationScreen(
+                      isSelected: item.id,
+                    ))),
+            child: Column(
+              children: [
+                SvgPicture.asset((widget.index ?? 0) == item.id
+                    ? item.img.toString()
+                    : item.imgUnselect.toString()),
+                const SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  item.name,
+                  style: (widget.index ?? 0) == item.id
+                      ? CommonStyles.size12W400Grey86(context)
+                          .copyWith(color: const Color(0xff0066CC))
+                      : CommonStyles.size12W400Grey86(context),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
   }
 }

@@ -4,10 +4,14 @@ import 'package:webviewtest/common/flip_widget.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
+import 'package:webviewtest/screen/news/news_screen.dart';
+import 'package:webviewtest/screen/store/store_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen({Key? key}) : super(key: key);
+  final int isSelected;
+
+  const NavigationScreen({this.isSelected = 0, Key? key}) : super(key: key);
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
@@ -20,22 +24,25 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   final pages = [
     const HomePageScreen(),
-    // const NewsScreen(),
-    // const UserScreen(),
-    // const SizedBox(),
-    const ShopDunkWebView(
-      key: Key('news'),
-      url: 'tin-tuc',
-    ),
+    const NewsScreen(),
     const ShopDunkWebView(
       key: Key('info'),
       url: 'customer/info',
+      hideBottom: false,
     ),
     const ShopDunkWebView(
-      key: Key('cart'),
-      url: 'cart',
+      key: Key('store'),
+      url: 'he-thong-cua-hang',
+      hideBottom: false,
     ),
+    // const StoreScreen(),
   ];
+
+  @override
+  void initState() {
+    _isSelected = widget.isSelected;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +113,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   Widget _buildBottomBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -124,27 +130,39 @@ class _NavigationScreenState extends State<NavigationScreen> {
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () => setState(() => _isSelected = item.id),
-            child: Column(
-              children: [
-                FlipWidget(
-                    flip: _isSelected == item.id,
-                    backWidget: SvgPicture.asset(
-                      item.imgUnselect.toString(),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.15,
+              child: Column(
+                children: [
+                  Container(
+                    decoration: _isSelected == item.id
+                        ? BoxDecoration(
+                            border: Border.all(color: Colors.blue, width: 2),
+                            borderRadius: BorderRadius.circular(8))
+                        : null,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(_isSelected == item.id
+                            ? item.img.toString()
+                            : item.imgUnselect.toString()),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          item.name,
+                          style: _isSelected == item.id
+                              ? CommonStyles.size12W400Grey86(context)
+                                  .copyWith(color: const Color(0xff0066CC))
+                              : CommonStyles.size12W400Grey86(context),
+                        ),
+                      ],
                     ),
-                    frontWidget: SvgPicture.asset(
-                      item.img.toString(),
-                    )),
-                const SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  item.name,
-                  style: _isSelected == item.id
-                      ? CommonStyles.size12W400Grey86(context)
-                          .copyWith(color: const Color(0xff0066CC))
-                      : CommonStyles.size12W400Grey86(context),
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           );
         }).toList(),

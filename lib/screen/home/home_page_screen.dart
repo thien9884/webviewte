@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/categories/categories_bloc.dart';
 import 'package:webviewtest/blocs/categories/categories_event.dart';
 import 'package:webviewtest/blocs/categories/categories_state.dart';
+import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
@@ -123,7 +124,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         builder: (context, state) => _buildHomeUI(context),
         listener: (context, state) {
           if (state is CategoriesLoading) {
-            EasyLoading.show();
+            // EasyLoading.show();
           } else if (state is CategoriesLoaded) {
             _listCategories = state.categories
                 .where((element) => element.showOnHomePage == true)
@@ -140,7 +141,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is IpadLoading) {
-            EasyLoading.show();
+            // EasyLoading.show();
           } else if (state is IpadLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'ipad');
@@ -154,7 +155,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is IphoneLoading) {
-            EasyLoading.show();
+            // EasyLoading.show();
           } else if (state is IphoneLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'iphone');
@@ -168,7 +169,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is MacLoading) {
-            EasyLoading.show();
+            // EasyLoading.show();
           } else if (state is MacLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'mac');
@@ -182,7 +183,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is AppleWatchLoading) {
-            EasyLoading.show();
+            // EasyLoading.show();
           } else if (state is AppleWatchLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'apple-watch');
@@ -196,7 +197,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is SoundLoading) {
-            EasyLoading.show();
+            // EasyLoading.show();
           } else if (state is SoundLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'am-thanh');
@@ -210,7 +211,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is AccessoriesLoading) {
-            EasyLoading.show();
+            // EasyLoading.show();
           } else if (state is AccessoriesLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'phu-kien');
@@ -268,18 +269,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           SliverList(
               delegate: SliverChildBuilderDelegate(
                   childCount: 1,
-                  (context, index) => Container(
-                        color: Colors.black,
-                        child: CustomScrollView(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          slivers: [
-                            _footerShop(),
-                            _listFooterExpand(),
-                            _infoShop(),
-                          ],
-                        ),
-                      ))),
+                  (context, index) => const CommonFooter())),
         ],
       ),
     );
@@ -335,7 +325,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   },
                 ),
                 Positioned(
-                  bottom: Responsive.isMobile(context) ? 30 : 20,
+                  bottom: 20,
                   width: MediaQuery.of(context).size.width,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -412,10 +402,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
   // title product
   Widget _titleProduct(String nameProduct, String allProduct) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ShopDunkWebView(
-                url: allProduct,
-              ))),
+      // onTap: () => Navigator.of(context).push(MaterialPageRoute(
+      //     builder: (context) => ShopDunkWebView(
+      //           url: allProduct,
+      //         ))),
+      onTap: () => Navigator.of(context, rootNavigator: false).push(MaterialPageRoute(
+          builder: (context) => ShopDunkWebView(url: allProduct,), maintainState: false)),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Text(
@@ -692,216 +684,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         borderSide: BorderSide.none,
                         borderRadius: BorderRadius.circular(30))),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // footer web
-  Widget _footerShop() {
-    return SliverToBoxAdapter(
-      child: Container(
-        color: Colors.black,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.asset(
-                'assets/icons/ic_sd_white.png',
-                scale: Responsive.isMobile(context) ? 3 : 1.5,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30),
-                child: Text(
-                  CommonText.footerInfo(context),
-                  style: CommonStyles.size15W400WhiteD2(context),
-                ),
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/icons/ic_face.png',
-                    scale: Responsive.isMobile(context) ? 1 : 0.6,
-                  ),
-                  Image.asset(
-                    'assets/icons/ic_tiktok.png',
-                    scale: Responsive.isMobile(context) ? 1 : 0.6,
-                  ),
-                  Image.asset(
-                    'assets/icons/ic_zalo.png',
-                    scale: Responsive.isMobile(context) ? 1 : 0.6,
-                  ),
-                  Image.asset(
-                    'assets/icons/ic_youtube.png',
-                    scale: Responsive.isMobile(context) ? 1 : 0.6,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // list footer expand information
-  Widget _listFooterExpand() {
-    return SliverList(
-        delegate: SliverChildBuilderDelegate(
-            childCount: ListCustom.listFooter.length, (context, index) {
-      final items = ListCustom.listFooter[index];
-      return Theme(
-        data: ThemeData().copyWith(dividerColor: Colors.transparent),
-        child: ListTileTheme(
-          dense: true,
-          child: ExpansionTile(
-            iconColor: const Color(0xff424245),
-            collapsedIconColor: const Color(0xff424245),
-            backgroundColor: Colors.black,
-            collapsedBackgroundColor: Colors.black,
-            title: Container(
-              height: 42,
-              alignment: Alignment.centerLeft,
-              decoration: const BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(width: 1, color: Color(0xff424245)))),
-              child: Text(
-                items.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CommonStyles.size15W400WhiteD2(context),
-              ),
-            ),
-            childrenPadding: const EdgeInsets.symmetric(horizontal: 40),
-            trailing: const Icon(Icons.keyboard_arrow_down_rounded),
-            children: [
-              _listItemExpand(items.listExpand),
-            ],
-          ),
-        ),
-      );
-    }));
-  }
-
-  // list item expand
-  Widget _listItemExpand(List<Resource> listResource) {
-    return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (BuildContext context, int childIdx) {
-        final item = listResource[childIdx];
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ShopDunkWebView(
-                          baseUrl: item.baseUrl,
-                          url: item.linkUrl,
-                        ))),
-                child: Text(
-                  item.name,
-                  style: CommonStyles.size13W400Grey86(context),
-                ),
-              ),
-              item.showAddress ? _itemFooterInfo() : const SizedBox(),
-            ],
-          ),
-        );
-      },
-      itemCount: listResource.length,
-    );
-  }
-
-  // item footer info
-  Widget _itemFooterInfo() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 20, bottom: 10),
-          child: RichText(
-              text: TextSpan(
-                  text: 'Mua hàng: ',
-                  style: CommonStyles.size13W400Grey86(context),
-                  children: [
-                TextSpan(
-                  text: '1900.6626',
-                  style: CommonStyles.size16W400Blue00(context),
-                )
-              ])),
-        ),
-        Text(
-          CommonText.footerNhanh1(context),
-          style: CommonStyles.size13W400Grey86(context),
-        ),
-        const SizedBox(
-          height: 4,
-        ),
-        Text(
-          CommonText.footerNhanh2(context),
-          style: CommonStyles.size13W400Grey86(context),
-        ),
-        const SizedBox(
-          height: 4,
-        ),
-        Text(
-          CommonText.footerNhanh3(context),
-          style: CommonStyles.size13W400Grey86(context),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: RichText(
-              text: TextSpan(
-                  text: 'Doanh nghiệp: ',
-                  style: CommonStyles.size13W400Grey86(context),
-                  children: [
-                TextSpan(
-                  text: '0822.688.668',
-                  style: CommonStyles.size13W400Blue00(context),
-                )
-              ])),
-        ),
-      ],
-    );
-  }
-
-  // info shop
-  Widget _infoShop() {
-    return SliverToBoxAdapter(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-        color: Colors.black,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              CommonText.footerGPKD(context),
-              style:
-                  CommonStyles.size13W400Grey51(context).copyWith(height: 1.2),
-            ),
-            const SizedBox(
-              height: 4,
-            ),
-            Text(
-              CommonText.footerAddress(context),
-              style:
-                  CommonStyles.size13W400Grey51(context).copyWith(height: 1.2),
-            ),
-            const SizedBox(
-              height: 4,
-            ),
-            Text(
-              CommonText.footerLaw(context),
-              style:
-                  CommonStyles.size13W400Grey51(context).copyWith(height: 1.2),
             ),
           ],
         ),
