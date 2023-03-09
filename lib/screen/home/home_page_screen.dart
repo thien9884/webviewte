@@ -11,7 +11,6 @@ import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
-import 'package:webviewtest/constant/text_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
@@ -124,7 +123,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         builder: (context, state) => _buildHomeUI(context),
         listener: (context, state) {
           if (state is CategoriesLoading) {
-            // EasyLoading.show();
+            EasyLoading.show();
           } else if (state is CategoriesLoaded) {
             _listCategories = state.categories
                 .where((element) => element.showOnHomePage == true)
@@ -141,7 +140,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is IpadLoading) {
-            // EasyLoading.show();
+            EasyLoading.show();
           } else if (state is IpadLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'ipad');
@@ -155,7 +154,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is IphoneLoading) {
-            // EasyLoading.show();
+            EasyLoading.show();
           } else if (state is IphoneLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'iphone');
@@ -169,7 +168,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is MacLoading) {
-            // EasyLoading.show();
+            EasyLoading.show();
           } else if (state is MacLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'mac');
@@ -183,7 +182,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is AppleWatchLoading) {
-            // EasyLoading.show();
+            EasyLoading.show();
           } else if (state is AppleWatchLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'apple-watch');
@@ -197,7 +196,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is SoundLoading) {
-            // EasyLoading.show();
+            EasyLoading.show();
           } else if (state is SoundLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'am-thanh');
@@ -211,7 +210,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           }
 
           if (state is AccessoriesLoading) {
-            // EasyLoading.show();
+            EasyLoading.show();
           } else if (state is AccessoriesLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'phu-kien');

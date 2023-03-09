@@ -48,9 +48,9 @@ class ListCustom {
   static List<Resource> listBottomBar = [
     Resource(
         id: 0,
-        name: 'Shop',
-        img: 'assets/icons/ic_monitor.svg',
-        imgUnselect: 'assets/icons/ic_monitor_un.svg'),
+        name: 'Flash sale',
+        img: 'assets/icons/ic_news.svg',
+        imgUnselect: 'assets/icons/ic_news_un.svg'),
     Resource(
         id: 1,
         name: 'News',
@@ -58,11 +58,16 @@ class ListCustom {
         imgUnselect: 'assets/icons/ic_news_un.svg'),
     Resource(
         id: 2,
+        name: 'Shop',
+        img: 'assets/icons/ic_monitor.svg',
+        imgUnselect: 'assets/icons/ic_monitor_un.svg'),
+    Resource(
+        id: 3,
         name: 'Account',
         img: 'assets/icons/ic_user.svg',
         imgUnselect: 'assets/icons/ic_user_un.svg'),
     Resource(
-        id: 3,
+        id: 4,
         name: 'Store',
         img: 'assets/icons/ic_bag.svg',
         imgUnselect: 'assets/icons/ic_bag_un.svg'),

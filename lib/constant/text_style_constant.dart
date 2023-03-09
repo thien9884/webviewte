@@ -233,6 +233,14 @@ class CommonStyles {
     );
   }
 
+  static TextStyle size20W700Black(BuildContext context) {
+    return const TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w700,
+      color: Colors.black,
+    );
+  }
+
   static TextStyle size24W700Black1D(BuildContext context) {
     return const TextStyle(
       fontSize: 24,

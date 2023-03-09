@@ -1,74 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:webviewtest/blocs/news/news_bloc.dart';
-import 'package:webviewtest/blocs/news/news_event.dart';
-import 'package:webviewtest/blocs/news/news_state.dart';
+import 'package:intl/intl.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
-import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
-import 'package:webviewtest/model/news/news_model.dart';
+import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
-class NewsScreen extends StatefulWidget {
-  const NewsScreen({Key? key}) : super(key: key);
+class CategoryScreen extends StatefulWidget {
+  const CategoryScreen({Key? key}) : super(key: key);
 
   @override
-  State<NewsScreen> createState() => _NewsScreenState();
+  State<CategoryScreen> createState() => _CategoryScreenState();
 }
 
-class _NewsScreenState extends State<NewsScreen> {
+class _CategoryScreenState extends State<CategoryScreen> {
   int _indexSelected = 0;
-  List<NewsGroup> _newsGroup = [];
-
   final TextEditingController _emailController = TextEditingController();
-
-  // Sync data
-  _getNews() async {
-    BlocProvider.of<NewsBloc>(context).add(const RequestGetNews());
-  }
+  var priceFormat = NumberFormat.decimalPattern('vi_VN');
+  // bool _isExpand = false;
 
   @override
-  void initState() {
-    _getNews();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) => BlocConsumer<NewsBloc, NewsState>(
-        builder: (context, state) => _buildNewsUI(),
-        listener: (context, state) {
-          if (state is NewsLoading) {
-            EasyLoading.show();
-          } else if (state is NewsLoaded) {
-            _newsGroup = state.newGroup;
-
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          } else if (state is NewsLoadError) {
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-        },
-      );
-
-  // build UI
-  Widget _buildNewsUI() {
-    return Container(
-      color: const Color(0xfff5f5f7),
-      child: CustomScrollView(
-        slivers: [
-          _pageView(),
-          _scrollBar(),
-          _customListNews(),
-          _receiveInfo(),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  childCount: 1, (context, index) => const CommonFooter())),
-        ],
-      ),
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        _pageView(),
+        _scrollBar(),
+        _listProduct([]),
+        // SliverToBoxAdapter(
+        //   child: Column(
+        //     children: [
+        //       SizedBox(
+        //         height: _isExpand ? null : 500,
+        //         child: Text(CommonText.descriptionIphone(context)),
+        //       ),
+        //       GestureDetector(
+        //           onTap: () => setState(() => _isExpand = !_isExpand),
+        //           child: const Text('Expand')),
+        //     ],
+        //   ),
+        // ),
+        _receiveInfo(),
+        SliverList(
+            delegate: SliverChildBuilderDelegate(
+                childCount: 1, (context, index) => const CommonFooter())),
+      ],
     );
   }
 
@@ -172,16 +148,12 @@ class _NewsScreenState extends State<NewsScreen> {
           child: SizedBox(
         height: 80,
         child: ListView.builder(
-          itemCount: _newsGroup.length,
+          itemCount: 5,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
-            final news = _newsGroup[index];
             return GestureDetector(
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ShopDunkWebView(
-                        index: 1,
-                        url: news.seName,
-                      ))),
+                  builder: (context) => const ShopDunkWebView())),
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
@@ -190,17 +162,9 @@ class _NewsScreenState extends State<NewsScreen> {
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 margin:
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                child: Row(
-                  children: [
-                    Image.asset('assets/icons/ic_tips.webp', scale: 5),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Text(
-                      news.name ?? '',
-                      style: CommonStyles.size15W400Grey51(context),
-                    )
-                  ],
+                child: Text(
+                  'iPhone',
+                  style: CommonStyles.size15W400Grey51(context),
                 ),
               ),
             );
@@ -210,116 +174,113 @@ class _NewsScreenState extends State<NewsScreen> {
     );
   }
 
-  // tittle
-  Widget _tittle({required String content, required String url}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-      child: GestureDetector(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (content) => ShopDunkWebView(
-                  index: 1,
-                  url: url,
-                ))),
-        child: Text(
-          content,
-          style: CommonStyles.size24W700Black1D(context),
-        ),
-      ),
-    );
-  }
-
-  // list news
-  Widget _listNews({required List<NewsItems> listNews}) {
-    return SliverList(
+  // list product
+  Widget _listProduct(List<ProductsModel> listProduct) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate(
-      childCount: 3,
-      (context, index) {
-        final item = listNews[index];
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: const BoxDecoration(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      item.pictureModel?.fullSizeImageUrl ?? '',
-                      width: 140,
-                      height: 140,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20, top: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.title ?? '',
-                            style: CommonStyles.size18W700Black1D(context)
-                                .copyWith(height: 1.5),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            '14/2/2023',
-                            style: CommonStyles.size13W400Grey86(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+          childCount: listProduct.length,
+          (context, index) {
+            var item = listProduct[index];
+            return Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 40),
-                child: Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Color(0xff777777),
+              child: Material(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(4),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ShopDunkWebView(
+                            url: item.seName,
+                          ))),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        alignment: Alignment.centerRight,
+                        margin: EdgeInsets.only(
+                            top: Responsive.isMobile(context) ? 5 : 10,
+                            right: Responsive.isMobile(context) ? 5 : 10),
+                        child: Image.asset(
+                          'assets/images/tet_2023.png',
+                          scale: Responsive.isMobile(context) ? 10 : 6,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: Responsive.isMobile(context) ? 10 : 20),
+                        child: Image.network(
+                            item.defaultPictureModel?.imageUrl ?? ''),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
+                                child: Text(
+                                  item.name ?? '',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      CommonStyles.size14W700Black1D(context),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        priceFormat.format(
+                                            item.productPrice?.priceValue ?? 0),
+                                        style: CommonStyles.size16W700Blue00(
+                                            context),
+                                      ),
+                                      Text(
+                                        '₫',
+                                        style: CommonStyles.size12W400Blue00(
+                                            context),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
+                                    style:
+                                        CommonStyles.size12W400Grey66(context)
+                                            .copyWith(
+                                                decoration:
+                                                    TextDecoration.lineThrough),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              )
-            ],
-          ),
-        );
-      },
-    ));
-  }
-
-  // all news
-  Widget _allNews({required String content, required String url}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: GestureDetector(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (content) => ShopDunkWebView(
-                  index: 1,
-                  url: url,
-                ))),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Xem tất cả $content',
-              style: CommonStyles.size14W400Blue00(context),
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            const Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: Color(0xff0066CC),
-            ),
-          ],
+              ),
+            );
+          },
+        ),
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
+          mainAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
+          crossAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
+          childAspectRatio: 0.53,
         ),
       ),
     );
@@ -379,35 +340,5 @@ class _NewsScreenState extends State<NewsScreen> {
         ),
       ),
     );
-  }
-
-  // list news
-  Widget _customListNews() {
-    return SliverList(
-        delegate: SliverChildBuilderDelegate(
-      (context, index) {
-        final newsGroup = _newsGroup[index];
-        return Column(
-          children: [
-            _tittle(
-              content: newsGroup.name ?? '',
-              url: newsGroup.seName ?? '',
-            ),
-            CustomScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              slivers: [
-                _listNews(listNews: newsGroup.newsItems ?? []),
-              ],
-            ),
-            _allNews(
-              content: newsGroup.name ?? '',
-              url: newsGroup.seName ?? '',
-            ),
-          ],
-        );
-      },
-      childCount: _newsGroup.length,
-    ));
   }
 }

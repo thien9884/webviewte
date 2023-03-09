@@ -32,6 +32,7 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
+  // store tittle
   Widget _tittleStore() {
     return SliverToBoxAdapter(
       child: Row(
@@ -49,6 +50,7 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
+  // list city
   Widget _listCity() {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -80,6 +82,7 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
+  // list store
   Widget _listStore() {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),

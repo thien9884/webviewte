@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:webviewtest/common/flip_widget.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/screen/flash_sale/flash_sale_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
-import 'package:webviewtest/screen/store/store_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class NavigationScreen extends StatefulWidget {
   final int isSelected;
 
-  const NavigationScreen({this.isSelected = 0, Key? key}) : super(key: key);
+  const NavigationScreen({this.isSelected = 2, Key? key}) : super(key: key);
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
@@ -19,12 +18,13 @@ class NavigationScreen extends StatefulWidget {
 
 class _NavigationScreenState extends State<NavigationScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
-  int _isSelected = 0;
+  int _isSelected = 2;
   String url = '';
 
   final pages = [
-    const HomePageScreen(),
+    const FlashSaleScreen(),
     const NewsScreen(),
+    const HomePageScreen(),
     const ShopDunkWebView(
       key: Key('info'),
       url: 'customer/info',
@@ -63,6 +63,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
     );
   }
 
+  // drawer
   Widget _buildDrawer() {
     return Drawer(
       child: Column(
@@ -111,6 +112,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
     );
   }
 
+  // bottom bar
   Widget _buildBottomBar() {
     return Container(
       decoration: BoxDecoration(
