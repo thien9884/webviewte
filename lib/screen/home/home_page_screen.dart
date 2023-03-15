@@ -15,6 +15,7 @@ import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/web_view_model.dart';
+import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class HomePageScreen extends StatefulWidget {
@@ -268,8 +269,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           _receiveInfo(),
           SliverList(
               delegate: SliverChildBuilderDelegate(
-                  childCount: 1,
-                  (context, index) => const CommonFooter())),
+                  childCount: 1, (context, index) => const CommonFooter())),
         ],
       ),
     );
@@ -381,8 +381,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
             (context, index) => Column(
                   children: [
                     _titleProduct(
-                      _listCategories[index].name.toString(),
-                      _listCategories[index].seName.toString().toLowerCase(),
+                      _listCategories[index].name ?? '',
+                      _listCategories[index].description ?? '',
+                      _listCategories[index].listProduct ?? [],
                     ),
                     CustomScrollView(
                       physics: const NeverScrollableScrollPhysics(),
@@ -400,14 +401,20 @@ class _HomePageScreenState extends State<HomePageScreen> {
   }
 
   // title product
-  Widget _titleProduct(String nameProduct, String allProduct) {
+  Widget _titleProduct(String nameProduct,String desc, List<ProductsModel> allProduct) {
     return GestureDetector(
       // onTap: () => Navigator.of(context).push(MaterialPageRoute(
       //     builder: (context) => ShopDunkWebView(
       //           url: allProduct,
       //         ))),
-      onTap: () => Navigator.of(context, rootNavigator: false).push(MaterialPageRoute(
-          builder: (context) => ShopDunkWebView(url: allProduct,), maintainState: false)),
+      onTap: () =>
+          Navigator.of(context, rootNavigator: false).push(MaterialPageRoute(
+              builder: (context) => CategoryScreen(
+                    title: nameProduct,
+                    desc: desc,
+                    allProduct: allProduct,
+                  ),
+              maintainState: false)),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Text(

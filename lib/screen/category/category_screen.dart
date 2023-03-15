@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
@@ -8,7 +9,16 @@ import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class CategoryScreen extends StatefulWidget {
-  const CategoryScreen({Key? key}) : super(key: key);
+  final String title;
+  final String desc;
+  final List<ProductsModel> allProduct;
+
+  const CategoryScreen(
+      {required this.title,
+      required this.desc,
+      required this.allProduct,
+      Key? key})
+      : super(key: key);
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
@@ -18,7 +28,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   int _indexSelected = 0;
   final TextEditingController _emailController = TextEditingController();
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
-  // bool _isExpand = false;
+  bool _isExpand = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,20 +36,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
       slivers: [
         _pageView(),
         _scrollBar(),
-        _listProduct([]),
-        // SliverToBoxAdapter(
-        //   child: Column(
-        //     children: [
-        //       SizedBox(
-        //         height: _isExpand ? null : 500,
-        //         child: Text(CommonText.descriptionIphone(context)),
-        //       ),
-        //       GestureDetector(
-        //           onTap: () => setState(() => _isExpand = !_isExpand),
-        //           child: const Text('Expand')),
-        //     ],
-        //   ),
-        // ),
+        _tittle(widget.title),
+        _listProduct(widget.allProduct),
+        _description(widget.desc),
         _receiveInfo(),
         SliverList(
             delegate: SliverChildBuilderDelegate(
@@ -174,6 +173,21 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
+  // title
+  Widget _tittle(String tittle) {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      sliver: SliverToBoxAdapter(
+        child: Center(
+          child: Text(
+            tittle,
+            style: CommonStyles.size24W700Black1D(context),
+          ),
+        ),
+      ),
+    );
+  }
+
   // list product
   Widget _listProduct(List<ProductsModel> listProduct) {
     return SliverPadding(
@@ -281,6 +295,26 @@ class _CategoryScreenState extends State<CategoryScreen> {
           mainAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
           childAspectRatio: 0.53,
+        ),
+      ),
+    );
+  }
+
+  // description
+  Widget _description(String description) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 500,
+              child: Html(data: description,),
+            ),
+            GestureDetector(
+                onTap: () => setState(() => _isExpand = !_isExpand),
+                child: const Text('Expand')),
+          ],
         ),
       ),
     );
