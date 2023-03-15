@@ -78,9 +78,7 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
             if (state is CategoriesLoading) {
               EasyLoading.show();
             } else if (state is CategoriesLoaded) {
-              _listCategories = state.categories
-                  .where((element) => element.showOnHomePage == true)
-                  .toList();
+              _listCategories = state.categories;
               _getListIphone();
               if (EasyLoading.isShow) {
                 EasyLoading.dismiss();
@@ -132,7 +130,7 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
             image: DecorationImage(
                 fit: BoxFit.fill,
                 image: NetworkImage(
-                    'https://api.shopdunk.com/images/uploaded/banner/banner%20MB%20FLASH%20SALE.jpeg'))),
+                    'https://shopdunk.com/images/uploaded/banner/banner%20MB%20FLASH%20SALE.jpeg'))),
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:webviewtest/blocs/main_bloc.dart';
-import 'package:webviewtest/screen/category/category_screen.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 
 void main() {
   configLoading();
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       providers: MainBloc.allBlocs(),
       child: MaterialApp(
         builder: EasyLoading.init(),
-        home: const CategoryScreen(),
+        home: const NavigationScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );

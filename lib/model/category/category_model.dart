@@ -33,10 +33,10 @@ class Categories {
   int? parentCategoryId;
   int? pageSize;
   String? pageSizeOptions;
-  dynamic priceRanges;
-  dynamic showOnHomePage;
+  String? priceRanges;
+  bool? showOnHomePage;
   bool? includeInTopMenu;
-  dynamic hasDiscountsApplied;
+  bool? hasDiscountsApplied;
   bool? published;
   bool? deleted;
   int? displayOrder;
@@ -160,7 +160,7 @@ class Categories {
 
 class ImageProduct {
   String? src;
-  dynamic attachment;
+  String? attachment;
 
   ImageProduct({this.src, this.attachment});
 
