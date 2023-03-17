@@ -45,6 +45,15 @@ class ListCustom {
     Resource(id: 1, name: 'Nữ'),
   ];
 
+  static List<Resource> listSortProduct = [
+    Resource(id: 0, name: 'Thứ tự hiển thị'),
+    Resource(id: 1, name: 'Giá cao đến thấp'),
+    Resource(id: 2, name: 'Mới nhất'),
+    Resource(id: 3, name: 'Tên: A đến Z'),
+    Resource(id: 4, name: 'Tên: Z đến A'),
+    Resource(id: 5, name: 'Giá thấp đến cao'),
+  ];
+
   static List<Resource> listBottomBar = [
     Resource(
         id: 0,

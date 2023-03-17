@@ -3,6 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
+import 'package:webviewtest/constant/constant.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/product/products_model.dart';
@@ -29,21 +30,33 @@ class _CategoryScreenState extends State<CategoryScreen> {
   final TextEditingController _emailController = TextEditingController();
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
   bool _isExpand = false;
+  String _sortBy = ListCustom.listSortProduct[0].name;
+  List<ProductsModel> _listAllProduct = [];
+
+  @override
+  void initState() {
+    _listAllProduct.addAll(widget.allProduct);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        _pageView(),
-        _scrollBar(),
-        _tittle(widget.title),
-        _listProduct(widget.allProduct),
-        _description(widget.desc),
-        _receiveInfo(),
-        SliverList(
-            delegate: SliverChildBuilderDelegate(
-                childCount: 1, (context, index) => const CommonFooter())),
-      ],
+    return Container(
+      color: const Color(0xfff5f5f7),
+      child: CustomScrollView(
+        slivers: [
+          _pageView(),
+          _scrollBar(),
+          _sortListProduct(),
+          _tittle(widget.title),
+          _listProduct(_listAllProduct),
+          _description(widget.desc),
+          _receiveInfo(),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  childCount: 1, (context, index) => const CommonFooter())),
+        ],
+      ),
     );
   }
 
@@ -145,31 +158,112 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return SliverToBoxAdapter(
       child: Scrollbar(
           child: SizedBox(
-        height: 80,
+        height: 70,
         child: ListView.builder(
           itemCount: 5,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
             return GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const ShopDunkWebView())),
+              onTap: () {},
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10)),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                 margin:
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                child: Text(
-                  'iPhone',
-                  style: CommonStyles.size15W400Grey51(context),
+                child: Center(
+                  child: Text(
+                    'iPhone',
+                    style: CommonStyles.size15W400Grey51(context),
+                  ),
                 ),
               ),
             );
           },
         ),
       )),
+    );
+  }
+
+  // sort list product
+  Widget _sortListProduct() {
+    return SliverToBoxAdapter(
+      child: Row(
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.4,
+          ),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: const Color(0xffEBEBEB), width: 1),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _sortBy,
+                  menuMaxHeight: 300,
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                  elevation: 16,
+                  isDense: true,
+                  style: CommonStyles.size14W400Black1D(context),
+                  onChanged: (String? value) {
+                    // This is called when the user selects an item.
+                    setState(() {
+                      _sortBy = value!;
+
+                      switch (value) {
+                        case Constant.sttDefault:
+                          _listAllProduct.clear();
+                          _listAllProduct.addAll(widget.allProduct);
+                          break;
+                        case Constant.price91:
+                          _listAllProduct.sort((a, b) =>
+                              a.productPrice!.priceValue!.compareTo(
+                                  b.productPrice!.priceValue!.toDouble()));
+                          break;
+                        case Constant.newest:
+                          break;
+                        case Constant.nameAZ:
+                          _listAllProduct.sort((a, b) => a.name!
+                              .toLowerCase()
+                              .compareTo(b.name!.toLowerCase()));
+                          break;
+                        case Constant.nameZA:
+                          _listAllProduct.sort((a, b) => b.name!
+                              .toLowerCase()
+                              .compareTo(a.name!.toLowerCase()));
+                          break;
+                        case Constant.price19:
+                          _listAllProduct.sort((a, b) =>
+                              b.productPrice!.priceValue!.compareTo(
+                                  a.productPrice!.priceValue!.toDouble()));
+                          break;
+                        default:
+                          _listAllProduct;
+                          break;
+                      }
+                    });
+                  },
+                  items:
+                      List.generate(ListCustom.listSortProduct.length, (index) {
+                    final item = ListCustom.listSortProduct[index];
+                    return DropdownMenuItem<String>(
+                      value: item.name,
+                      child: Text(item.name),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -197,94 +291,88 @@ class _CategoryScreenState extends State<CategoryScreen> {
           childCount: listProduct.length,
           (context, index) {
             var item = listProduct[index];
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Material(
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(4),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ShopDunkWebView(
-                            url: item.seName,
-                          ))),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        alignment: Alignment.centerRight,
-                        margin: EdgeInsets.only(
-                            top: Responsive.isMobile(context) ? 5 : 10,
-                            right: Responsive.isMobile(context) ? 5 : 10),
-                        child: Image.asset(
-                          'assets/images/tet_2023.png',
-                          scale: Responsive.isMobile(context) ? 10 : 6,
-                        ),
+            return GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => ShopDunkWebView(
+                        url: item.seName,
+                      ))),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      alignment: Alignment.centerRight,
+                      margin: EdgeInsets.only(
+                          top: Responsive.isMobile(context) ? 5 : 10,
+                          right: Responsive.isMobile(context) ? 5 : 10),
+                      child: Image.asset(
+                        'assets/images/tet_2023.png',
+                        scale: Responsive.isMobile(context) ? 10 : 6,
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: Responsive.isMobile(context) ? 10 : 20),
-                        child: Image.network(
-                            item.defaultPictureModel?.imageUrl ?? ''),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                child: Text(
-                                  item.name ?? '',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style:
-                                      CommonStyles.size14W700Black1D(context),
-                                ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: Responsive.isMobile(context) ? 10 : 20),
+                      child: Image.network(
+                          item.defaultPictureModel?.imageUrl ?? ''),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: Text(
+                                item.name ?? '',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: CommonStyles.size14W700Black1D(context),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        priceFormat.format(
-                                            item.productPrice?.priceValue ?? 0),
-                                        style: CommonStyles.size16W700Blue00(
-                                            context),
-                                      ),
-                                      Text(
-                                        '₫',
-                                        style: CommonStyles.size12W400Blue00(
-                                            context),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                    style:
-                                        CommonStyles.size12W400Grey66(context)
-                                            .copyWith(
-                                                decoration:
-                                                    TextDecoration.lineThrough),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      priceFormat.format(
+                                          item.productPrice?.priceValue ?? 0),
+                                      style: CommonStyles.size16W700Blue00(
+                                          context),
+                                    ),
+                                    Text(
+                                      '₫',
+                                      style: CommonStyles.size12W400Blue00(
+                                          context),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
+                                  style: CommonStyles.size12W400Grey66(context)
+                                      .copyWith(
+                                          decoration:
+                                              TextDecoration.lineThrough),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ),
             );
@@ -303,17 +391,36 @@ class _CategoryScreenState extends State<CategoryScreen> {
   // description
   Widget _description(String description) {
     return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: Column(
           children: [
-            SizedBox(
-              height: 500,
-              child: Html(data: description,),
+            Html(
+              data: _isExpand ? description : description.substring(0, 1000),
+              padding: const EdgeInsets.all(10),
             ),
             GestureDetector(
                 onTap: () => setState(() => _isExpand = !_isExpand),
-                child: const Text('Expand')),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _isExpand ? 'Collapse' : 'Expand',
+                        style: CommonStyles.size14W400Blue00(context),
+                      ),
+                      Icon(
+                        _isExpand
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.keyboard_arrow_down_rounded,
+                        color: const Color(0xff0066CC),
+                      )
+                    ],
+                  ),
+                )),
           ],
         ),
       ),

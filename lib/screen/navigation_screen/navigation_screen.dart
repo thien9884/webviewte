@@ -4,6 +4,7 @@ import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/screen/flash_sale/flash_sale_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
+import 'package:webviewtest/screen/login/login_screen.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
@@ -25,11 +26,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
     const FlashSaleScreen(),
     const NewsScreen(),
     const HomePageScreen(),
-    const ShopDunkWebView(
-      key: Key('info'),
-      url: 'customer/info',
-      hideBottom: false,
-    ),
+    const LoginScreen(),
     const ShopDunkWebView(
       key: Key('store'),
       url: 'he-thong-cua-hang',

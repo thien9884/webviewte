@@ -126,10 +126,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
           if (state is CategoriesLoading) {
             EasyLoading.show();
           } else if (state is CategoriesLoaded) {
-            _listCategories = state.categories;
-            // _listCategories = state.categories
-            //     .where((element) => element.showOnHomePage == true)
-            //     .toList();
+            _listCategories = state.categories
+                .where((element) => element.showOnHomePage == true)
+                .toList();
             _getListProduct();
             if (EasyLoading.isShow) {
               EasyLoading.dismiss();
