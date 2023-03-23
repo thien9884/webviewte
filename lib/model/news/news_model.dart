@@ -2,7 +2,7 @@ class NewsModel {
   int? httpStatusCode;
   bool? success;
   dynamic message;
-  Data? data;
+  NewsData? data;
   int? total;
   int? totalDone;
   int? totalNotDone;
@@ -26,7 +26,7 @@ class NewsModel {
     httpStatusCode = json['HttpStatusCode'];
     success = json['Success'];
     message = json['Message'];
-    data = json['Data'] != null ? Data.fromJson(json['Data']) : null;
+    data = json['Data'] != null ? NewsData.fromJson(json['Data']) : null;
     total = json['Total'];
     totalDone = json['TotalDone'];
     totalNotDone = json['TotalNotDone'];
@@ -53,15 +53,15 @@ class NewsModel {
   }
 }
 
-class Data {
+class NewsData {
   int? workingLanguageId;
   List<LatestNews>? latestNews;
   List<NewsGroup>? newsGroup;
   int? id;
 
-  Data({this.workingLanguageId, this.latestNews, this.newsGroup, this.id});
+  NewsData({this.workingLanguageId, this.latestNews, this.newsGroup, this.id});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  NewsData.fromJson(Map<String, dynamic> json) {
     workingLanguageId = json['WorkingLanguageId'];
     if (json['LatestNews'] != null) {
       latestNews = <LatestNews>[];

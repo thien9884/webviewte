@@ -22,11 +22,11 @@ class NewsLoading extends NewsState {
 }
 
 class NewsLoaded extends NewsState {
-  final List<NewsGroup> newGroup;
-  const NewsLoaded({required this.newGroup});
+  final NewsData newsData;
+  const NewsLoaded({required this.newsData});
 
   @override
-  List<Object?> get props => [newGroup];
+  List<Object?> get props => [newsData];
 }
 
 class NewsLoadError extends NewsState {

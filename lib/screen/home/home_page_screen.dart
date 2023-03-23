@@ -108,7 +108,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   @override
   void initState() {
     _getCategories();
-    _autoSlidePage();
+    // _autoSlidePage();
     super.initState();
   }
 
@@ -237,8 +237,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
       child: CustomScrollView(
         slivers: <Widget>[
           _buildAppbar(),
-          _topPageView(),
-          _topListDeal(),
+          // _topPageView(),
+          // _topListDeal(),
           _buildCategoriesUI(),
           SliverToBoxAdapter(
             child: GestureDetector(
@@ -400,7 +400,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
   }
 
   // title product
-  Widget _titleProduct(String nameProduct,String desc, List<ProductsModel> allProduct) {
+  Widget _titleProduct(
+      String nameProduct, String desc, List<ProductsModel> allProduct) {
     return GestureDetector(
       // onTap: () => Navigator.of(context).push(MaterialPageRoute(
       //     builder: (context) => ShopDunkWebView(

@@ -9,7 +9,7 @@ abstract class ApiInterface {
   Future<List<Categories>> requestGetCategories();
 
   // Get news
-  Future<List<NewsGroup>> requestGetNews();
+  Future<NewsData?> requestGetNews();
 
   // Get list product
   Future<List<ProductsModel>> requestGetProduct(int? id);

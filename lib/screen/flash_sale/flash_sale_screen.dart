@@ -111,7 +111,7 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
       color: const Color(0xffF5F5F7),
       child: CustomScrollView(
         slivers: [
-          _bannerSale(),
+          // _bannerSale(),
           _tittleFlashSale(),
           _listFlashSale(_listIphone),
           _receiveInfo(),

@@ -399,7 +399,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
           children: [
             Html(
               data: _isExpand ? description : description.substring(0, 1000),
-              padding: const EdgeInsets.all(10),
             ),
             GestureDetector(
                 onTap: () => setState(() => _isExpand = !_isExpand),

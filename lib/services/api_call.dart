@@ -18,11 +18,11 @@ class ApiCall implements ApiInterface {
   }
 
   @override
-  Future<List<NewsGroup>> requestGetNews() async {
+  Future<NewsData?> requestGetNews() async {
     var response = await DioClient().get(ApiConstant.news);
-    if (response == null) return [];
-    Iterable list = response['Data']['NewsGroup'];
-    return list.map((e) => NewsGroup.fromJson(e)).toList();
+    if (response == null) return null;
+    final data = response['Data'];
+    return NewsData.fromJson(data);
   }
 
   @override

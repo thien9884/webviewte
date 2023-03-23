@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/news/news_bloc.dart';
 import 'package:webviewtest/blocs/news/news_event.dart';
 import 'package:webviewtest/blocs/news/news_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
-import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/news/news_model.dart';
-import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
+import 'package:webviewtest/screen/news/news_category.dart';
+import 'package:webviewtest/screen/news/news_detail.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key}) : super(key: key);
@@ -22,6 +23,7 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   int _indexSelected = 0;
   List<NewsGroup> _newsGroup = [];
+  List<LatestNews> _latestNews = [];
 
   final TextEditingController _emailController = TextEditingController();
 
@@ -43,8 +45,8 @@ class _NewsScreenState extends State<NewsScreen> {
           if (state is NewsLoading) {
             EasyLoading.show();
           } else if (state is NewsLoaded) {
-            _newsGroup = state.newGroup;
-
+            _newsGroup = state.newsData.newsGroup ?? [];
+            _latestNews = state.newsData.latestNews ?? [];
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is NewsLoadError) {
             if (EasyLoading.isShow) EasyLoading.dismiss();
@@ -61,7 +63,7 @@ class _NewsScreenState extends State<NewsScreen> {
       child: CustomScrollView(
         slivers: [
           _pageView(),
-          _scrollBar(),
+          _newsScrollBar(),
           _customListNews(),
           _receiveInfo(),
           SliverList(
@@ -76,27 +78,32 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget _pageView() {
     return SliverToBoxAdapter(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.5,
+        height: MediaQuery.of(context).size.height * 0.4,
         width: double.infinity,
         child: Stack(
           children: [
             PageView.builder(
               onPageChanged: (value) {
                 setState(() {
-                  _indexSelected = value % ListCustom.listIcon.length;
+                  _indexSelected = value;
                 });
               },
+              itemCount: _latestNews.length,
               itemBuilder: (context, index) {
+                final item = _latestNews[index];
+
                 return Container(
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage(
-                        'assets/images/news_banner.jpeg',
+                      image: NetworkImage(
+                        item.pictureModel?.fullSizeImageUrl ?? '',
                       ),
                       fit: BoxFit.fill,
                     ),
                   ),
                   child: Container(
+                    alignment: Alignment.bottomCenter,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     decoration: const BoxDecoration(
                         gradient: LinearGradient(
                       colors: [
@@ -107,6 +114,22 @@ class _NewsScreenState extends State<NewsScreen> {
                       end: Alignment.topCenter,
                       tileMode: TileMode.clamp,
                     )),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 60),
+                            child: Text(
+                              item.title ?? '',
+                              style: CommonStyles.size18W700White(context)
+                                  .copyWith(height: 1.3),
+                              maxLines: 3,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -116,49 +139,27 @@ class _NewsScreenState extends State<NewsScreen> {
                 width: MediaQuery.of(context).size.width,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: Text(
-                                'TRÒ CHƠI “ÔM CÀNG LÂU, ƯU ĐÃI CÀNG SÂU” SHOPDUNK THU HÚT PHỐ ĐI BỘ HÀ NỘI',
-                                style: CommonStyles.size18W700White(context),
-                                maxLines: 3,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                              ListCustom.listIcon.length,
-                              (index) => Container(
-                                    height:
-                                        Responsive.isMobile(context) ? 10 : 15,
-                                    width:
-                                        Responsive.isMobile(context) ? 10 : 15,
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    decoration: BoxDecoration(
-                                        color: _indexSelected == index
-                                            ? const Color(0xff4AB2F1)
-                                                .withOpacity(0.5)
-                                            : const Color(0xff515154)
-                                                .withOpacity(0.5),
-                                        shape: BoxShape.circle),
-                                  )),
-                        ),
-                      ),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                          _latestNews.length,
+                          (index) => Container(
+                                height: Responsive.isMobile(context) ? 10 : 15,
+                                width: Responsive.isMobile(context) ? 10 : 15,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                    color: _indexSelected == index
+                                        ? Colors.white
+                                        : const Color(0xff515154)
+                                            .withOpacity(0.5),
+                                    shape: BoxShape.circle),
+                              )),
+                    ),
                   ),
-                ))
+                )),
           ],
         ),
       ),
@@ -166,7 +167,7 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   // news scroll bar
-  Widget _scrollBar() {
+  Widget _newsScrollBar() {
     return SliverToBoxAdapter(
       child: Scrollbar(
           child: SizedBox(
@@ -178,9 +179,8 @@ class _NewsScreenState extends State<NewsScreen> {
             final news = _newsGroup[index];
             return GestureDetector(
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ShopDunkWebView(
-                        index: 1,
-                        url: news.seName,
+                  builder: (context) => NewsCategory(
+                        newsGroup: news,
                       ))),
               child: Container(
                 decoration: BoxDecoration(
@@ -211,19 +211,12 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   // tittle
-  Widget _tittle({required String content, required String url}) {
+  Widget _tittle({required String content}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-      child: GestureDetector(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (content) => ShopDunkWebView(
-                  index: 1,
-                  url: url,
-                ))),
-        child: Text(
-          content,
-          style: CommonStyles.size24W700Black1D(context),
-        ),
+      child: Text(
+        content,
+        style: CommonStyles.size24W700Black1D(context),
       ),
     );
   }
@@ -235,49 +228,58 @@ class _NewsScreenState extends State<NewsScreen> {
       childCount: 3,
       (context, index) {
         final item = listNews[index];
+        final timeUpload = DateTime.parse(item.createdOn ?? '');
+        final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
+
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: const BoxDecoration(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      item.pictureModel?.fullSizeImageUrl ?? '',
-                      width: 140,
-                      height: 140,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20, top: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.title ?? '',
-                            style: CommonStyles.size18W700Black1D(context)
-                                .copyWith(height: 1.5),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            '14/2/2023',
-                            style: CommonStyles.size13W400Grey86(context),
-                          ),
-                        ],
+              GestureDetector(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => NewsDetail(
+                          newsItems: item,
+                        ))),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        item.pictureModel?.fullSizeImageUrl ?? '',
+                        width: 140,
+                        height: 140,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20, top: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.title ?? '',
+                              style: CommonStyles.size18W700Black1D(context)
+                                  .copyWith(height: 1.5),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              timeFormat,
+                              style: CommonStyles.size13W400Grey86(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const Padding(
                 padding: EdgeInsets.only(top: 40),
@@ -295,14 +297,13 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   // all news
-  Widget _allNews({required String content, required String url}) {
+  Widget _allNews({required String content, required NewsGroup newsGroup}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GestureDetector(
         onTap: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (content) => ShopDunkWebView(
-                  index: 1,
-                  url: url,
+            builder: (context) => NewsCategory(
+                  newsGroup: newsGroup,
                 ))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -391,7 +392,6 @@ class _NewsScreenState extends State<NewsScreen> {
           children: [
             _tittle(
               content: newsGroup.name ?? '',
-              url: newsGroup.seName ?? '',
             ),
             CustomScrollView(
               physics: const NeverScrollableScrollPhysics(),
@@ -402,7 +402,7 @@ class _NewsScreenState extends State<NewsScreen> {
             ),
             _allNews(
               content: newsGroup.name ?? '',
-              url: newsGroup.seName ?? '',
+              newsGroup: newsGroup,
             ),
           ],
         );

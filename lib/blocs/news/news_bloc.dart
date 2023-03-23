@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webviewtest/blocs/base_blocs.dart';
 import 'package:webviewtest/blocs/news/news_event.dart';
 import 'package:webviewtest/blocs/news/news_state.dart';
+import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/services/api_call.dart';
 
 class NewsBloc extends BaseBloc<NewsEvent, NewsState> {
@@ -13,9 +14,9 @@ class NewsBloc extends BaseBloc<NewsEvent, NewsState> {
   _handleGetNews(RequestGetNews event, Emitter emit) async {
     emit(const NewsLoading());
     try {
-      final user = await ApiCall().requestGetNews();
+      final data = await ApiCall().requestGetNews();
       emit(
-        NewsLoaded(newGroup: user),
+        NewsLoaded(newsData: data ?? NewsData()),
       );
     } catch (e) {
       emit(

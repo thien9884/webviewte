@@ -249,6 +249,22 @@ class CommonStyles {
     );
   }
 
+  static TextStyle size24W700Grey4B(BuildContext context) {
+    return const TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      color: Color(0xff4B4B4B),
+    );
+  }
+
+  static TextStyle size24W700Grey39(BuildContext context) {
+    return const TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      color: Color(0xff393939),
+    );
+  }
+
   static TextStyle size35W700Black1D(BuildContext context) {
     return const TextStyle(
       fontSize: 35,
