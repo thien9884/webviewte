@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/user/account_info/account_info.dart';
 import 'package:webviewtest/screen/user/account_order/account_order.dart';
 import 'package:webviewtest/screen/user/account_address/user_address.dart';
+import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class Resource {
   Widget? screen;
@@ -174,32 +176,47 @@ class ListCustom {
         Resource(
           id: 0,
           name: 'Tin tức',
-          linkUrl: 'tin-tuc',
+          screen: const NewsScreen(),
         ),
         Resource(
           id: 1,
           name: 'Giới thiệu',
           linkUrl: 'giới-thiệu',
+          screen: const ShopDunkWebView(
+            url: 'giới-thiệu',
+          ),
         ),
         Resource(
           id: 2,
           name: 'Check IMEI',
           linkUrl: 'check-imei',
+          screen: const ShopDunkWebView(
+            url: 'check-imei',
+          ),
         ),
         Resource(
           id: 3,
           name: 'Phương thức thanh toán',
           linkUrl: 'phuong-thuc-thanh-toan',
+          screen: const ShopDunkWebView(
+            url: 'phuong-thuc-thanh-toan',
+          ),
         ),
         Resource(
           id: 4,
           name: 'Thuê điểm bán lẻ',
           linkUrl: 'thue-diem-ban-le',
+          screen: const ShopDunkWebView(
+            url: 'thue-diem-ban-le',
+          ),
         ),
         Resource(
           id: 5,
           name: 'Bảo hành và sửa chữa',
           baseUrl: 'https://care.shopdunk.com/',
+          screen: const ShopDunkWebView(
+            baseUrl: 'https://care.shopdunk.com/',
+          ),
         ),
         Resource(
           id: 6,
@@ -209,6 +226,9 @@ class ListCustom {
           id: 7,
           name: 'Đánh giá chất lượng, khiếu nại',
           linkUrl: 'web-review',
+          screen: const ShopDunkWebView(
+            url: 'web-review',
+          ),
         ),
       ],
     ),
@@ -220,46 +240,73 @@ class ListCustom {
           id: 0,
           name: 'Thu cũ đổi mới',
           linkUrl: 'tis-trade-in-sale',
+          screen: const ShopDunkWebView(
+            url: 'tis-trade-in-sale',
+          ),
         ),
         Resource(
           id: 1,
           name: 'Giao hàng',
           linkUrl: 'chinh-sach-ship-cod',
+          screen: const ShopDunkWebView(
+            url: 'chinh-sach-ship-cod',
+          ),
         ),
         Resource(
           id: 2,
           name: 'Giao hàng (ZaloPay)',
           linkUrl: 'giao-hang-zalopay',
+          screen: const ShopDunkWebView(
+            url: 'giao-hang-zalopay',
+          ),
         ),
         Resource(
           id: 3,
           name: 'Huỷ giao dịch',
           linkUrl: 'chinh-sach-huy-giao-dich-va-hoan-tien',
+          screen: const ShopDunkWebView(
+            url: 'chinh-sach-huy-giao-dich-va-hoan-tien',
+          ),
         ),
         Resource(
           id: 4,
           name: 'Đổi trả',
           linkUrl: 'chinh-sach-doi-tra',
+          screen: const ShopDunkWebView(
+            url: 'chinh-sach-doi-tra',
+          ),
         ),
         Resource(
           id: 5,
           name: 'Bảo hành',
           linkUrl: 'chinh-sach-bao-hanh',
+          screen: const ShopDunkWebView(
+            url: 'chinh-sach-bao-hanh',
+          ),
         ),
         Resource(
           id: 6,
           name: 'Giải quyết khiếu nại',
           linkUrl: 'giai-quyet-khieu-nai',
+          screen: const ShopDunkWebView(
+            url: 'giai-quyet-khieu-nai',
+          ),
         ),
         Resource(
           id: 7,
           name: 'Bảo mật thông tin',
           linkUrl: 'chinh-sach-bao-mat',
+          screen: const ShopDunkWebView(
+            url: 'chinh-sach-bao-mat',
+          ),
         ),
         Resource(
           id: 8,
           name: 'Trả góp',
           linkUrl: 'tra-gop',
+          screen: const ShopDunkWebView(
+            url: 'tra-gop',
+          ),
         ),
       ],
     ),
@@ -271,16 +318,25 @@ class ListCustom {
           id: 0,
           name: 'Tài khoản của tôi',
           linkUrl: 'customer/info',
+          screen: const ShopDunkWebView(
+            url: 'customer/info',
+          ),
         ),
         Resource(
           id: 1,
           name: 'Đơn đặt hàng',
           linkUrl: 'order/history',
+          screen: const ShopDunkWebView(
+            url: 'order/history',
+          ),
         ),
         Resource(
           id: 2,
           name: 'Hệ thống cửa hàng',
           linkUrl: 'he-thong-cua-hang',
+          screen: const ShopDunkWebView(
+            url: 'he-thong-cua-hang',
+          ),
         ),
         Resource(
           id: 3,
@@ -288,6 +344,11 @@ class ListCustom {
           baseUrl: 'https://www.google.com/',
           linkUrl:
               'maps/@/data=!3m1!4b1!4m3!11m2!2s0Vq6CiZoSh-QELJ3lKHSgQ!3e3?shorturl=1',
+          screen: const ShopDunkWebView(
+            baseUrl: 'https://www.google.com/',
+            url:
+                'maps/@/data=!3m1!4b1!4m3!11m2!2s0Vq6CiZoSh-QELJ3lKHSgQ!3e3?shorturl=1',
+          ),
           showAddress: true,
         ),
       ],

@@ -92,43 +92,50 @@ class _NewsScreenState extends State<NewsScreen> {
               itemBuilder: (context, index) {
                 final item = _latestNews[index];
 
-                return Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        item.pictureModel?.fullSizeImageUrl ?? '',
-                      ),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
+                return GestureDetector(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => NewsDetail(
+                        newsItems: NewsItems(),
+                        latestNews: item,
+                      ))),
                   child: Container(
-                    alignment: Alignment.bottomCenter,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                      colors: [
-                        Colors.black,
-                        Colors.transparent,
-                      ],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      tileMode: TileMode.clamp,
-                    )),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 60),
-                            child: Text(
-                              item.title ?? '',
-                              style: CommonStyles.size18W700White(context)
-                                  .copyWith(height: 1.3),
-                              maxLines: 3,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(
+                          item.pictureModel?.fullSizeImageUrl ?? '',
+                        ),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                    child: Container(
+                      alignment: Alignment.bottomCenter,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                        colors: [
+                          Colors.black,
+                          Colors.transparent,
+                        ],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        tileMode: TileMode.clamp,
+                      )),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 60),
+                              child: Text(
+                                item.title ?? '',
+                                style: CommonStyles.size18W700White(context)
+                                    .copyWith(height: 1.3),
+                                maxLines: 3,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );

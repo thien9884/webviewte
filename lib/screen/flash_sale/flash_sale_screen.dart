@@ -71,6 +71,12 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
   }
 
   @override
+  void dispose() {
+    countdownTimer!.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) =>
       BlocConsumer<CategoriesBloc, CategoriesState>(
           builder: (context, state) => _buildUI(context),

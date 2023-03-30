@@ -3,7 +3,6 @@ import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
-import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class CommonFooter extends StatefulWidget {
   const CommonFooter({Key? key}) : super(key: key);
@@ -54,9 +53,11 @@ class _CommonFooterState extends State<CommonFooter> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'assets/icons/ic_face.png',
-                    scale: Responsive.isMobile(context) ? 1 : 0.6,
+                  GestureDetector(
+                    child: Image.asset(
+                      'assets/icons/ic_face.png',
+                      scale: Responsive.isMobile(context) ? 1 : 0.6,
+                    ),
                   ),
                   Image.asset(
                     'assets/icons/ic_tiktok.png',
@@ -132,10 +133,7 @@ class _CommonFooterState extends State<CommonFooter> {
             children: [
               GestureDetector(
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ShopDunkWebView(
-                          baseUrl: item.baseUrl,
-                          url: item.linkUrl,
-                        ))),
+                    builder: (context) => item.screen ?? Container())),
                 child: Text(
                   item.name,
                   style: CommonStyles.size13W400Grey86(context),
