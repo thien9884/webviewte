@@ -95,9 +95,9 @@ class _NewsScreenState extends State<NewsScreen> {
                 return GestureDetector(
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => NewsDetail(
-                        newsItems: NewsItems(),
-                        latestNews: item,
-                      ))),
+                            newsItems: NewsItems(),
+                            latestNews: item,
+                          ))),
                   child: Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
@@ -259,6 +259,12 @@ class _NewsScreenState extends State<NewsScreen> {
                         width: 140,
                         height: 140,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, value, stackTree) {
+                          return const SizedBox(
+                            width: 140,
+                            height: 140,
+                          );
+                        },
                       ),
                     ),
                     Expanded(

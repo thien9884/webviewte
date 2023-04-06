@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/screen/flash_sale/flash_sale_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/login/login_screen.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
+import 'package:webviewtest/screen/store/store_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class NavigationScreen extends StatefulWidget {
@@ -20,19 +22,18 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   int _isSelected = 2;
+  bool _showSearch = false;
   String url = '';
+  int a = 0;
+  final TextEditingController _searchController =
+      TextEditingController(text: '0');
 
   final pages = [
     const FlashSaleScreen(),
     const NewsScreen(),
     const HomePageScreen(),
     const LoginScreen(),
-    const ShopDunkWebView(
-      key: Key('store'),
-      url: 'he-thong-cua-hang',
-      hideBottom: false,
-    ),
-    // const StoreScreen(),
+    const StoreScreen(),
   ];
 
   @override
@@ -49,10 +50,16 @@ class _NavigationScreenState extends State<NavigationScreen> {
       body: WillPopScope(
         onWillPop: () async => false,
         child: SafeArea(
-          child: Column(
+          child: Stack(
             children: [
-              Expanded(child: pages[_isSelected]),
-              _buildBottomBar(),
+              Column(
+                children: [
+                  if (_isSelected != 3) _buildAppbar(),
+                  Expanded(child: pages[_isSelected]),
+                  _buildBottomBar(),
+                ],
+              ),
+              if (_showSearch == true) _buildSearchUI(context),
             ],
           ),
         ),
@@ -60,51 +67,189 @@ class _NavigationScreenState extends State<NavigationScreen> {
     );
   }
 
+  // home app bar
+  Widget _buildAppbar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      color: const Color(0xff515154),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Builder(
+            builder: (context) => GestureDetector(
+              onTap: () => Scaffold.of(context).openDrawer(),
+              child: const Icon(
+                Icons.menu,
+                size: 30,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Image.asset(
+            'assets/icons/ic_sd_white.png',
+            scale: Responsive.isMobile(context) ? 4 : 1.5,
+          ),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _showSearch = true;
+              });
+            },
+            child: SvgPicture.asset(
+              'assets/icons/ic_search_home.svg',
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // build search UI
+  Widget _buildSearchUI(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _showSearch = false;
+        });
+      },
+      child: Container(
+        color: Colors.black.withOpacity(0.5),
+        child: CustomScrollView(
+          slivers: [
+            _buildSearchBar(),
+            _buildSearchResult(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // build search bar
+  Widget _buildSearchBar() {
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        color: const Color(0xff515154),
+        child: TextField(
+          controller: _searchController,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            suffixIcon: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _showSearch = false;
+                });
+              },
+              child: const Icon(Icons.close_rounded),
+            ),
+          ),
+          onChanged: (value) {
+            setState(() {
+              a = int.parse(value);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  // build search result
+  Widget _buildSearchResult() {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          childCount: a,
+          (context, index) {
+            return Container(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: index == a - 1
+                    ? null
+                    : const Border(
+                        bottom: BorderSide(
+                          color: Colors.grey,
+                          width: 1,
+                        ),
+                      ),
+                borderRadius: index == a - 1
+                    ? const BorderRadius.only(
+                        bottomRight: Radius.circular(8),
+                        bottomLeft: Radius.circular(8),
+                      )
+                    : null,
+              ),
+              child: Text(index.toString()),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   // drawer
   Widget _buildDrawer() {
-    return Drawer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 80, left: 20),
-            alignment: Alignment.centerLeft,
-            child: SvgPicture.asset('assets/icons/ic_logo_home_page.svg'),
-          ),
-          Expanded(
-            child: ListView.builder(
-                itemCount: ListCustom.listDrawers.length,
-                itemBuilder: (context, index) {
-                  final item = ListCustom.listDrawers[index];
-                  return GestureDetector(
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ShopDunkWebView(
-                              url: item.linkUrl,
-                            ))),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      decoration: const BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  width: 1, color: Color(0xffEBEBEB)))),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            item.img.toString(),
-                            scale: 0.8,
+    return SafeArea(
+      child: Drawer(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 80, left: 20, bottom: 40),
+              alignment: Alignment.centerLeft,
+              color: Colors.grey,
+              child: Image.asset('assets/icons/ic_sd_white.png', scale: 4),
+            ),
+            Expanded(
+              child: ListView.builder(
+                  itemCount: ListCustom.listDrawers.length,
+                  itemBuilder: (context, index) {
+                    final item = ListCustom.listDrawers[index];
+                    return GestureDetector(
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ShopDunkWebView(
+                            url: item.linkUrl,
                           ),
-                          Text(
-                            item.name,
-                            style: CommonStyles.size14W400Black1D(context),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  );
-                }),
-          )
-        ],
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: const BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                                    width: 1, color: Color(0xffEBEBEB)))),
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              item.img.toString(),
+                              scale: 0.8,
+                            ),
+                            Text(
+                              item.name,
+                              style: CommonStyles.size14W400Black1D(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+            )
+          ],
+        ),
       ),
     );
   }

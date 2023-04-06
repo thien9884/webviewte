@@ -4,4 +4,5 @@ class ApiConstant {
   static const String news = '/api/news-category';
   static const String products = '/api/products/get-category-featured-products/';
   static const String token = '/token';
+  static const String relatedNews = '/api/get-related-entities';
 }

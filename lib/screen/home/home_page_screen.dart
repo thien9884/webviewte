@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/categories/categories_bloc.dart';
 import 'package:webviewtest/blocs/categories/categories_event.dart';
@@ -92,18 +91,18 @@ class _HomePageScreenState extends State<HomePageScreen> {
     await _getListAccessories();
   }
 
-  _autoSlidePage() {
-    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-      if (_currentIndex < ListCustom.listIcon.length + 1) {
-        _currentIndex++;
-      } else {
-        _currentIndex = 0;
-      }
-
-      _pageController.nextPage(
-          duration: const Duration(seconds: 1), curve: Curves.linear);
-    });
-  }
+  // _autoSlidePage() {
+  //   _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+  //     if (_currentIndex < ListCustom.listIcon.length + 1) {
+  //       _currentIndex++;
+  //     } else {
+  //       _currentIndex = 0;
+  //     }
+  //
+  //     _pageController.nextPage(
+  //         duration: const Duration(seconds: 1), curve: Curves.linear);
+  //   });
+  // }
 
   @override
   void initState() {
@@ -234,63 +233,45 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget _buildHomeUI(BuildContext context) {
     return Container(
       color: const Color(0xffF5F5F7),
-      child: CustomScrollView(
-        slivers: <Widget>[
-          _buildAppbar(),
-          // _topPageView(),
-          // _topListDeal(),
-          _buildCategoriesUI(),
-          SliverToBoxAdapter(
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const ShopDunkWebView(
-                        baseUrl: 'https://doanhnghiep.shopdunk.com/',
-                      ))),
-              child: Image.asset(
-                'assets/images/banner_doanh_nghiep.png',
-                scale: 0.5,
-              ),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.only(top: 35, bottom: 15),
-            sliver: SliverToBoxAdapter(
-              child: Center(
-                child: Text(
-                  'Tin Tức',
-                  style: CommonStyles.size24W700Black1D(context),
+      child: Stack(
+        children: [
+          CustomScrollView(
+            slivers: <Widget>[
+              // _topPageView(),
+              // _topListDeal(),
+              _buildCategoriesUI(),
+              SliverToBoxAdapter(
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const ShopDunkWebView(
+                            baseUrl: 'https://doanhnghiep.shopdunk.com/',
+                          ))),
+                  child: Image.asset(
+                    'assets/images/banner_doanh_nghiep.png',
+                    scale: 0.5,
+                  ),
                 ),
               ),
-            ),
+              SliverPadding(
+                padding: const EdgeInsets.only(top: 35, bottom: 15),
+                sliver: SliverToBoxAdapter(
+                  child: Center(
+                    child: Text(
+                      'Tin Tức',
+                      style: CommonStyles.size24W700Black1D(context),
+                    ),
+                  ),
+                ),
+              ),
+              _listNews(),
+              _allNews(),
+              _receiveInfo(),
+              SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                      childCount: 1, (context, index) => const CommonFooter())),
+            ],
           ),
-          _listNews(),
-          _allNews(),
-          _receiveInfo(),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  childCount: 1, (context, index) => const CommonFooter())),
         ],
-      ),
-    );
-  }
-
-  // home app bar
-  Widget _buildAppbar() {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 23, vertical: 10),
-      sliver: SliverToBoxAdapter(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Builder(
-              builder: (context) => GestureDetector(
-                  onTap: () => Scaffold.of(context).openDrawer(),
-                  child: const Icon(Icons.menu)),
-            ),
-            SvgPicture.asset('assets/icons/ic_logo_home_page.svg'),
-            SvgPicture.asset('assets/icons/ic_search_home.svg'),
-          ],
-        ),
       ),
     );
   }
@@ -375,43 +356,55 @@ class _HomePageScreenState extends State<HomePageScreen> {
   // build categories
   Widget _buildCategoriesUI() {
     return SliverList(
-        delegate: SliverChildBuilderDelegate(
-            childCount: _listCategories.length,
-            (context, index) => Column(
-                  children: [
-                    _titleProduct(
-                      _listCategories[index].name ?? '',
-                      _listCategories[index].description ?? '',
-                      _listCategories[index].listProduct ?? [],
-                    ),
-                    CustomScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      slivers: [
-                        _listProduct(_listCategories[index].listProduct ?? []),
-                      ],
-                    ),
-                    _allProduct(
-                      _listCategories[index].name.toString(),
-                      _listCategories[index].seName.toString().toLowerCase(),
-                    ),
-                  ],
-                )));
+        delegate: SliverChildBuilderDelegate(childCount: _listCategories.length,
+            (context, index) {
+      final item = _listCategories[index];
+      return Column(
+        children: [
+          _titleProduct(
+            item.name ?? '',
+            item.description ?? '',
+            item.seName ?? '',
+            item.pageSize ?? 0,
+            item.listProduct ?? [],
+          ),
+          CustomScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            slivers: [
+              _listProduct(
+                item.listProduct ?? [],
+              ),
+            ],
+          ),
+          _allProduct(
+            item.name ?? '',
+            item.description ?? '',
+            item.seName ?? '',
+            item.pageSize ?? 0,
+            item.listProduct ?? [],
+          ),
+        ],
+      );
+    }));
   }
 
   // title product
   Widget _titleProduct(
-      String nameProduct, String desc, List<ProductsModel> allProduct) {
+    String nameProduct,
+    String desc,
+    String seName,
+    int pagesNumber,
+    List<ProductsModel> allProduct,
+  ) {
     return GestureDetector(
-      // onTap: () => Navigator.of(context).push(MaterialPageRoute(
-      //     builder: (context) => ShopDunkWebView(
-      //           url: allProduct,
-      //         ))),
       onTap: () =>
           Navigator.of(context, rootNavigator: false).push(MaterialPageRoute(
               builder: (context) => CategoryScreen(
                     title: nameProduct,
                     desc: desc,
+                    seName: seName,
+                    pagesNumber: pagesNumber,
                     allProduct: allProduct,
                   ),
               maintainState: false)),
@@ -538,7 +531,13 @@ class _HomePageScreenState extends State<HomePageScreen> {
   }
 
   // all product
-  Widget _allProduct(String nameProduct, String allProduct) {
+  Widget _allProduct(
+    String nameProduct,
+    String desc,
+    String seName,
+    int pagesNumber,
+    List<ProductsModel> allProduct,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -548,10 +547,16 @@ class _HomePageScreenState extends State<HomePageScreen> {
           child: Material(
             child: InkWell(
               borderRadius: BorderRadius.circular(8),
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ShopDunkWebView(
-                        url: allProduct,
-                      ))),
+              onTap: () => Navigator.of(context, rootNavigator: false)
+                  .push(MaterialPageRoute(
+                      builder: (context) => CategoryScreen(
+                            title: nameProduct,
+                            desc: desc,
+                            seName: seName,
+                            pagesNumber: pagesNumber,
+                            allProduct: allProduct,
+                          ),
+                      maintainState: false)),
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 20),

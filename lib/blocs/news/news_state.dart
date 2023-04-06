@@ -36,3 +36,24 @@ class NewsLoadError extends NewsState {
   @override
   List<Object?> get props => [message];
 }
+
+// GET CATEGORIES STATES
+class RelatedNewsLoading extends NewsState {
+  const RelatedNewsLoading();
+}
+
+class RelatedNewsLoaded extends NewsState {
+  final NewsData newsData;
+  const RelatedNewsLoaded({required this.newsData});
+
+  @override
+  List<Object?> get props => [newsData];
+}
+
+class RelatedNewsLoadError extends NewsState {
+  final String message;
+  const RelatedNewsLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}

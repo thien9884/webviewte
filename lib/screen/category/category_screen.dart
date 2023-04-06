@@ -12,11 +12,15 @@ import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 class CategoryScreen extends StatefulWidget {
   final String title;
   final String desc;
+  final String seName;
+  final int pagesNumber;
   final List<ProductsModel> allProduct;
 
   const CategoryScreen(
       {required this.title,
       required this.desc,
+      required this.seName,
+      required this.pagesNumber,
       required this.allProduct,
       Key? key})
       : super(key: key);
@@ -27,11 +31,12 @@ class CategoryScreen extends StatefulWidget {
 
 class _CategoryScreenState extends State<CategoryScreen> {
   int _indexSelected = 0;
+  int _pagesSelected = 0;
   final TextEditingController _emailController = TextEditingController();
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
   bool _isExpand = false;
   String _sortBy = ListCustom.listSortProduct[0].name;
-  List<ProductsModel> _listAllProduct = [];
+  final List<ProductsModel> _listAllProduct = [];
 
   @override
   void initState() {
@@ -50,6 +55,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
           _sortListProduct(),
           _tittle(widget.title),
           _listProduct(_listAllProduct),
+          _pagesNumber(),
+          widget.title != 'Sounds' && widget.title != 'Accessories'
+              ? _relatedProducts()
+              : const SliverToBoxAdapter(),
           _description(widget.desc),
           _receiveInfo(),
           SliverList(
@@ -388,17 +397,151 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
+  // pages number
+  Widget _pagesNumber() {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      sliver: SliverToBoxAdapter(
+        child: Center(
+          child: SizedBox(
+            height: 35,
+            width: widget.pagesNumber > 6
+                ? double.infinity
+                : 35 * (widget.pagesNumber + 1) + 25,
+            child: ListView.builder(
+              itemCount: widget.pagesNumber,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => GestureDetector(
+                onTap: () => setState(
+                  () {
+                    _pagesSelected = index;
+                  },
+                ),
+                child: Container(
+                  height: 35,
+                  width: 35,
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    color: _pagesSelected == index
+                        ? Colors.blueAccent
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    (index + 1).toString(),
+                    style: _pagesSelected == index
+                        ? CommonStyles.size14W400White(context)
+                        : CommonStyles.size14W400Black1D(context),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // related products
+  Widget _relatedProducts() {
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      sliver: SliverToBoxAdapter(
+        child: Column(
+          children: List.generate(2, (index) => _relatedItems(index)),
+        ),
+      ),
+    );
+  }
+
+  // related Items
+  Widget _relatedItems(int index) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Image.network(
+            'https://shopdunk.com/images/uploaded/trang%20danh%20muc/iphone/Image-Standard-1.png',
+            width: 139,
+            height: 121,
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  index == 0
+                      ? 'Phụ kiện ${widget.title} thường mua đi kèm'
+                      : 'Tìm ${widget.title} phù hợp với bạn',
+                  style: CommonStyles.size18W700Black1D(context),
+                  maxLines: 2,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      index == 0
+                          ? 'Tìm phụ kiện'
+                          : 'So sánh các ${widget.title}',
+                      style: CommonStyles.size14W400Blue00(context),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Color(0xff0066CC),
+                      size: 14,
+                    )
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   // description
   Widget _description(String description) {
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Column(
           children: [
             Html(
-              data: _isExpand ? description : description.substring(0, 1000),
+              data: _isExpand
+                  ? description
+                  : description
+                      .substring(0, 1000)
+                      .replaceRange(1000, 1000, '...'),
+              style: {
+                "h3": Style(
+                    fontSize: FontSize.xxLarge, textAlign: TextAlign.justify),
+                "p": Style(
+                  fontSize: FontSize.xLarge,
+                  textAlign: TextAlign.justify,
+                  lineHeight: LineHeight.number(1.1),
+                ),
+                "li": Style(
+                  fontSize: FontSize.xLarge,
+                  textAlign: TextAlign.justify,
+                  lineHeight: LineHeight.number(1.1),
+                ),
+                "img": Style(alignment: Alignment.center),
+              },
             ),
             GestureDetector(
                 onTap: () => setState(() => _isExpand = !_isExpand),
@@ -408,7 +551,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _isExpand ? 'Collapse' : 'Expand',
+                        _isExpand ? 'Thu gọn' : 'Xem thêm',
                         style: CommonStyles.size14W400Blue00(context),
                       ),
                       Icon(

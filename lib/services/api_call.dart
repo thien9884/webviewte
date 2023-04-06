@@ -4,6 +4,7 @@ import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
+import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/services/api_interfaces.dart';
 import 'package:webviewtest/services/dio_client.dart';
 
@@ -23,6 +24,14 @@ class ApiCall implements ApiInterface {
     if (response == null) return null;
     final data = response['Data'];
     return NewsData.fromJson(data);
+  }
+
+  @override
+  Future<RelatedNews?> requestGetRelatedNews(int? newsId) async {
+    var response = await DioClient().get('${ApiConstant.relatedNews}/$newsId');
+    if (response == null) return null;
+    final data = response['Data'];
+    return RelatedNews.fromJson(data);
   }
 
   @override

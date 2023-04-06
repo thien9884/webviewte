@@ -13,3 +13,10 @@ class RequestGetNews extends NewsEvent {
   @override
   List<Object?> get props => [];
 }
+
+class RequestGetRelatedNews extends NewsEvent {
+  const RequestGetRelatedNews();
+
+  @override
+  List<Object?> get props => [];
+}

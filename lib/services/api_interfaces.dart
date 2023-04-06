@@ -3,6 +3,7 @@ import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
+import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 
 abstract class ApiInterface {
   // Get categories
@@ -10,6 +11,9 @@ abstract class ApiInterface {
 
   // Get news
   Future<NewsData?> requestGetNews();
+
+  // Get news
+  Future<RelatedNews?> requestGetRelatedNews(int? newsId);
 
   // Get list product
   Future<List<ProductsModel>> requestGetProduct(int? id);

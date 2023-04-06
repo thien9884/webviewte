@@ -11,7 +11,7 @@ class CommonButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: onTap != null ? Colors.blue : const Color(0xff86868B),
+      color: onTap != null ? Colors.blue : const Color(0xff0066CC),
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,

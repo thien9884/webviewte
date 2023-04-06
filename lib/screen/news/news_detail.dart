@@ -1,16 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
+import 'package:webviewtest/blocs/related_news/related_news_bloc.dart';
+import 'package:webviewtest/blocs/related_news/related_news_event.dart';
+import 'package:webviewtest/blocs/related_news/related_news_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/news/news_model.dart';
+import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
-class NewsDetail extends StatelessWidget {
+class NewsDetail extends StatefulWidget {
   final NewsItems newsItems;
   final LatestNews? latestNews;
 
@@ -18,7 +24,37 @@ class NewsDetail extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  State<NewsDetail> createState() => _NewsDetailState();
+}
+
+class _NewsDetailState extends State<NewsDetail> {
+  RelatedNews _relatedNewsData = RelatedNews();
+
+  _getRelatedNewsData(int id) {
+    BlocProvider.of<RelatedNewsBloc>(context).add(RequestGetRelatedNews(id));
+  }
+
+  @override
+  void initState() {
+    _getRelatedNewsData(588);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocConsumer<RelatedNewsBloc, RelatedNewsState>(
+          builder: (context, state) => _newsDetailUI(context),
+          listener: (context, state) {
+            if (state is RelatedNewsLoading) {
+            } else if (state is RelatedNewsLoaded) {
+              _relatedNewsData = state.newsData;
+            } else if (state is RelatedNewsLoadError) {
+              AlertUtils.displayErrorAlert(context, state.message);
+            }
+          });
+
+  // news detail UI
+  Widget _newsDetailUI(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: GestureDetector(
@@ -46,8 +82,11 @@ class NewsDetail extends StatelessWidget {
   // news detail
   Widget _newsDetail(BuildContext context) {
     final timeUpload = DateTime.parse(
-        (latestNews != null ? latestNews?.createdOn : newsItems.createdOn) ??
-            '');
+      (widget.latestNews != null
+              ? widget.latestNews?.createdOn
+              : widget.newsItems.createdOn) ??
+          '',
+    );
     final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
 
     return SliverToBoxAdapter(
@@ -57,16 +96,18 @@ class NewsDetail extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.network(
-                (latestNews != null
-                        ? latestNews?.pictureModel?.fullSizeImageUrl
-                        : newsItems.pictureModel?.fullSizeImageUrl) ??
+                (widget.latestNews != null
+                        ? widget.latestNews?.pictureModel?.fullSizeImageUrl
+                        : widget.newsItems.pictureModel?.fullSizeImageUrl) ??
                     '',
                 fit: BoxFit.fill,
               ),
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Text(
-                  (latestNews != null ? latestNews?.title : newsItems.title) ??
+                  (widget.latestNews != null
+                          ? widget.latestNews?.title
+                          : widget.newsItems.title) ??
                       '',
                   style: CommonStyles.size24W700Grey39(context),
                 ),
@@ -83,10 +124,10 @@ class NewsDetail extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Html(
-              data: latestNews != null
-                  ? latestNews?.full
+              data: widget.latestNews != null
+                  ? widget.latestNews?.full
                       ?.replaceAll('src="', 'src="http://shopdunk.com')
-                  : newsItems.full
+                  : widget.newsItems.full
                       ?.replaceAll('src="', 'src="http://shopdunk.com'),
               onLinkTap: (str, contextRender, list, element) =>
                   Navigator.of(context).push(MaterialPageRoute(
@@ -95,9 +136,18 @@ class NewsDetail extends StatelessWidget {
                           ))),
               style: {
                 "h3": Style(
-                    fontSize: FontSize.xxLarge, textAlign: TextAlign.justify),
+                  fontSize: FontSize.xxLarge,
+                  textAlign: TextAlign.justify,
+                ),
                 "p": Style(
-                    fontSize: FontSize.xLarge, textAlign: TextAlign.justify),
+                  fontSize: FontSize.xLarge,
+                  textAlign: TextAlign.justify,
+                ),
+                "li": Style(
+                  fontSize: FontSize.xLarge,
+                  textAlign: TextAlign.justify,
+                  lineHeight: LineHeight.number(1.1),
+                ),
                 "img": Style(alignment: Alignment.center),
               },
             ),
@@ -332,9 +382,10 @@ class NewsDetail extends StatelessWidget {
   Widget _relatedNews(BuildContext context) {
     return SliverList(
         delegate: SliverChildBuilderDelegate(
-      childCount: 3,
+      childCount: _relatedNewsData.newsItemModels?.length,
       (context, index) {
-        final timeUpload = DateTime.parse('2022-12-14T07:00:00');
+        final item = _relatedNewsData.newsItemModels?[index];
+        final timeUpload = DateTime.parse(item?.createdOn ?? '');
         final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
 
         return Container(
@@ -344,17 +395,17 @@ class NewsDetail extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               GestureDetector(
-                // onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                //     builder: (context) => NewsDetail(
-                //       newsItems: item,
-                //     ))),
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => NewsDetail(
+                          newsItems: item ?? NewsItems(),
+                        ))),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.network(
-                        'https://shopdunk.com/images/thumbs/0001451_dieu-khien-nhac-bang-applewatch_1600.webp',
+                        item?.pictureModel?.fullSizeImageUrl ?? '',
                         width: 140,
                         height: 140,
                         fit: BoxFit.cover,
@@ -374,7 +425,7 @@ class NewsDetail extends StatelessWidget {
                               height: 5,
                             ),
                             Text(
-                              'Top 5 Apple Watch phù hợp với học sinh, sinh viên',
+                              item?.title ?? '',
                               style: CommonStyles.size18W700Black1D(context)
                                   .copyWith(height: 1.5),
                               maxLines: 3,
