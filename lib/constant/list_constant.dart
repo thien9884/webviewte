@@ -60,28 +60,28 @@ class ListCustom {
     Resource(
         id: 0,
         name: 'Flash sale',
-        img: 'assets/icons/ic_news.svg',
-        imgUnselect: 'assets/icons/ic_news_un.svg'),
+        img: 'assets/icons/ic_flash_sale_sel.png',
+        imgUnselect: 'assets/icons/ic_flash_sale_uns.png'),
     Resource(
         id: 1,
         name: 'News',
-        img: 'assets/icons/ic_news.svg',
-        imgUnselect: 'assets/icons/ic_news_un.svg'),
+        img: 'assets/icons/ic_news_sel.png',
+        imgUnselect: 'assets/icons/ic_news_uns.png'),
     Resource(
         id: 2,
-        name: 'Shop',
-        img: 'assets/icons/ic_monitor.svg',
-        imgUnselect: 'assets/icons/ic_monitor_un.svg'),
+        name: 'Home',
+        img: 'assets/icons/ic_home_sel.png',
+        imgUnselect: 'assets/icons/ic_home_uns.png'),
     Resource(
         id: 3,
         name: 'Account',
-        img: 'assets/icons/ic_user.svg',
-        imgUnselect: 'assets/icons/ic_user_un.svg'),
+        img: 'assets/icons/ic_user_sel.png',
+        imgUnselect: 'assets/icons/ic_user_uns.png'),
     Resource(
         id: 4,
         name: 'Store',
-        img: 'assets/icons/ic_bag.svg',
-        imgUnselect: 'assets/icons/ic_bag_un.svg'),
+        img: 'assets/icons/ic_shop_sel.png',
+        imgUnselect: 'assets/icons/ic_shop_uns.png'),
   ];
 
   static List<Resource> listNews = [

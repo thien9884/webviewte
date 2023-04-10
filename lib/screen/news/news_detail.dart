@@ -194,14 +194,19 @@ class _NewsDetailState extends State<NewsDetail> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate(
-          childCount: 2,
+          childCount: _relatedNewsData.productOverviewModels?.length,
           (context, index) {
+            final item = _relatedNewsData.productOverviewModels?[index];
             return Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Material(
                 child: InkWell(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ShopDunkWebView(
+                            url: item?.seName,
+                          ))),
                   borderRadius: BorderRadius.circular(4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,7 +226,7 @@ class _NewsDetailState extends State<NewsDetail> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 15),
                                 child: Text(
-                                  'Apple Watch Ultra LTE 49mm Alpine Loop size S',
+                                  item?.name ?? '',
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style:
@@ -239,7 +244,8 @@ class _NewsDetailState extends State<NewsDetail> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        priceFormat.format(19900000),
+                                        priceFormat.format(
+                                            item?.productPrice?.priceValue),
                                         style: CommonStyles.size16W700Blue00(
                                             context),
                                       ),

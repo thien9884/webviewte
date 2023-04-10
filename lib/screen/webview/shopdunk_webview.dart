@@ -7,7 +7,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // #docregion platform_imports
@@ -78,12 +77,17 @@ const String kTransparentBackgroundPage = '''
 
 class ShopDunkWebView extends StatefulWidget {
   final bool hideBottom;
-  final int? index;
+  final int index;
   final String? baseUrl;
   final String? url;
 
-  const ShopDunkWebView(
-      {this.baseUrl, this.url, this.index, this.hideBottom = true, super.key});
+  const ShopDunkWebView({
+    this.baseUrl,
+    this.url,
+    this.index = 2,
+    this.hideBottom = true,
+    super.key,
+  });
 
   @override
   State<ShopDunkWebView> createState() => _ShopDunkWebViewState();
@@ -233,21 +237,28 @@ Page resource error:
           final item = ListCustom.listBottomBar[index];
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
                 builder: (context) => NavigationScreen(
-                      isSelected: item.id,
-                    ))),
+                  isSelected: item.id,
+                ),
+              ),
+            ),
             child: Column(
               children: [
-                SvgPicture.asset((widget.index ?? 0) == item.id
-                    ? item.img.toString()
-                    : item.imgUnselect.toString()),
+                Image.asset(
+                  widget.index == item.id
+                      ? item.img.toString()
+                      : item.imgUnselect.toString(),
+                  height: 30,
+                  width: 30,
+                ),
                 const SizedBox(
                   height: 5,
                 ),
                 Text(
                   item.name,
-                  style: (widget.index ?? 0) == item.id
+                  style: widget.index == item.id
                       ? CommonStyles.size12W400Grey86(context)
                           .copyWith(color: const Color(0xff0066CC))
                       : CommonStyles.size12W400Grey86(context),

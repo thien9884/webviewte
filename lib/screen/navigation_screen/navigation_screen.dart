@@ -289,9 +289,13 @@ class _NavigationScreenState extends State<NavigationScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 5),
                     child: Column(
                       children: [
-                        SvgPicture.asset(_isSelected == item.id
-                            ? item.img.toString()
-                            : item.imgUnselect.toString()),
+                        Image.asset(
+                          _isSelected == item.id
+                              ? item.img.toString()
+                              : item.imgUnselect.toString(),
+                          width: 30,
+                          height: 30,
+                        ),
                         const SizedBox(
                           height: 5,
                         ),
