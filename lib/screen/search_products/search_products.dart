@@ -1,202 +1,189 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
+import 'package:webviewtest/blocs/search_products/search_products_bloc.dart';
+import 'package:webviewtest/blocs/search_products/search_products_event.dart';
+import 'package:webviewtest/blocs/search_products/search_products_state.dart';
+import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/constant.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/product/products_model.dart';
+import 'package:webviewtest/model/search_products/search_products_model.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
-class CategoryScreen extends StatefulWidget {
-  final String title;
-  final String desc;
-  final String seName;
-  final int pagesNumber;
-  final List<ProductsModel> allProduct;
+class SearchProductsScreen extends StatefulWidget {
+  final String? keySearch;
 
-  const CategoryScreen(
-      {required this.title,
-      required this.desc,
-      required this.seName,
-      required this.pagesNumber,
-      required this.allProduct,
-      Key? key})
-      : super(key: key);
+  const SearchProductsScreen({this.keySearch, Key? key}) : super(key: key);
 
   @override
-  State<CategoryScreen> createState() => _CategoryScreenState();
+  State<SearchProductsScreen> createState() => _SearchProductsScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen> {
-  int _indexSelected = 0;
-  int _pagesSelected = 0;
-  final TextEditingController _emailController = TextEditingController();
-  var priceFormat = NumberFormat.decimalPattern('vi_VN');
-  bool _isExpand = false;
+class _SearchProductsScreenState extends State<SearchProductsScreen> {
   String _sortBy = ListCustom.listSortProduct[0].name;
+  CatalogProductsModel catalogProductsModel = CatalogProductsModel();
   final List<ProductsModel> _listAllProduct = [];
+  final List<ProductsModel> _listSearchProduct = [];
+  var priceFormat = NumberFormat.decimalPattern('vi_VN');
+  int _pagesSelected = 0;
+  String _keySearch = '';
+  final TextEditingController _emailController = TextEditingController();
+  late TextEditingController _searchController;
+
+  _getFirstSearchResult() {
+    BlocProvider.of<SearchProductsBloc>(context).add(
+      RequestGetSearchProductResult(1, _keySearch),
+    );
+  }
 
   @override
   void initState() {
-    _listAllProduct.addAll(widget.allProduct);
+    _keySearch = widget.keySearch ?? '';
+    _searchController = TextEditingController(text: _keySearch);
+    _getFirstSearchResult();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<SearchProductsBloc, SearchProductsState>(
+        builder: (context, state) => _buildUI(),
+        listener: (context, state) {
+          if (state is SearchProductsLoading) {
+            EasyLoading.show();
+          } else if (state is SearchProductsLoaded) {
+            catalogProductsModel = CatalogProductsModel();
+            _listAllProduct.clear();
+            _listSearchProduct.clear();
+            catalogProductsModel = state.catalogProductsModel;
+            _listAllProduct.addAll(catalogProductsModel.products ?? []);
+            _listSearchProduct.addAll(catalogProductsModel.products ?? []);
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is SearchProductsLoadError) {
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+        });
+  }
+
+  // build UI
+  Widget _buildUI() {
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          color: const Color(0xfff5f5f7),
-          child: CustomScrollView(
-            slivers: [
-              _pageView(),
-              _scrollBar(),
-              _sortListProduct(),
-              _tittle(widget.title),
-              _listProduct(_listAllProduct),
-              _pagesNumber(),
-              widget.title != 'Sounds' && widget.title != 'Accessories'
-                  ? _relatedProducts()
-                  : const SliverToBoxAdapter(),
-              _description(widget.desc),
-              _receiveInfo(),
-              SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                      childCount: 1, (context, index) => const CommonFooter())),
-            ],
+        child: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: Container(
+            color: const Color(0xfff5f5f7),
+            child: CustomScrollView(
+              slivers: [
+                _searchProducts(),
+                _sortListProduct(),
+                _listProduct(_listAllProduct),
+                if (catalogProductsModel.totalPages != null) _pagesNumber(),
+                _receiveInfo(),
+                SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                        childCount: 1,
+                        (context, index) => const CommonFooter())),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  // page view
-  Widget _pageView() {
+  // news scroll bar
+  Widget _searchProducts() {
     return SliverToBoxAdapter(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.5,
-        width: double.infinity,
-        child: Stack(
-          children: [
-            PageView.builder(
-              onPageChanged: (value) {
-                setState(() {
-                  _indexSelected = value % ListCustom.listIcon.length;
-                });
-              },
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                        'assets/images/news_banner.jpeg',
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Text(
+              'Tìm kiếm',
+              style: CommonStyles.size24W700Black1D(context),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Tìm từ khoá:',
+                  style: CommonStyles.size15W400Black1D(context),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 20),
+                  child: TextFormField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color(0xffEBEBEB),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      fit: BoxFit.fill,
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color(0xff0066CC),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color(0xffEBEBEB),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      enabled: true,
                     ),
                   ),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                      colors: [
-                        Colors.black,
-                        Colors.transparent,
-                      ],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      tileMode: TileMode.clamp,
-                    )),
-                  ),
-                );
-              },
-            ),
-            Positioned(
-                bottom: 20,
-                width: MediaQuery.of(context).size.width,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: Text(
-                                'TRÒ CHƠI “ÔM CÀNG LÂU, ƯU ĐÃI CÀNG SÂU” SHOPDUNK THU HÚT PHỐ ĐI BỘ HÀ NỘI',
-                                style: CommonStyles.size18W700White(context),
-                                maxLines: 3,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                              ListCustom.listIcon.length,
-                              (index) => Container(
-                                    height:
-                                        Responsive.isMobile(context) ? 10 : 15,
-                                    width:
-                                        Responsive.isMobile(context) ? 10 : 15,
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    decoration: BoxDecoration(
-                                        color: _indexSelected == index
-                                            ? const Color(0xff4AB2F1)
-                                                .withOpacity(0.5)
-                                            : const Color(0xff515154)
-                                                .withOpacity(0.5),
-                                        shape: BoxShape.circle),
-                                  )),
-                        ),
-                      ),
-                    ],
-                  ),
-                ))
-          ],
-        ),
-      ),
-    );
-  }
-
-  // news scroll bar
-  Widget _scrollBar() {
-    return SliverToBoxAdapter(
-      child: Scrollbar(
-          child: SizedBox(
-        height: 70,
-        child: ListView.builder(
-          itemCount: 5,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {},
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                child: Center(
-                  child: Text(
-                    'iPhone',
-                    style: CommonStyles.size15W400Grey51(context),
-                  ),
                 ),
-              ),
-            );
-          },
-        ),
-      )),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        width: 160,
+                        child: CommonButton(
+                          title: 'Tìm kiếm',
+                          onTap: () {
+                            setState(() {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                              BlocProvider.of<SearchProductsBloc>(context).add(
+                                RequestGetSearchProductResult(
+                                  1,
+                                  _searchController.text,
+                                ),
+                              );
+                            });
+                          },
+                        )),
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -211,7 +198,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              margin: const EdgeInsets.symmetric(horizontal: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: const Color(0xffEBEBEB), width: 1),
@@ -233,7 +220,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       switch (value) {
                         case Constant.sttDefault:
                           _listAllProduct.clear();
-                          _listAllProduct.addAll(widget.allProduct);
+                          _listAllProduct.addAll(_listSearchProduct);
                           break;
                         case Constant.price91:
                           _listAllProduct.sort((a, b) =>
@@ -276,21 +263,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // title
-  Widget _tittle(String tittle) {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      sliver: SliverToBoxAdapter(
-        child: Center(
-          child: Text(
-            tittle,
-            style: CommonStyles.size24W700Black1D(context),
-          ),
-        ),
       ),
     );
   }
@@ -409,16 +381,20 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: Center(
           child: SizedBox(
             height: 35,
-            width: widget.pagesNumber > 6
+            width: catalogProductsModel.totalPages! > 6
                 ? double.infinity
-                : 35 * (widget.pagesNumber + 1) + 25,
+                : 35 * (catalogProductsModel.totalPages! + 1) + 25,
             child: ListView.builder(
-              itemCount: widget.pagesNumber,
+              itemCount: catalogProductsModel.totalPages,
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () => setState(
                   () {
                     _pagesSelected = index;
+                    BlocProvider.of<SearchProductsBloc>(context).add(
+                      RequestGetSearchProductResult(
+                          index + 1, _searchController.text),
+                    );
                   },
                 ),
                 child: Container(
@@ -442,132 +418,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  // related products
-  Widget _relatedProducts() {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      sliver: SliverToBoxAdapter(
-        child: Column(
-          children: List.generate(2, (index) => _relatedItems(index)),
-        ),
-      ),
-    );
-  }
-
-  // related Items
-  Widget _relatedItems(int index) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Image.network(
-            'https://shopdunk.com/images/uploaded/trang%20danh%20muc/iphone/Image-Standard-1.png',
-            width: 139,
-            height: 121,
-          ),
-          const SizedBox(
-            width: 5,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  index == 0
-                      ? 'Phụ kiện ${widget.title} thường mua đi kèm'
-                      : 'Tìm ${widget.title} phù hợp với bạn',
-                  style: CommonStyles.size18W700Black1D(context),
-                  maxLines: 2,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      index == 0
-                          ? 'Tìm phụ kiện'
-                          : 'So sánh các ${widget.title}',
-                      style: CommonStyles.size14W400Blue00(context),
-                    ),
-                    const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: Color(0xff0066CC),
-                      size: 14,
-                    )
-                  ],
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  // description
-  Widget _description(String description) {
-    return SliverToBoxAdapter(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          children: [
-            Html(
-              data: _isExpand
-                  ? description
-                  : description
-                      .substring(0, 1000)
-                      .replaceRange(1000, 1000, '...'),
-              style: {
-                "h3": Style(
-                    fontSize: FontSize.xxLarge, textAlign: TextAlign.justify),
-                "p": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                  lineHeight: LineHeight.number(1.1),
-                ),
-                "li": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                  lineHeight: LineHeight.number(1.1),
-                ),
-                "img": Style(alignment: Alignment.center),
-              },
-            ),
-            GestureDetector(
-                onTap: () => setState(() => _isExpand = !_isExpand),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _isExpand ? 'Thu gọn' : 'Xem thêm',
-                        style: CommonStyles.size14W400Blue00(context),
-                      ),
-                      Icon(
-                        _isExpand
-                            ? Icons.keyboard_arrow_up_rounded
-                            : Icons.keyboard_arrow_down_rounded,
-                        color: const Color(0xff0066CC),
-                      )
-                    ],
-                  ),
-                )),
-          ],
         ),
       ),
     );

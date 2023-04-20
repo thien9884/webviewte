@@ -59,6 +59,7 @@ class NewsCategory extends StatelessWidget {
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => NewsDetail(
                       newsItems: item,
+                  newsGroup: newsGroup,
                     ))),
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10),

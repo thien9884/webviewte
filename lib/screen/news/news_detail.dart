@@ -10,17 +10,25 @@ import 'package:webviewtest/blocs/related_news/related_news_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
-import 'package:webviewtest/constant/text_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/news/news_model.dart';
+import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
+import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class NewsDetail extends StatefulWidget {
+  final NewsGroup newsGroup;
   final NewsItems newsItems;
   final LatestNews? latestNews;
 
-  const NewsDetail({required this.newsItems, this.latestNews, Key? key})
+  const NewsDetail(
+      {required this.newsGroup,
+      required this.newsItems,
+      this.latestNews,
+      Key? key})
       : super(key: key);
 
   @override
@@ -29,14 +37,74 @@ class NewsDetail extends StatefulWidget {
 
 class _NewsDetailState extends State<NewsDetail> {
   RelatedNews _relatedNewsData = RelatedNews();
+  NewsCommentResponseModel _newsCommentResponseModel =
+      NewsCommentResponseModel();
+  String _firstContent = '';
+  String _videoContent = '';
+  String _lastContent = '';
+  late YoutubePlayerController _controller;
 
   _getRelatedNewsData(int id) {
     BlocProvider.of<RelatedNewsBloc>(context).add(RequestGetRelatedNews(id));
   }
 
+  _checkVideo() {
+    if (widget.latestNews != null &&
+        widget.latestNews!.full!.contains('<div class="video-container"')) {
+      _firstContent = widget.latestNews!.full?.replaceRange(
+              widget.latestNews!.full
+                      ?.indexOf('<div class="video-container"') ??
+                  0,
+              widget.latestNews!.full?.length,
+              '') ??
+          '';
+      _lastContent = widget.latestNews!.full?.replaceRange(
+              0,
+              widget.latestNews!.full
+                      ?.lastIndexOf('<div class="video-container"') ??
+                  0,
+              '') ??
+          '';
+      _videoContent =
+          _lastContent.replaceRange(0, _lastContent.indexOf('embed/') + 6, '');
+      _videoContent = _videoContent.replaceRange(
+          _videoContent.indexOf('"'), _videoContent.length, '');
+      print(_videoContent);
+    } else if (widget.newsItems.full!
+        .contains('<div class="video-container"')) {
+      _firstContent = widget.newsItems.full?.replaceRange(
+              widget.newsItems.full?.indexOf('<div class="video-container"') ??
+                  0,
+              widget.newsItems.full?.length,
+              '') ??
+          '';
+      _lastContent = widget.newsItems.full?.replaceRange(
+              0,
+              widget.newsItems.full
+                      ?.lastIndexOf('<div class="video-container"') ??
+                  0,
+              '') ??
+          '';
+      _videoContent =
+          _lastContent.replaceRange(0, _lastContent.indexOf('embed/') + 6, '');
+      _videoContent = _videoContent.replaceRange(
+          _videoContent.indexOf('"'), _videoContent.length, '');
+      print(_videoContent);
+    }
+  }
+
   @override
   void initState() {
-    _getRelatedNewsData(588);
+    _getRelatedNewsData(widget.newsItems.id ?? 0);
+    _checkVideo();
+    _controller = YoutubePlayerController(
+      initialVideoId: _videoContent,
+      flags: const YoutubePlayerFlags(
+        isLive: false,
+        autoPlay: true,
+        mute: false,
+      ),
+    );
     super.initState();
   }
 
@@ -46,9 +114,42 @@ class _NewsDetailState extends State<NewsDetail> {
           builder: (context, state) => _newsDetailUI(context),
           listener: (context, state) {
             if (state is RelatedNewsLoading) {
+              EasyLoading.show();
             } else if (state is RelatedNewsLoaded) {
               _relatedNewsData = state.newsData;
+              if (EasyLoading.isShow) EasyLoading.dismiss();
             } else if (state is RelatedNewsLoadError) {
+              AlertUtils.displayErrorAlert(context, state.message);
+            } else if (state is NewsCommentsLoading) {
+              EasyLoading.show();
+            } else if (state is NewsCommentsLoaded) {
+              _newsCommentResponseModel = state.newsCommentResponseModel;
+              showCupertinoModalPopup(
+                  context: context,
+                  builder: (context) {
+                    if (EasyLoading.isShow) EasyLoading.dismiss();
+
+                    return CupertinoAlertDialog(
+                      title: Text(
+                        'Thông báo',
+                        style: CommonStyles.size17W700Black1D(context),
+                      ),
+                      content: Text(
+                        _newsCommentResponseModel.data?.message ?? '',
+                        style: CommonStyles.size14W400Green66(context),
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                          isDestructiveAction: true,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    );
+                  });
+            } else if (state is NewsCommentsLoadError) {
               AlertUtils.displayErrorAlert(context, state.message);
             }
           });
@@ -56,24 +157,75 @@ class _NewsDetailState extends State<NewsDetail> {
   // news detail UI
   Widget _newsDetailUI(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: CustomScrollView(
-            slivers: [
-              _newsDetail(context),
-              _newsDivider(context),
+      body: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: CustomScrollView(
+          slivers: [
+            _newsAppBar(),
+            _newsDetail(context),
+            _newsDivider(context),
+            if (_relatedNewsData.productOverviewModels != null &&
+                _relatedNewsData.productOverviewModels!.isNotEmpty)
               _relatedProductsTittle(context),
+            if (_relatedNewsData.productOverviewModels != null)
               _relatedProducts(context),
-              _newsComment(context),
+            if (widget.newsItems.comments != null) _newsComment(context),
+            if (_relatedNewsData.newsItemModels != null &&
+                _relatedNewsData.newsItemModels!.isNotEmpty)
               _relatedNewsTittle(context),
-              _relatedNews(context),
-              _receiveInfo(context),
-              SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                      childCount: 1, (context, index) => const CommonFooter())),
-            ],
-          ),
+            if (_relatedNewsData.newsItemModels != null) _relatedNews(context),
+            _receiveInfo(context),
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    childCount: 1, (context, index) => const CommonFooter())),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // news app bar
+  Widget _newsAppBar() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const NavigationScreen(
+                          isSelected: 1,
+                        )));
+              },
+              child: Text(
+                'Trang chủ News',
+                style: CommonStyles.size14W400Grey86(context),
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 12,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => NewsCategory(
+                          newsGroup: widget.newsGroup,
+                        )));
+              },
+              child: Text(
+                widget.newsGroup.name ?? '',
+                style: CommonStyles.size14W400Grey86(context),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -123,37 +275,118 @@ class _NewsDetailState extends State<NewsDetail> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Html(
-              data: widget.latestNews != null
-                  ? widget.latestNews?.full
-                      ?.replaceAll('src="', 'src="http://shopdunk.com')
-                  : widget.newsItems.full
-                      ?.replaceAll('src="', 'src="http://shopdunk.com'),
-              onLinkTap: (str, contextRender, list, element) =>
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ShopDunkWebView(
-                            baseUrl: str,
-                          ))),
-              style: {
-                "h3": Style(
-                  fontSize: FontSize.xxLarge,
-                  textAlign: TextAlign.justify,
-                ),
-                "p": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                ),
-                "li": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                  lineHeight: LineHeight.number(1.1),
-                ),
-                "img": Style(alignment: Alignment.center),
-              },
-            ),
+            child: (widget.latestNews != null &&
+                        widget.latestNews!.full!.contains('video-container')) ||
+                    widget.newsItems.full!.contains('video-container')
+                ? Column(
+                    children: [
+                      Html(
+                        data: _firstContent.replaceAll(
+                            'src="', 'src="http://shopdunk.com'),
+                        onLinkTap: (str, contextRender, list, element) =>
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ShopDunkWebView(
+                                      baseUrl: str,
+                                    ))),
+                        style: {
+                          "h3": Style(
+                            fontSize: FontSize.xxLarge,
+                            textAlign: TextAlign.justify,
+                          ),
+                          "p": Style(
+                            fontSize: FontSize.xLarge,
+                            textAlign: TextAlign.justify,
+                          ),
+                          "span": Style(
+                            fontSize: FontSize.xLarge,
+                            textAlign: TextAlign.justify,
+                          ),
+                          "li": Style(
+                            fontSize: FontSize.xLarge,
+                            textAlign: TextAlign.justify,
+                            lineHeight: LineHeight.number(1.1),
+                          ),
+                          "img": Style(alignment: Alignment.center),
+                        },
+                      ),
+                      _youtubePlayer(),
+                      Html(
+                        data: _lastContent.replaceAll(
+                            'src="', 'src="http://shopdunk.com'),
+                        onLinkTap: (str, contextRender, list, element) =>
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ShopDunkWebView(
+                                      baseUrl: str,
+                                    ))),
+                        style: {
+                          "h3": Style(
+                            fontSize: FontSize.xxLarge,
+                            textAlign: TextAlign.justify,
+                          ),
+                          "p": Style(
+                            fontSize: FontSize.xLarge,
+                            textAlign: TextAlign.justify,
+                          ),
+                          "span": Style(
+                            fontSize: FontSize.xLarge,
+                            textAlign: TextAlign.justify,
+                          ),
+                          "li": Style(
+                            fontSize: FontSize.xLarge,
+                            textAlign: TextAlign.justify,
+                            lineHeight: LineHeight.number(1.1),
+                          ),
+                          "img": Style(alignment: Alignment.center),
+                        },
+                      ),
+                    ],
+                  )
+                : Html(
+                    data: widget.latestNews != null
+                        ? widget.latestNews?.full
+                            ?.replaceAll('src="', 'src="http://shopdunk.com')
+                        : widget.newsItems.full
+                            ?.replaceAll('src="', 'src="http://shopdunk.com'),
+                    onLinkTap: (str, contextRender, list, element) =>
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ShopDunkWebView(
+                                  baseUrl: str,
+                                ))),
+                    style: {
+                      "h3": Style(
+                        fontSize: FontSize.xxLarge,
+                        textAlign: TextAlign.justify,
+                      ),
+                      "p": Style(
+                        fontSize: FontSize.xLarge,
+                        textAlign: TextAlign.justify,
+                      ),
+                      "span": Style(
+                        fontSize: FontSize.xLarge,
+                        textAlign: TextAlign.justify,
+                      ),
+                      "li": Style(
+                        fontSize: FontSize.xLarge,
+                        textAlign: TextAlign.justify,
+                        lineHeight: LineHeight.number(1.1),
+                      ),
+                      "img": Style(alignment: Alignment.center),
+                    },
+                  ),
           ),
         ],
       ),
+    );
+  }
+
+  // youtube player
+  Widget _youtubePlayer() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: YoutubePlayer(
+          controller: _controller,
+          liveUIColor: Colors.redAccent,
+          bottomActions: const []),
     );
   }
 
@@ -244,8 +477,10 @@ class _NewsDetailState extends State<NewsDetail> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        priceFormat.format(
-                                            item?.productPrice?.priceValue),
+                                        item?.productPrice?.priceValue != null
+                                            ? priceFormat.format(
+                                                item?.productPrice?.priceValue)
+                                            : '',
                                         style: CommonStyles.size16W700Blue00(
                                             context),
                                       ),
@@ -317,6 +552,7 @@ class _NewsDetailState extends State<NewsDetail> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     labelText: 'Để lại bình luận của bạn',
+                    alignLabelWithHint: true,
                   ),
                   maxLines: 3,
                 ),
@@ -325,32 +561,23 @@ class _NewsDetailState extends State<NewsDetail> {
                   right: 10,
                   child: GestureDetector(
                     onTap: () {
-                      EasyLoading.show();
-                      showCupertinoModalPopup(
-                          context: context,
-                          builder: (context) {
-                            if (EasyLoading.isShow) EasyLoading.dismiss();
-
-                            return CupertinoAlertDialog(
-                              title: Text(
-                                'Thông báo',
-                                style: CommonStyles.size17W700Black1D(context),
-                              ),
-                              content: Text(
-                                CommonText.confirmComment(context),
-                                style: CommonStyles.size14W400Green66(context),
-                              ),
-                              actions: [
-                                CupertinoDialogAction(
-                                  isDestructiveAction: true,
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          });
+                      setState(() {
+                        BlocProvider.of<RelatedNewsBloc>(context).add(
+                          RequestPostNewsComment(
+                            widget.newsItems.id,
+                            NewsCommentModel(
+                              id: 1,
+                              customerId: 0,
+                              customerName: 'thien@gmail.com',
+                              customerAvatarUrl: '',
+                              allowViewingProfiles: true,
+                              createOn: DateTime.now().toString(),
+                              commentTitle: 'thien',
+                              commentText: 'hi anh',
+                            ),
+                          ),
+                        );
+                      });
                     },
                     child: Container(
                       width: 45,
@@ -359,7 +586,10 @@ class _NewsDetailState extends State<NewsDetail> {
                       decoration: BoxDecoration(
                           color: Colors.blueAccent,
                           borderRadius: BorderRadius.circular(8)),
-                      child: const Text('Gửi'),
+                      child: Text(
+                        'Gửi',
+                        style: CommonStyles.size12W400White(context),
+                      ),
                     ),
                   ),
                 )
@@ -391,7 +621,8 @@ class _NewsDetailState extends State<NewsDetail> {
       childCount: _relatedNewsData.newsItemModels?.length,
       (context, index) {
         final item = _relatedNewsData.newsItemModels?[index];
-        final timeUpload = DateTime.parse(item?.createdOn ?? '');
+        final timeUpload =
+            DateTime.parse(item?.createdOn ?? DateTime.now().toString());
         final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
 
         return Container(
@@ -404,6 +635,7 @@ class _NewsDetailState extends State<NewsDetail> {
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => NewsDetail(
                           newsItems: item ?? NewsItems(),
+                          newsGroup: widget.newsGroup,
                         ))),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,

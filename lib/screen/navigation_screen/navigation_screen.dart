@@ -1,12 +1,22 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:webviewtest/blocs/search_products/search_products_bloc.dart';
+import 'package:webviewtest/blocs/search_products/search_products_event.dart';
+import 'package:webviewtest/blocs/search_products/search_products_state.dart';
 import 'package:webviewtest/common/responsive.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/flash_sale/flash_sale_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/login/login_screen.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
+import 'package:webviewtest/screen/search_products/search_products.dart';
 import 'package:webviewtest/screen/store/store_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
@@ -22,11 +32,11 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
   int _isSelected = 2;
-  bool _showSearch = false;
   String url = '';
-  int a = 0;
-  final TextEditingController _searchController =
-      TextEditingController(text: '0');
+  final TextEditingController _searchController = TextEditingController();
+  List<ProductsModel> _listAllProduct = [];
+  final _delayInput = DelayInput(milliseconds: 1000);
+  bool _showSearch = false;
 
   final pages = [
     const FlashSaleScreen(),
@@ -44,6 +54,22 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<SearchProductsBloc, SearchProductsState>(
+        builder: (context, state) => _buildNavigationUI(),
+        listener: (context, state) {
+          if (state is SearchProductsLoading) {
+          } else if (state is SearchProductsLoaded) {
+            setState(() {
+              _listAllProduct = state.catalogProductsModel.products ?? [];
+            });
+          } else if (state is SearchProductsLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+        });
+  }
+
+  // buildNavigation
+  Widget _buildNavigationUI() {
     return Scaffold(
       key: _key,
       drawer: _buildDrawer(),
@@ -59,9 +85,31 @@ class _NavigationScreenState extends State<NavigationScreen> {
                   _buildBottomBar(),
                 ],
               ),
-              if (_showSearch == true) _buildSearchUI(context),
+              if (_showSearch) _buildSearchUI(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // build search UI
+  Widget _buildSearchUI() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _showSearch = false;
+          _searchController.clear();
+          _listAllProduct.clear();
+        });
+      },
+      child: Container(
+        color: Colors.black.withOpacity(0.6),
+        child: Column(
+          children: [
+            _buildSearchBar(),
+            Expanded(child: _buildSearchResult()),
+          ],
         ),
       ),
     );
@@ -105,35 +153,19 @@ class _NavigationScreenState extends State<NavigationScreen> {
     );
   }
 
-  // build search UI
-  Widget _buildSearchUI(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _showSearch = false;
-        });
-      },
-      child: Container(
-        color: Colors.black.withOpacity(0.5),
-        child: CustomScrollView(
-          slivers: [
-            _buildSearchBar(),
-            _buildSearchResult(),
-          ],
-        ),
-      ),
-    );
-  }
-
   // build search bar
   Widget _buildSearchBar() {
-    return SliverToBoxAdapter(
+    return GestureDetector(
+      onTap: () => setState(() {
+        _showSearch = false;
+        _searchController.clear();
+        _listAllProduct.clear();
+      }),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         color: const Color(0xff515154),
         child: TextField(
           controller: _searchController,
-          keyboardType: TextInputType.number,
           decoration: InputDecoration(
             fillColor: Colors.white,
             filled: true,
@@ -149,15 +181,34 @@ class _NavigationScreenState extends State<NavigationScreen> {
               onTap: () {
                 setState(() {
                   _showSearch = false;
+                  _searchController.clear();
+                  _listAllProduct.clear();
                 });
               },
               child: const Icon(Icons.close_rounded),
             ),
           ),
           onChanged: (value) {
-            setState(() {
-              a = int.parse(value);
+            _delayInput.run(() {
+              if (value.length >= 3) {
+                setState(() {
+                  BlocProvider.of<SearchProductsBloc>(context).add(
+                    RequestGetSearchProductResult(1, value),
+                  );
+                });
+              }
             });
+          },
+          onSubmitted: (value) {
+            _showSearch = false;
+            _searchController.clear();
+            if (value.length >= 3) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => SearchProductsScreen(keySearch: value),
+                ),
+              );
+            }
           },
         ),
       ),
@@ -166,32 +217,85 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   // build search result
   Widget _buildSearchResult() {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          childCount: a,
-          (context, index) {
-            return Container(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: index == a - 1
-                    ? null
-                    : const Border(
-                        bottom: BorderSide(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
+    return GestureDetector(
+      onTap: () => setState(() {
+        _showSearch = false;
+        _searchController.clear();
+        _listAllProduct.clear();
+      }),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: ListView.builder(
+          itemCount: _listAllProduct.length,
+          itemBuilder: (context, index) {
+            final item = _listAllProduct[index];
+
+            return GestureDetector(
+              onTap: () {
+                if (index == 7) {
+                  _showSearch = false;
+                  _searchController.clear();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => SearchProductsScreen(
+                          keySearch: _searchController.text),
+                    ),
+                  );
+                } else {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ShopDunkWebView(
+                        url: item.seName,
                       ),
-                borderRadius: index == a - 1
-                    ? const BorderRadius.only(
-                        bottomRight: Radius.circular(8),
-                        bottomLeft: Radius.circular(8),
+                    ),
+                  );
+                }
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: index == _listAllProduct.length - 1
+                      ? null
+                      : const Border(
+                          bottom: BorderSide(
+                            color: Colors.grey,
+                            width: 1,
+                          ),
+                        ),
+                  borderRadius: index == _listAllProduct.length - 1
+                      ? const BorderRadius.only(
+                          bottomRight: Radius.circular(8),
+                          bottomLeft: Radius.circular(8),
+                        )
+                      : null,
+                ),
+                child: index == 7
+                    ? Text(
+                        'Xem tất cả kết quả...',
+                        style: CommonStyles.size15W400Grey86(context),
                       )
-                    : null,
+                    : Row(
+                        children: [
+                          Image.network(
+                            item.defaultPictureModel!.imageUrl.toString(),
+                            height: 30,
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: Text(
+                              item.name ?? '',
+                              style: CommonStyles.size15W400Grey86(context),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          ),
+                        ],
+                      ),
               ),
-              child: Text(index.toString()),
             );
           },
         ),
@@ -293,8 +397,8 @@ class _NavigationScreenState extends State<NavigationScreen> {
                           _isSelected == item.id
                               ? item.img.toString()
                               : item.imgUnselect.toString(),
-                          width: 30,
-                          height: 30,
+                          width: 25,
+                          height: 25,
                         ),
                         const SizedBox(
                           height: 5,
@@ -341,4 +445,19 @@ class SlideRightRoute extends PageRouteBuilder {
             );
           },
         );
+}
+
+class DelayInput {
+  final int milliseconds;
+  VoidCallback? action;
+  Timer? timer;
+
+  DelayInput({required this.milliseconds, this.action, this.timer, Key? key});
+
+  run(VoidCallback action) {
+    if (timer != null) {
+      timer?.cancel();
+    }
+    timer = Timer(Duration(milliseconds: milliseconds), action);
+  }
 }

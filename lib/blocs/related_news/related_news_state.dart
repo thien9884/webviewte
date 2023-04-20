@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 
 abstract class RelatedNewsState extends Equatable {
@@ -34,6 +35,29 @@ class RelatedNewsLoadError extends RelatedNewsState {
   final String message;
 
   const RelatedNewsLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// GET CATEGORIES STATES
+class NewsCommentsLoading extends RelatedNewsState {
+  const NewsCommentsLoading();
+}
+
+class NewsCommentsLoaded extends RelatedNewsState {
+  final NewsCommentResponseModel newsCommentResponseModel;
+
+  const NewsCommentsLoaded({required this.newsCommentResponseModel});
+
+  @override
+  List<Object?> get props => [newsCommentResponseModel];
+}
+
+class NewsCommentsLoadError extends RelatedNewsState {
+  final String message;
+
+  const NewsCommentsLoadError({required this.message});
 
   @override
   List<Object?> get props => [message];

@@ -65,7 +65,7 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
 
   @override
   void initState() {
-    _getCategories();
+    // _getCategories();
     // startTimer();
     super.initState();
   }
@@ -119,7 +119,18 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
         slivers: [
           // _bannerSale(),
           _tittleFlashSale(),
-          _listFlashSale(_listIphone),
+          // _listFlashSale(_listIphone),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: 300,
+              child: Center(
+                child: Text(
+                  'Hiện chưa có sản phẩm',
+                  style: CommonStyles.size14W400Black1D(context),
+                ),
+              ),
+            ),
+          ),
           _receiveInfo(),
           SliverList(
               delegate: SliverChildBuilderDelegate(

@@ -12,6 +12,7 @@ import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/news/news_detail.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key}) : super(key: key);
@@ -24,8 +25,10 @@ class _NewsScreenState extends State<NewsScreen> {
   int _indexSelected = 0;
   List<NewsGroup> _newsGroup = [];
   List<LatestNews> _latestNews = [];
+  List vd = ['fc28Zn8p0wE', 'iLnmTe5Q2Qw', 'KtQKoWrLBLs'];
 
   final TextEditingController _emailController = TextEditingController();
+  late YoutubePlayerController controller;
 
   // Sync data
   _getNews() async {
@@ -47,6 +50,7 @@ class _NewsScreenState extends State<NewsScreen> {
           } else if (state is NewsLoaded) {
             _newsGroup = state.newsData.newsGroup ?? [];
             _latestNews = state.newsData.latestNews ?? [];
+            _latestNews.removeRange(4, _latestNews.lastIndexOf(_latestNews.last));
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is NewsLoadError) {
             if (EasyLoading.isShow) EasyLoading.dismiss();
@@ -65,6 +69,7 @@ class _NewsScreenState extends State<NewsScreen> {
           _pageView(),
           _newsScrollBar(),
           _customListNews(),
+          _newsVideo(),
           _receiveInfo(),
           SliverList(
               delegate: SliverChildBuilderDelegate(
@@ -93,11 +98,15 @@ class _NewsScreenState extends State<NewsScreen> {
                 final item = _latestNews[index];
 
                 return GestureDetector(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
                       builder: (context) => NewsDetail(
-                            newsItems: NewsItems(),
-                            latestNews: item,
-                          ))),
+                        newsGroup: _newsGroup[index],
+                        newsItems: NewsItems(),
+                        latestNews: item,
+                      ),
+                    ),
+                  ),
                   child: Container(
                     decoration: BoxDecoration(
                       image: DecorationImage(
@@ -111,15 +120,16 @@ class _NewsScreenState extends State<NewsScreen> {
                       alignment: Alignment.bottomCenter,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                        colors: [
-                          Colors.black,
-                          Colors.transparent,
-                        ],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        tileMode: TileMode.clamp,
-                      )),
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black,
+                            Colors.transparent,
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          tileMode: TileMode.clamp,
+                        ),
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -142,31 +152,32 @@ class _NewsScreenState extends State<NewsScreen> {
               },
             ),
             Positioned(
-                bottom: 20,
-                width: MediaQuery.of(context).size.width,
+              bottom: 20,
+              width: MediaQuery.of(context).size.width,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                          _latestNews.length,
-                          (index) => Container(
-                                height: Responsive.isMobile(context) ? 10 : 15,
-                                width: Responsive.isMobile(context) ? 10 : 15,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                decoration: BoxDecoration(
-                                    color: _indexSelected == index
-                                        ? Colors.white
-                                        : const Color(0xff515154)
-                                            .withOpacity(0.5),
-                                    shape: BoxShape.circle),
-                              )),
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                        5,
+                        (index) => Container(
+                              height: Responsive.isMobile(context) ? 10 : 15,
+                              width: Responsive.isMobile(context) ? 10 : 15,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                  color: _indexSelected == index
+                                      ? Colors.white
+                                      : const Color(0xff515154)
+                                          .withOpacity(0.5),
+                                  shape: BoxShape.circle),
+                            )),
                   ),
-                )),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -206,7 +217,7 @@ class _NewsScreenState extends State<NewsScreen> {
                     Text(
                       news.name ?? '',
                       style: CommonStyles.size15W400Grey51(context),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -229,84 +240,86 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   // list news
-  Widget _listNews({required List<NewsItems> listNews}) {
+  Widget _listNews({required NewsGroup newsGroup}) {
     return SliverList(
-        delegate: SliverChildBuilderDelegate(
-      childCount: 3,
-      (context, index) {
-        final item = listNews[index];
-        final timeUpload = DateTime.parse(item.createdOn ?? '');
-        final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
+      delegate: SliverChildBuilderDelegate(
+        childCount: 3,
+        (context, index) {
+          final item = newsGroup.newsItems![index];
+          final timeUpload = DateTime.parse(item.createdOn ?? '');
+          final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
 
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: const BoxDecoration(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => NewsDetail(
-                          newsItems: item,
-                        ))),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        item.pictureModel?.fullSizeImageUrl ?? '',
-                        width: 140,
-                        height: 140,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, value, stackTree) {
-                          return const SizedBox(
-                            width: 140,
-                            height: 140,
-                          );
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 20, top: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.title ?? '',
-                              style: CommonStyles.size18W700Black1D(context)
-                                  .copyWith(height: 1.5),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Text(
-                              timeFormat,
-                              style: CommonStyles.size13W400Grey86(context),
-                            ),
-                          ],
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: const BoxDecoration(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => NewsDetail(
+                            newsItems: item,
+                            newsGroup: newsGroup,
+                          ))),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          item.pictureModel?.fullSizeImageUrl ?? '',
+                          width: 140,
+                          height: 140,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, value, stackTree) {
+                            return const SizedBox(
+                              width: 140,
+                              height: 140,
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ],
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20, top: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.title ?? '',
+                                style: CommonStyles.size18W700Black1D(context)
+                                    .copyWith(height: 1.5),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                timeFormat,
+                                style: CommonStyles.size13W400Grey86(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 40),
-                child: Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Color(0xff777777),
+                const Padding(
+                  padding: EdgeInsets.only(top: 40),
+                  child: Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Color(0xff777777),
+                  ),
                 ),
-              )
-            ],
-          ),
-        );
-      },
-    ));
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   // all news
@@ -314,10 +327,13 @@ class _NewsScreenState extends State<NewsScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: GestureDetector(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
             builder: (context) => NewsCategory(
-                  newsGroup: newsGroup,
-                ))),
+              newsGroup: newsGroup,
+            ),
+          ),
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -335,6 +351,29 @@ class _NewsScreenState extends State<NewsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // news video
+  Widget _newsVideo() {
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        childCount: vd.length,
+        (context, index) {
+          controller = YoutubePlayerController(
+            initialVideoId: vd[index],
+            flags: const YoutubePlayerFlags(
+              isLive: false,
+              autoPlay: false,
+            ),
+          );
+
+          return YoutubePlayer(
+            controller: controller,
+            liveUIColor: Colors.redAccent,
+          );
+        },
       ),
     );
   }
@@ -365,28 +404,30 @@ class _NewsScreenState extends State<NewsScreen> {
               child: TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    hintText: 'Email của bạn',
-                    contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    suffixIcon: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      decoration: BoxDecoration(
-                          color: const Color(0xff0066CC),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Đăng ký',
-                            style: CommonStyles.size12W400White(context),
-                          ),
-                        ],
-                      ),
+                  fillColor: Colors.white,
+                  filled: true,
+                  hintText: 'Email của bạn',
+                  contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                  suffixIcon: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    decoration: BoxDecoration(
+                        color: const Color(0xff0066CC),
+                        borderRadius: BorderRadius.circular(30)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Đăng ký',
+                          style: CommonStyles.size12W400White(context),
+                        ),
+                      ],
                     ),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(30))),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
               ),
             ),
           ],
@@ -398,29 +439,30 @@ class _NewsScreenState extends State<NewsScreen> {
   // list news
   Widget _customListNews() {
     return SliverList(
-        delegate: SliverChildBuilderDelegate(
-      (context, index) {
-        final newsGroup = _newsGroup[index];
-        return Column(
-          children: [
-            _tittle(
-              content: newsGroup.name ?? '',
-            ),
-            CustomScrollView(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              slivers: [
-                _listNews(listNews: newsGroup.newsItems ?? []),
-              ],
-            ),
-            _allNews(
-              content: newsGroup.name ?? '',
-              newsGroup: newsGroup,
-            ),
-          ],
-        );
-      },
-      childCount: _newsGroup.length,
-    ));
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          final newsGroup = _newsGroup[index];
+          return Column(
+            children: [
+              _tittle(
+                content: newsGroup.name ?? '',
+              ),
+              CustomScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                slivers: [
+                  _listNews(newsGroup: newsGroup),
+                ],
+              ),
+              _allNews(
+                content: newsGroup.name ?? '',
+                newsGroup: newsGroup,
+              ),
+            ],
+          );
+        },
+        childCount: _newsGroup.length,
+      ),
+    );
   }
 }
