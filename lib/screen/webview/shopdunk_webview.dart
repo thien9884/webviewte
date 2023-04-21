@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 // ignore_for_file: public_member_api_docs
-
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -15,9 +12,7 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 // Import for iOS features.
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
-import 'package:webviewtest/constant/list_constant.dart';
-import 'package:webviewtest/constant/text_style_constant.dart';
-import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
+import 'package:webviewtest/common/common_navigate_bar.dart';
 // #enddocregion platform_imports
 
 const String kNavigationExamplePage = '''
@@ -84,7 +79,7 @@ class ShopDunkWebView extends StatefulWidget {
   const ShopDunkWebView({
     this.baseUrl,
     this.url,
-    this.index = 2,
+    this.index = 1,
     this.hideBottom = true,
     super.key,
   });
@@ -157,8 +152,8 @@ Page resource error:
           );
         },
       )
-      ..loadRequest(Uri.parse(
-          (widget.baseUrl ?? 'https://shopdunk.com/') + (widget.url ?? '')));
+      ..loadRequest(Uri.parse((widget.baseUrl ?? 'https://api.shopdunk.com/') +
+          (widget.url ?? '')));
 
     // #docregion platform_features
     if (controller.platform is AndroidWebViewController) {
@@ -173,101 +168,9 @@ Page resource error:
 
   @override
   Widget build(BuildContext context) {
-    if (!Platform.isIOS) {
-      return WillPopScope(
-        onWillPop: () async {
-          if (await _controller.canGoBack()) {
-            await _controller.goBack();
-            return false;
-          } else {
-            return true;
-          }
-        },
-        child: _buildUI(),
-      );
-    } else {
-      return GestureDetector(
-        onHorizontalDragUpdate: (detail) async {
-          if (await _controller.canGoBack()) {
-            await _controller.goBack();
-          } else {
-            if (!mounted) return;
-            if (detail.delta.dx > 0) {
-              Navigator.pop(context);
-            }
-          }
-        },
-        child: WillPopScope(
-          onWillPop: () async => false,
-          child: _buildUI(),
-        ),
-      );
-    }
-  }
-
-  Widget _buildUI() {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-          child: Column(
-        children: [
-          Expanded(child: WebViewWidget(controller: _controller)),
-          Visibility(visible: widget.hideBottom, child: _buildBottomBar()),
-        ],
-      )),
-    );
-  }
-
-  Widget _buildBottomBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            blurRadius: 25,
-            offset: const Offset(0, -20),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(ListCustom.listBottomBar.length, (index) {
-          final item = ListCustom.listBottomBar[index];
-          return GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => NavigationScreen(
-                  isSelected: item.id,
-                ),
-              ),
-            ),
-            child: Column(
-              children: [
-                Image.asset(
-                  widget.index == item.id
-                      ? item.img.toString()
-                      : item.imgUnselect.toString(),
-                  height: 30,
-                  width: 30,
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  item.name,
-                  style: widget.index == item.id
-                      ? CommonStyles.size12W400Grey86(context)
-                          .copyWith(color: const Color(0xff0066CC))
-                      : CommonStyles.size12W400Grey86(context),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
+    return CommonNavigateBar(
+        index: 1,
+        showAppBar: false,
+        child: WebViewWidget(controller: _controller));
   }
 }

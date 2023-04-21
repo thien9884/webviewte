@@ -52,6 +52,7 @@ class _NewsScreenState extends State<NewsScreen> {
             _latestNews = state.newsData.latestNews ?? [];
             _latestNews.removeRange(4, _latestNews.lastIndexOf(_latestNews.last));
             if (EasyLoading.isShow) EasyLoading.dismiss();
+
           } else if (state is NewsLoadError) {
             if (EasyLoading.isShow) EasyLoading.dismiss();
 
@@ -62,21 +63,24 @@ class _NewsScreenState extends State<NewsScreen> {
 
   // build UI
   Widget _buildNewsUI() {
-    return Container(
-      color: const Color(0xfff5f5f7),
-      child: CustomScrollView(
-        slivers: [
-          _pageView(),
-          _newsScrollBar(),
-          _customListNews(),
-          _newsVideo(),
-          _receiveInfo(),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  childCount: 1, (context, index) => const CommonFooter())),
-        ],
-      ),
-    );
+    return _newsGroup.isEmpty && _latestNews.isEmpty
+        ? Container()
+        : Container(
+            color: const Color(0xfff5f5f7),
+            child: CustomScrollView(
+              slivers: [
+                _pageView(),
+                _newsScrollBar(),
+                _customListNews(),
+                // _newsVideo(),
+                _receiveInfo(),
+                SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                        childCount: 1,
+                        (context, index) => const CommonFooter())),
+              ],
+            ),
+          );
   }
 
   // page view
@@ -102,7 +106,6 @@ class _NewsScreenState extends State<NewsScreen> {
                     MaterialPageRoute(
                       builder: (context) => NewsDetail(
                         newsGroup: _newsGroup[index],
-                        newsItems: NewsItems(),
                         latestNews: item,
                       ),
                     ),
@@ -113,7 +116,7 @@ class _NewsScreenState extends State<NewsScreen> {
                         image: NetworkImage(
                           item.pictureModel?.fullSizeImageUrl ?? '',
                         ),
-                        fit: BoxFit.fill,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     child: Container(
@@ -199,6 +202,7 @@ class _NewsScreenState extends State<NewsScreen> {
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => NewsCategory(
                         newsGroup: news,
+                        index: 0,
                       ))),
               child: Container(
                 decoration: BoxDecoration(
@@ -331,6 +335,7 @@ class _NewsScreenState extends State<NewsScreen> {
           MaterialPageRoute(
             builder: (context) => NewsCategory(
               newsGroup: newsGroup,
+              index: 0,
             ),
           ),
         ),

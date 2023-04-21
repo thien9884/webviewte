@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:webviewtest/model/category/category_model.dart';
+import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 
 abstract class CategoriesState extends Equatable {
@@ -15,6 +16,27 @@ class CategoriesInitial extends CategoriesState {
 
   @override
   List<Object?> get props => [];
+}
+
+// GET CATEGORIES STATES
+class NewsLoading extends CategoriesState {
+  const NewsLoading();
+}
+
+class NewsLoaded extends CategoriesState {
+  final NewsData newsData;
+  const NewsLoaded({required this.newsData});
+
+  @override
+  List<Object?> get props => [newsData];
+}
+
+class NewsLoadError extends CategoriesState {
+  final String message;
+  const NewsLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
 }
 
 // GET CATEGORIES STATES

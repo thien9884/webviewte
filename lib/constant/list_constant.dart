@@ -57,28 +57,28 @@ class ListCustom {
   ];
 
   static List<Resource> listBottomBar = [
+    // Resource(
+    //     id: 0,
+    //     name: 'Flash sale',
+    //     img: 'assets/icons/ic_flash_sale_sel.png',
+    //     imgUnselect: 'assets/icons/ic_flash_sale_uns.png'),
     Resource(
         id: 0,
-        name: 'Flash sale',
-        img: 'assets/icons/ic_flash_sale_sel.png',
-        imgUnselect: 'assets/icons/ic_flash_sale_uns.png'),
-    Resource(
-        id: 1,
         name: 'News',
         img: 'assets/icons/ic_news_sel.png',
         imgUnselect: 'assets/icons/ic_news_uns.png'),
     Resource(
-        id: 2,
+        id: 1,
         name: 'Home',
         img: 'assets/icons/ic_home_sel.png',
         imgUnselect: 'assets/icons/ic_home_uns.png'),
+    // Resource(
+    //     id: 3,
+    //     name: 'Account',
+    //     img: 'assets/icons/ic_user_sel.png',
+    //     imgUnselect: 'assets/icons/ic_user_uns.png'),
     Resource(
-        id: 3,
-        name: 'Account',
-        img: 'assets/icons/ic_user_sel.png',
-        imgUnselect: 'assets/icons/ic_user_uns.png'),
-    Resource(
-        id: 4,
+        id: 2,
         name: 'Store',
         img: 'assets/icons/ic_shop_sel.png',
         imgUnselect: 'assets/icons/ic_shop_uns.png'),

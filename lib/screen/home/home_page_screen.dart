@@ -12,9 +12,10 @@ import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category/category_model.dart';
+import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
-import 'package:webviewtest/model/web_view_model.dart';
 import 'package:webviewtest/screen/category/category_screen.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class HomePageScreen extends StatefulWidget {
@@ -31,13 +32,19 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Timer? _timer;
   int _currentIndex = 0;
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
+  List<LatestNews> _latestNews = [];
 
   // Categories
   List<Categories> _listCategories = [];
 
   // Sync data
   _getCategories() async {
+    EasyLoading.show();
     BlocProvider.of<CategoriesBloc>(context).add(const RequestGetCategories());
+  }
+
+  _getNews() async {
+    BlocProvider.of<CategoriesBloc>(context).add(const RequestGetNews());
   }
 
   _getListIpad() async {
@@ -89,6 +96,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
     await _getListWatch();
     await _getListSound();
     await _getListAccessories();
+    await _getNews();
+    if (EasyLoading.isShow) EasyLoading.dismiss();
   }
 
   // _autoSlidePage() {
@@ -123,107 +132,82 @@ class _HomePageScreenState extends State<HomePageScreen> {
         builder: (context, state) => _buildHomeUI(context),
         listener: (context, state) {
           if (state is CategoriesLoading) {
-            EasyLoading.show();
           } else if (state is CategoriesLoaded) {
             _listCategories = state.categories
                 .where((element) => element.showOnHomePage == true)
                 .toList();
             _getListProduct();
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
           } else if (state is CategoriesLoadError) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
             AlertUtils.displayErrorAlert(context, state.message);
           }
 
           if (state is IpadLoading) {
-            EasyLoading.show();
           } else if (state is IpadLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'ipad');
 
             _listCategories[index].listProduct = state.ipad;
           } else if (state is IpadLoadError) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
             AlertUtils.displayErrorAlert(context, state.message);
           }
 
           if (state is IphoneLoading) {
-            EasyLoading.show();
           } else if (state is IphoneLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'iphone');
 
             _listCategories[index].listProduct = state.iphone;
           } else if (state is IphoneLoadError) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
             AlertUtils.displayErrorAlert(context, state.message);
           }
 
           if (state is MacLoading) {
-            EasyLoading.show();
           } else if (state is MacLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'mac');
 
             _listCategories[index].listProduct = state.mac;
           } else if (state is MacLoadError) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
             AlertUtils.displayErrorAlert(context, state.message);
           }
 
           if (state is AppleWatchLoading) {
-            EasyLoading.show();
           } else if (state is AppleWatchLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'apple-watch');
 
             _listCategories[index].listProduct = state.watch;
           } else if (state is AppleWatchLoadError) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
             AlertUtils.displayErrorAlert(context, state.message);
           }
 
           if (state is SoundLoading) {
-            EasyLoading.show();
           } else if (state is SoundLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'am-thanh');
 
             _listCategories[index].listProduct = state.sound;
           } else if (state is SoundLoadError) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
             AlertUtils.displayErrorAlert(context, state.message);
           }
 
           if (state is AccessoriesLoading) {
-            EasyLoading.show();
           } else if (state is AccessoriesLoaded) {
             int index = _listCategories
                 .indexWhere((element) => element.seName == 'phu-kien');
 
             _listCategories[index].listProduct = state.accessories;
-
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
           } else if (state is AccessoriesLoadError) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+
+          if (state is NewsLoading) {
+          } else if (state is NewsLoaded) {
+            _latestNews = state.newsData.latestNews ?? [];
+            _latestNews.removeRange(
+                2, _latestNews.lastIndexOf(_latestNews.last));
+            print(_latestNews);
+          } else if (state is NewsLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
           }
         });
@@ -231,49 +215,54 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   // home UI
   Widget _buildHomeUI(BuildContext context) {
-    return Container(
-      color: const Color(0xffF5F5F7),
-      child: Stack(
-        children: [
-          CustomScrollView(
-            slivers: <Widget>[
-              // _topPageView(),
-              // _topListDeal(),
-              _buildCategoriesUI(),
-              SliverToBoxAdapter(
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const ShopDunkWebView(
-                            baseUrl: 'https://doanhnghiep.shopdunk.com/',
-                          ))),
-                  child: Image.asset(
-                    'assets/images/banner_doanh_nghiep.png',
-                    scale: 0.5,
-                  ),
-                ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.only(top: 35, bottom: 15),
-                sliver: SliverToBoxAdapter(
-                  child: Center(
-                    child: Text(
-                      'Tin Tức',
-                      style: CommonStyles.size24W700Black1D(context),
+    return EasyLoading.isShow
+        ? Container()
+        : Container(
+            color: const Color(0xffF5F5F7),
+            child: Stack(
+              children: [
+                CustomScrollView(
+                  slivers: <Widget>[
+                    // _topPageView(),
+                    // _topListDeal(),
+                    _buildCategoriesUI(),
+                    SliverToBoxAdapter(
+                      child: GestureDetector(
+                        onTap: () =>
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const ShopDunkWebView(
+                                      baseUrl:
+                                          'https://doanhnghiep.shopdunk.com/',
+                                    ))),
+                        child: Image.asset(
+                          'assets/images/banner_doanh_nghiep.png',
+                          scale: 0.5,
+                        ),
+                      ),
                     ),
-                  ),
+                    SliverPadding(
+                      padding: const EdgeInsets.only(top: 35, bottom: 15),
+                      sliver: SliverToBoxAdapter(
+                        child: Center(
+                          child: Text(
+                            'Tin Tức',
+                            style: CommonStyles.size24W700Black1D(context),
+                          ),
+                        ),
+                      ),
+                    ),
+                    _listNews(),
+                    _allNews(),
+                    _receiveInfo(),
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                            childCount: 1,
+                            (context, index) => const CommonFooter())),
+                  ],
                 ),
-              ),
-              _listNews(),
-              _allNews(),
-              _receiveInfo(),
-              SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                      childCount: 1, (context, index) => const CommonFooter())),
-            ],
-          ),
-        ],
-      ),
-    );
+              ],
+            ),
+          );
   }
 
   // page view deal
@@ -427,94 +416,89 @@ class _HomePageScreenState extends State<HomePageScreen> {
           childCount: listProduct.length,
           (context, index) {
             var item = listProduct[index];
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Material(
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(4),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ShopDunkWebView(
-                            url: item.seName,
-                          ))),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        alignment: Alignment.centerRight,
-                        margin: EdgeInsets.only(
-                            top: Responsive.isMobile(context) ? 5 : 10,
-                            right: Responsive.isMobile(context) ? 5 : 10),
-                        child: Image.asset(
-                          'assets/images/tet_2023.png',
-                          scale: Responsive.isMobile(context) ? 10 : 6,
-                        ),
+            return GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => ShopDunkWebView(
+                        url: item.seName,
+                      ))),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      alignment: Alignment.centerRight,
+                      margin: EdgeInsets.only(
+                          top: Responsive.isMobile(context) ? 5 : 10,
+                          right: Responsive.isMobile(context) ? 5 : 10),
+                      child: Image.asset(
+                        'assets/images/tet_2023.png',
+                        scale: Responsive.isMobile(context) ? 10 : 6,
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                            vertical: Responsive.isMobile(context) ? 10 : 20),
-                        child: Image.network(
-                            item.defaultPictureModel?.imageUrl ?? ''),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                child: Text(
-                                  item.name ?? '',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style:
-                                      CommonStyles.size14W700Black1D(context),
-                                ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: Responsive.isMobile(context) ? 10 : 20),
+                      child: Image.network(
+                          item.defaultPictureModel?.imageUrl ?? ''),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: Text(
+                                item.name ?? '',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: CommonStyles.size14W700Black1D(context),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        priceFormat.format(
-                                            item.productPrice?.priceValue ?? 0),
-                                        style: CommonStyles.size16W700Blue00(
-                                            context),
-                                      ),
-                                      Text(
-                                        '₫',
-                                        style: CommonStyles.size12W400Blue00(
-                                            context),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                    style:
-                                        CommonStyles.size12W400Grey66(context)
-                                            .copyWith(
-                                                decoration:
-                                                    TextDecoration.lineThrough),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      priceFormat.format(
+                                          item.productPrice?.priceValue ?? 0),
+                                      style: CommonStyles.size16W700Blue00(
+                                          context),
+                                    ),
+                                    Text(
+                                      '₫',
+                                      style: CommonStyles.size12W400Blue00(
+                                          context),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
+                                  style: CommonStyles.size12W400Grey66(context)
+                                      .copyWith(
+                                          decoration:
+                                              TextDecoration.lineThrough),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
                 ),
               ),
             );
@@ -522,8 +506,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
         ),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
-          mainAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
-          crossAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
+          mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
+          crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           childAspectRatio: 0.53,
         ),
       ),
@@ -594,56 +578,63 @@ class _HomePageScreenState extends State<HomePageScreen> {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       sliver: SliverList(
-          delegate: SliverChildBuilderDelegate(
-              childCount: 3,
-              (context, index) => ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/images/news_sale.jpeg'),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 30,
-                              horizontal: 20,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Airpods Pro 2 thay đổi nhỏ ngoại hình, cải tiến lớn tính năng',
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style:
-                                        CommonStyles.size16W700Grey33(context),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 20, left: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '14/12/2022',
-                                  style: CommonStyles.size13W400Grey86(context),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
+          delegate: SliverChildBuilderDelegate(childCount: _latestNews.length,
+              (context, index) {
+        final item = _latestNews[index];
+        final timeUpload = DateTime.parse(item.createdOn ?? '');
+        final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
+
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(8)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.network(
+                  item.pictureModel?.fullSizeImageUrl ?? '',
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 30,
+                    horizontal: 20,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.title ?? '',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: CommonStyles.size16W700Grey33(context),
+                        ),
                       ),
-                    ),
-                  ))),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20, left: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        timeFormat,
+                        style: CommonStyles.size13W400Grey86(context),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      })),
     );
   }
 
@@ -709,8 +700,13 @@ class _HomePageScreenState extends State<HomePageScreen> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       sliver: SliverToBoxAdapter(
         child: GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/web',
-              arguments: WebViewModel(url: 'https://shopdunk.com/iphone')),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const NavigationScreen(
+                isSelected: 0,
+              ),
+            ),
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

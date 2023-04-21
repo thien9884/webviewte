@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -11,29 +10,35 @@ import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/search_products/search_products.dart';
 import 'package:webviewtest/screen/store/store_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
-class NavigationScreen extends StatefulWidget {
-  final int isSelected;
+class CommonNavigateBar extends StatefulWidget {
+  final Widget child;
+  final int index;
+  final bool showAppBar;
 
-  const NavigationScreen({this.isSelected = 1, Key? key}) : super(key: key);
+  const CommonNavigateBar({
+    required this.child,
+    this.index = 1,
+    this.showAppBar = true,
+    Key? key,
+  }) : super(key: key);
 
   @override
-  State<NavigationScreen> createState() => _NavigationScreenState();
+  State<CommonNavigateBar> createState() => _CommonNavigateBarState();
 }
 
-class _NavigationScreenState extends State<NavigationScreen>
+class _CommonNavigateBarState extends State<CommonNavigateBar>
     with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
-  int _isSelected = 1;
-  String url = '';
+  bool _showSearch = false;
   final TextEditingController _searchController = TextEditingController();
   List<ProductsModel> _listAllProduct = [];
   final _delayInput = DelayInput(milliseconds: 1000);
-  bool _showSearch = false;
   bool _showDrawer = false;
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 500),
@@ -46,7 +51,6 @@ class _NavigationScreenState extends State<NavigationScreen>
     curve: Curves.linear,
     reverseCurve: Curves.linear,
   );
-
   final pages = [
     // const FlashSaleScreen(),
     const NewsScreen(),
@@ -56,15 +60,15 @@ class _NavigationScreenState extends State<NavigationScreen>
   ];
 
   @override
-  void initState() {
-    _isSelected = widget.isSelected;
-    super.initState();
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SearchProductsBloc, SearchProductsState>(
-        builder: (context, state) => _buildNavigationUI(),
+        builder: (context, state) => _commonNavigatorUI(),
         listener: (context, state) {
           if (state is SearchProductsLoading) {
           } else if (state is SearchProductsLoaded) {
@@ -77,27 +81,26 @@ class _NavigationScreenState extends State<NavigationScreen>
         });
   }
 
-  // buildNavigation
-  Widget _buildNavigationUI() {
+  // common navigator ui
+  Widget _commonNavigatorUI() {
     return Scaffold(
       key: _key,
-      drawer: _buildDrawer(),
+      backgroundColor: const Color(0xffF5F5F7),
       body: WillPopScope(
-        onWillPop: () async => false,
+        onWillPop: () async => true,
         child: SafeArea(
           child: Stack(
             children: [
               Column(
                 children: [
-                  _buildAppbar(),
+                  if (widget.showAppBar) _buildAppbar(),
                   Expanded(
-                    child: Stack(
-                      children: [
-                        pages[_isSelected],
-                        _buildDrawerUI(),
-                      ],
-                    ),
-                  ),
+                      child: Stack(
+                    children: [
+                      widget.child,
+                      _buildDrawerUI(),
+                    ],
+                  )),
                   _buildBottomBar(),
                 ],
               ),
@@ -109,6 +112,7 @@ class _NavigationScreenState extends State<NavigationScreen>
     );
   }
 
+  // build drawer UI
   Widget _buildDrawerUI() {
     return SizeTransition(
       sizeFactor: _animation,
@@ -125,28 +129,6 @@ class _NavigationScreenState extends State<NavigationScreen>
               blurRadius: 15,
               offset: const Offset(0, 20),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // build search UI
-  Widget _buildSearchUI() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _showSearch = false;
-          _searchController.clear();
-          _listAllProduct.clear();
-        });
-      },
-      child: Container(
-        color: Colors.black.withOpacity(0.6),
-        child: Column(
-          children: [
-            _buildSearchBar(),
-            Expanded(child: _buildSearchResult()),
           ],
         ),
       ),
@@ -179,7 +161,13 @@ class _NavigationScreenState extends State<NavigationScreen>
             ),
           ),
           GestureDetector(
-            onTap: () => setState(() => _isSelected = 1),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const NavigationScreen(
+                  isSelected: 1,
+                ),
+              ),
+            ),
             child: Image.asset(
               'assets/icons/ic_sd_white.png',
               scale: Responsive.isMobile(context) ? 4 : 1.5,
@@ -197,6 +185,28 @@ class _NavigationScreenState extends State<NavigationScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // build search UI
+  Widget _buildSearchUI() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _showSearch = false;
+          _searchController.clear();
+          _listAllProduct.clear();
+        });
+      },
+      child: Container(
+        color: Colors.black.withOpacity(0.6),
+        child: Column(
+          children: [
+            _buildSearchBar(),
+            Expanded(child: _buildSearchResult()),
+          ],
+        ),
       ),
     );
   }
@@ -286,7 +296,8 @@ class _NavigationScreenState extends State<NavigationScreen>
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => SearchProductsScreen(
-                          keySearch: _searchController.text),
+                        keySearch: _searchController.text,
+                      ),
                     ),
                   );
                 } else {
@@ -351,61 +362,6 @@ class _NavigationScreenState extends State<NavigationScreen>
     );
   }
 
-  // drawer
-  Widget _buildDrawer() {
-    return SafeArea(
-      child: Drawer(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.only(top: 80, left: 20, bottom: 40),
-              alignment: Alignment.centerLeft,
-              color: Colors.grey,
-              child: Image.asset('assets/icons/ic_sd_white.png', scale: 4),
-            ),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: ListCustom.listDrawers.length,
-                  itemBuilder: (context, index) {
-                    final item = ListCustom.listDrawers[index];
-                    return GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ShopDunkWebView(
-                            url: item.linkUrl,
-                          ),
-                        ),
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: const BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    width: 1, color: Color(0xffEBEBEB)))),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              item.img.toString(),
-                              scale: 0.8,
-                            ),
-                            Text(
-                              item.name,
-                              style: CommonStyles.size14W400Black1D(context),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
   // bottom bar
   Widget _buildBottomBar() {
     return Container(
@@ -426,13 +382,19 @@ class _NavigationScreenState extends State<NavigationScreen>
 
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () => setState(() => _isSelected = item.id),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => NavigationScreen(
+                  isSelected: item.id,
+                ),
+              ),
+            ),
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.15,
               child: Column(
                 children: [
                   Container(
-                    decoration: _isSelected == item.id
+                    decoration: widget.index == item.id
                         ? BoxDecoration(
                             border: Border.all(color: Colors.blue, width: 2),
                             borderRadius: BorderRadius.circular(8))
@@ -443,7 +405,7 @@ class _NavigationScreenState extends State<NavigationScreen>
                     child: Column(
                       children: [
                         Image.asset(
-                          _isSelected == item.id
+                          widget.index == item.id
                               ? item.img.toString()
                               : item.imgUnselect.toString(),
                           width: 25,
@@ -454,7 +416,7 @@ class _NavigationScreenState extends State<NavigationScreen>
                         ),
                         Text(
                           item.name,
-                          style: _isSelected == item.id
+                          style: widget.index == item.id
                               ? CommonStyles.size12W400Grey86(context)
                                   .copyWith(color: const Color(0xff0066CC))
                               : CommonStyles.size12W400Grey86(context),
@@ -469,44 +431,5 @@ class _NavigationScreenState extends State<NavigationScreen>
         }).toList(),
       ),
     );
-  }
-}
-
-class SlideRightRoute extends PageRouteBuilder {
-  final Widget widget;
-
-  SlideRightRoute({required this.widget})
-      : super(
-          pageBuilder: (BuildContext context, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
-            return widget;
-          },
-          transitionsBuilder: (BuildContext context,
-              Animation<double> animation,
-              Animation<double> secondaryAnimation,
-              Widget child) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1.0, 0.0),
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
-            );
-          },
-        );
-}
-
-class DelayInput {
-  final int milliseconds;
-  VoidCallback? action;
-  Timer? timer;
-
-  DelayInput({required this.milliseconds, this.action, this.timer, Key? key});
-
-  run(VoidCallback action) {
-    if (timer != null) {
-      timer?.cancel();
-    }
-    timer = Timer(Duration(milliseconds: milliseconds), action);
   }
 }

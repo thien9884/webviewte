@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: MainBloc.allBlocs(),
       child: MaterialApp(
+        theme: ThemeData(fontFamily: 'Arial'),
         builder: EasyLoading.init(),
         home: const NavigationScreen(),
         debugShowCheckedModeBanner: false,
@@ -30,11 +31,11 @@ void configLoading() {
   EasyLoading.instance
     ..indicatorColor = Colors.black
     ..backgroundColor = Colors.transparent
-    ..userInteractions = false
+    ..userInteractions = true
     ..loadingStyle = EasyLoadingStyle.custom
     ..textColor = Colors.white
     ..maskType = EasyLoadingMaskType.custom
     ..boxShadow = <BoxShadow>[]
-    ..maskColor = const Color(0xff0E879E).withOpacity(0.15)
+    ..maskColor = Colors.transparent
     ..dismissOnTap = false;
 }

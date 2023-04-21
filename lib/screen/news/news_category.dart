@@ -1,33 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/common/common_footer.dart';
+import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/screen/news/news_detail.dart';
 
 class NewsCategory extends StatelessWidget {
+  final int? index;
   final NewsGroup newsGroup;
 
-  const NewsCategory({required this.newsGroup, Key? key}) : super(key: key);
+  const NewsCategory({required this.newsGroup, this.index, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        color: const Color(0xfff5f5f7),
-        child: CustomScrollView(
-          slivers: [
-            _newsTittleCategory(context, newsGroup.name ?? ''),
-            _listNewsCategory(newsGroup.newsItems ?? []),
-            _receiveInfo(context),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1, (context, index) => const CommonFooter())),
-          ],
-        ),
+    return CommonNavigateBar(
+      index: index ?? -1,
+        child: Container(
+      color: const Color(0xfff5f5f7),
+      child: CustomScrollView(
+        slivers: [
+          _newsTittleCategory(context, newsGroup.name ?? ''),
+          _listNewsCategory(newsGroup.newsItems ?? []),
+          _receiveInfo(context),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  childCount: 1, (context, index) => const CommonFooter())),
+        ],
       ),
-    );
+    ));
   }
 
   // tittle news category
@@ -59,7 +62,7 @@ class NewsCategory extends StatelessWidget {
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => NewsDetail(
                       newsItems: item,
-                  newsGroup: newsGroup,
+                      newsGroup: newsGroup,
                     ))),
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10),

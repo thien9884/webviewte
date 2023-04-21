@@ -7,6 +7,13 @@ abstract class CategoriesEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class RequestGetNews extends CategoriesEvent {
+  const RequestGetNews();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class RequestGetCategories extends CategoriesEvent {
   const RequestGetCategories();
 

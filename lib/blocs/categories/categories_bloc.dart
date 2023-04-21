@@ -2,10 +2,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webviewtest/blocs/base_blocs.dart';
 import 'package:webviewtest/blocs/categories/categories_event.dart';
 import 'package:webviewtest/blocs/categories/categories_state.dart';
+import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/services/api_call.dart';
 
 class CategoriesBloc extends BaseBloc<CategoriesEvent, CategoriesState> {
   CategoriesBloc() : super(const CategoriesInitial()) {
+    // GET NEWS EVENT
+    on<RequestGetNews>((event, emit) => _handleGetNews(event, emit));
+
     // GET CATEGORIES EVENT
     on<RequestGetCategories>(
         (event, emit) => _handleGetCategories(event, emit));
@@ -39,6 +43,22 @@ class CategoriesBloc extends BaseBloc<CategoriesEvent, CategoriesState> {
       int? id = event.idAccessories;
       await _handleGetListAccessories(emit, id);
     });
+  }
+
+  _handleGetNews(RequestGetNews event, Emitter emit) async {
+    emit(const NewsLoading());
+    try {
+      final data = await ApiCall().requestGetNews();
+      emit(
+        NewsLoaded(newsData: data ?? NewsData()),
+      );
+    } catch (e) {
+      emit(
+        NewsLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
   }
 
   // Handle get categories

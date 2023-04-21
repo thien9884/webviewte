@@ -8,6 +8,7 @@ import 'package:webviewtest/blocs/related_news/related_news_bloc.dart';
 import 'package:webviewtest/blocs/related_news/related_news_event.dart';
 import 'package:webviewtest/blocs/related_news/related_news_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
+import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
@@ -21,15 +22,15 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class NewsDetail extends StatefulWidget {
   final NewsGroup newsGroup;
-  final NewsItems newsItems;
+  final NewsItems? newsItems;
   final LatestNews? latestNews;
 
-  const NewsDetail(
-      {required this.newsGroup,
-      required this.newsItems,
-      this.latestNews,
-      Key? key})
-      : super(key: key);
+  const NewsDetail({
+    required this.newsGroup,
+    this.newsItems,
+    this.latestNews,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<NewsDetail> createState() => _NewsDetailState();
@@ -69,18 +70,18 @@ class _NewsDetailState extends State<NewsDetail> {
           _lastContent.replaceRange(0, _lastContent.indexOf('embed/') + 6, '');
       _videoContent = _videoContent.replaceRange(
           _videoContent.indexOf('"'), _videoContent.length, '');
-      print(_videoContent);
-    } else if (widget.newsItems.full!
-        .contains('<div class="video-container"')) {
-      _firstContent = widget.newsItems.full?.replaceRange(
-              widget.newsItems.full?.indexOf('<div class="video-container"') ??
+      return;
+    } else if (widget.newsItems != null &&
+        widget.newsItems!.full!.contains('<div class="video-container"')) {
+      _firstContent = widget.newsItems?.full?.replaceRange(
+              widget.newsItems?.full?.indexOf('<div class="video-container"') ??
                   0,
-              widget.newsItems.full?.length,
+              widget.newsItems?.full?.length,
               '') ??
           '';
-      _lastContent = widget.newsItems.full?.replaceRange(
+      _lastContent = widget.newsItems?.full?.replaceRange(
               0,
-              widget.newsItems.full
+              widget.newsItems?.full
                       ?.lastIndexOf('<div class="video-container"') ??
                   0,
               '') ??
@@ -89,19 +90,19 @@ class _NewsDetailState extends State<NewsDetail> {
           _lastContent.replaceRange(0, _lastContent.indexOf('embed/') + 6, '');
       _videoContent = _videoContent.replaceRange(
           _videoContent.indexOf('"'), _videoContent.length, '');
-      print(_videoContent);
+      return;
     }
   }
 
   @override
   void initState() {
-    _getRelatedNewsData(widget.newsItems.id ?? 0);
+    _getRelatedNewsData(widget.newsItems?.id ?? 0);
     _checkVideo();
     _controller = YoutubePlayerController(
       initialVideoId: _videoContent,
       flags: const YoutubePlayerFlags(
         isLive: false,
-        autoPlay: true,
+        autoPlay: false,
         mute: false,
       ),
     );
@@ -156,9 +157,7 @@ class _NewsDetailState extends State<NewsDetail> {
 
   // news detail UI
   Widget _newsDetailUI(BuildContext context) {
-    return Scaffold(
-      body: _buildBody(),
-    );
+    return CommonNavigateBar(index: 0, child: _buildBody());
   }
 
   Widget _buildBody() {
@@ -175,7 +174,8 @@ class _NewsDetailState extends State<NewsDetail> {
               _relatedProductsTittle(context),
             if (_relatedNewsData.productOverviewModels != null)
               _relatedProducts(context),
-            if (widget.newsItems.comments != null) _newsComment(context),
+            _addNewsComment(context),
+            _newsComments(),
             if (_relatedNewsData.newsItemModels != null &&
                 _relatedNewsData.newsItemModels!.isNotEmpty)
               _relatedNewsTittle(context),
@@ -218,6 +218,7 @@ class _NewsDetailState extends State<NewsDetail> {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => NewsCategory(
                           newsGroup: widget.newsGroup,
+                          index: 0,
                         )));
               },
               child: Text(
@@ -236,7 +237,7 @@ class _NewsDetailState extends State<NewsDetail> {
     final timeUpload = DateTime.parse(
       (widget.latestNews != null
               ? widget.latestNews?.createdOn
-              : widget.newsItems.createdOn) ??
+              : widget.newsItems?.createdOn) ??
           '',
     );
     final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
@@ -250,7 +251,7 @@ class _NewsDetailState extends State<NewsDetail> {
               Image.network(
                 (widget.latestNews != null
                         ? widget.latestNews?.pictureModel?.fullSizeImageUrl
-                        : widget.newsItems.pictureModel?.fullSizeImageUrl) ??
+                        : widget.newsItems?.pictureModel?.fullSizeImageUrl) ??
                     '',
                 fit: BoxFit.fill,
               ),
@@ -259,7 +260,7 @@ class _NewsDetailState extends State<NewsDetail> {
                 child: Text(
                   (widget.latestNews != null
                           ? widget.latestNews?.title
-                          : widget.newsItems.title) ??
+                          : widget.newsItems?.title) ??
                       '',
                   style: CommonStyles.size24W700Grey39(context),
                 ),
@@ -277,7 +278,8 @@ class _NewsDetailState extends State<NewsDetail> {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: (widget.latestNews != null &&
                         widget.latestNews!.full!.contains('video-container')) ||
-                    widget.newsItems.full!.contains('video-container')
+                    (widget.newsItems != null &&
+                        widget.newsItems!.full!.contains('video-container'))
                 ? Column(
                     children: [
                       Html(
@@ -345,7 +347,7 @@ class _NewsDetailState extends State<NewsDetail> {
                     data: widget.latestNews != null
                         ? widget.latestNews?.full
                             ?.replaceAll('src="', 'src="http://shopdunk.com')
-                        : widget.newsItems.full
+                        : widget.newsItems?.full
                             ?.replaceAll('src="', 'src="http://shopdunk.com'),
                     onLinkTap: (str, contextRender, list, element) =>
                         Navigator.of(context).push(MaterialPageRoute(
@@ -514,86 +516,168 @@ class _NewsDetailState extends State<NewsDetail> {
     );
   }
 
-  // news comment
-  Widget _newsComment(BuildContext context) {
+  // add news comment
+  Widget _addNewsComment(BuildContext context) {
     TextEditingController newsComment = TextEditingController();
     TextEditingController newsDescription = TextEditingController();
 
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       sliver: SliverToBoxAdapter(
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  'Để lại bình luận của bạn',
+                  style: CommonStyles.size18W700Black1D(context),
+                ),
+              ),
+              TextField(
+                controller: newsComment,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  labelText: 'Tiêu đề nhận xét',
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Stack(
+                children: [
+                  TextField(
+                    controller: newsDescription,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      labelText: 'Để lại bình luận của bạn',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 3,
+                  ),
+                  Positioned(
+                    bottom: 10,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          BlocProvider.of<RelatedNewsBloc>(context).add(
+                            RequestPostNewsComment(
+                              widget.newsItems?.id,
+                              NewsCommentModel(
+                                id: 1,
+                                customerId: 0,
+                                customerName: 'thien@gmail.com',
+                                customerAvatarUrl: '',
+                                allowViewingProfiles: true,
+                                createOn: DateTime.now().toString(),
+                                commentTitle: 'thien',
+                                commentText: 'hi anh',
+                              ),
+                            ),
+                          );
+                        });
+                      },
+                      child: Container(
+                        width: 45,
+                        height: 30,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: Colors.blueAccent,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Text(
+                          'Gửi',
+                          style: CommonStyles.size12W400White(context),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // news comments
+  Widget _newsComments() {
+    return SliverToBoxAdapter(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
-                'Để lại bình luận của bạn',
-                style: CommonStyles.size18W700Black1D(context),
+                'Bình luận',
+                style: CommonStyles.size20W400Black44(context),
               ),
             ),
-            TextField(
-              controller: newsComment,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: Divider(
+                height: 1,
+                thickness: 1,
+              ),
+            ),
+            Text(
+              'Dat Nguyen',
+              style: CommonStyles.size15W700Black44(context),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 2,
+                  color: const Color(0xffcedbe1),
                 ),
-                labelText: 'Tiêu đề nhận xét',
+              ),
+              child: Image.network(
+                'https://api.shopdunk.com/images/thumbs/default-avatar_120.jpg',
+                height: 148,
+                width: 148,
+                fit: BoxFit.cover,
               ),
             ),
             const SizedBox(
-              height: 20,
+              height: 10,
             ),
-            Stack(
-              children: [
-                TextField(
-                  controller: newsDescription,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    labelText: 'Để lại bình luận của bạn',
-                    alignLabelWithHint: true,
-                  ),
-                  maxLines: 3,
-                ),
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        BlocProvider.of<RelatedNewsBloc>(context).add(
-                          RequestPostNewsComment(
-                            widget.newsItems.id,
-                            NewsCommentModel(
-                              id: 1,
-                              customerId: 0,
-                              customerName: 'thien@gmail.com',
-                              customerAvatarUrl: '',
-                              allowViewingProfiles: true,
-                              createOn: DateTime.now().toString(),
-                              commentTitle: 'thien',
-                              commentText: 'hi anh',
-                            ),
-                          ),
-                        );
-                      });
-                    },
-                    child: Container(
-                      width: 45,
-                      height: 30,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Colors.blueAccent,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Text(
-                        'Gửi',
-                        style: CommonStyles.size12W400White(context),
-                      ),
-                    ),
-                  ),
-                )
-              ],
+            Text(
+              '17/04/2023 10:38 SA',
+              style: CommonStyles.size13W400Black44(context),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            Text(
+              'Thien',
+              style: CommonStyles.size16W700Black44(context),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              'aaaaa',
+              style: CommonStyles.size15W400Grey51(context),
             ),
           ],
         ),
