@@ -201,7 +201,7 @@ class _NewsDetailState extends State<NewsDetail> {
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const NavigationScreen(
-                          isSelected: 1,
+                          isSelected: 0,
                         )));
               },
               child: Text(

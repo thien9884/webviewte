@@ -27,7 +27,6 @@ class NavigationScreen extends StatefulWidget {
 
 class _NavigationScreenState extends State<NavigationScreen>
     with TickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> _key = GlobalKey();
   int _isSelected = 1;
   String url = '';
   final TextEditingController _searchController = TextEditingController();
@@ -80,8 +79,6 @@ class _NavigationScreenState extends State<NavigationScreen>
   // buildNavigation
   Widget _buildNavigationUI() {
     return Scaffold(
-      key: _key,
-      drawer: _buildDrawer(),
       body: WillPopScope(
         onWillPop: () async => false,
         child: SafeArea(
@@ -171,8 +168,8 @@ class _NavigationScreenState extends State<NavigationScreen>
                   _controller.reverse();
                 }
               }),
-              child: const Icon(
-                Icons.menu,
+              child: Icon(
+                _showDrawer ? Icons.close_rounded : Icons.menu,
                 size: 30,
                 color: Colors.white,
               ),
@@ -281,14 +278,20 @@ class _NavigationScreenState extends State<NavigationScreen>
             return GestureDetector(
               onTap: () {
                 if (index == 7) {
-                  _showSearch = false;
-                  _searchController.clear();
-                  Navigator.of(context).push(
+                  Navigator.of(context)
+                      .push(
                     MaterialPageRoute(
                       builder: (context) => SearchProductsScreen(
                           keySearch: _searchController.text),
                     ),
-                  );
+                  )
+                      .then((value) {
+                    setState(() {
+                      _showSearch = false;
+                      _searchController.clear();
+                      _listAllProduct.clear();
+                    });
+                  });
                 } else {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -346,61 +349,6 @@ class _NavigationScreenState extends State<NavigationScreen>
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-
-  // drawer
-  Widget _buildDrawer() {
-    return SafeArea(
-      child: Drawer(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.only(top: 80, left: 20, bottom: 40),
-              alignment: Alignment.centerLeft,
-              color: Colors.grey,
-              child: Image.asset('assets/icons/ic_sd_white.png', scale: 4),
-            ),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: ListCustom.listDrawers.length,
-                  itemBuilder: (context, index) {
-                    final item = ListCustom.listDrawers[index];
-                    return GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ShopDunkWebView(
-                            url: item.linkUrl,
-                          ),
-                        ),
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: const BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    width: 1, color: Color(0xffEBEBEB)))),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              item.img.toString(),
-                              scale: 0.8,
-                            ),
-                            Text(
-                              item.name,
-                              style: CommonStyles.size14W400Black1D(context),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-            )
-          ],
         ),
       ),
     );

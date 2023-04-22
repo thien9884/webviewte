@@ -34,7 +34,6 @@ class CommonNavigateBar extends StatefulWidget {
 
 class _CommonNavigateBarState extends State<CommonNavigateBar>
     with TickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> _key = GlobalKey();
   bool _showSearch = false;
   final TextEditingController _searchController = TextEditingController();
   List<ProductsModel> _listAllProduct = [];
@@ -84,29 +83,25 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
   // common navigator ui
   Widget _commonNavigatorUI() {
     return Scaffold(
-      key: _key,
       backgroundColor: const Color(0xffF5F5F7),
-      body: WillPopScope(
-        onWillPop: () async => true,
-        child: SafeArea(
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  if (widget.showAppBar) _buildAppbar(),
-                  Expanded(
-                      child: Stack(
-                    children: [
-                      widget.child,
-                      _buildDrawerUI(),
-                    ],
-                  )),
-                  _buildBottomBar(),
-                ],
-              ),
-              if (_showSearch) _buildSearchUI(),
-            ],
-          ),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                if (widget.showAppBar) _buildAppbar(),
+                Expanded(
+                    child: Stack(
+                  children: [
+                    widget.child,
+                    _buildDrawerUI(),
+                  ],
+                )),
+                _buildBottomBar(),
+              ],
+            ),
+            if (_showSearch) _buildSearchUI(),
+          ],
         ),
       ),
     );
