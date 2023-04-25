@@ -5,6 +5,10 @@ class ApiConstant {
   static const String products = '/api/products/get-category-featured-products/';
   static const String searchProducts = '/api/search-products';
   static const String token = '/token';
-  static const String relatedNews = '/api/get-related-entities';
+  static const String relatedNews = '/api/get-related-entities/';
+  static const String newsGroup = '/api/news-group';
+  static const String productsGroup = '/api/products-category';
   static const String newsComments = '/api/add-comment';
+  static const String topBanner = '/api/topics/156';
+  static const String homeBanner = '/api/topics/6';
 }

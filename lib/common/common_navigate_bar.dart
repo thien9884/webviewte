@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:webviewtest/blocs/search_products/search_products_bloc.dart';
-import 'package:webviewtest/blocs/search_products/search_products_event.dart';
-import 'package:webviewtest/blocs/search_products/search_products_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
+import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
@@ -37,8 +39,12 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
   bool _showSearch = false;
   final TextEditingController _searchController = TextEditingController();
   List<ProductsModel> _listAllProduct = [];
+
+  // Categories
+  List<Categories> _listCategories = [];
   final _delayInput = DelayInput(milliseconds: 1000);
   bool _showDrawer = false;
+  bool _isVisible = true;
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 500),
     reverseDuration: const Duration(milliseconds: 500),
@@ -58,6 +64,17 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
     const StoreScreen(),
   ];
 
+  // Sync data
+  _getCategories() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetCategories());
+  }
+
+  @override
+  void initState() {
+    _getCategories();
+    super.initState();
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -66,16 +83,23 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SearchProductsBloc, SearchProductsState>(
+    return BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => _commonNavigatorUI(),
         listener: (context, state) {
-          if (state is SearchProductsLoading) {
+          if (state is CategoriesLoading) {
+          } else if (state is CategoriesLoaded) {
+            _listCategories = state.categories
+                .where((element) => element.showOnHomePage == true)
+                .toList();
+          } else if (state is CategoriesLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+          } else if (state is SearchProductsLoading) {
           } else if (state is SearchProductsLoaded) {
-            setState(() {
-              _listAllProduct = state.catalogProductsModel.products ?? [];
-            });
+            _listAllProduct = state.catalogProductsModel.products ?? [];
           } else if (state is SearchProductsLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+          } else if (state is HideBottomSuccess) {
+            _isVisible = state.isHide;
           }
         });
   }
@@ -90,14 +114,24 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             Column(
               children: [
                 if (widget.showAppBar) _buildAppbar(),
+                if (widget.showAppBar) _buildCategoryBar(),
                 Expanded(
-                    child: Stack(
-                  children: [
-                    widget.child,
-                    _buildDrawerUI(),
-                  ],
-                )),
-                _buildBottomBar(),
+                  child: Stack(
+                    children: [
+                      widget.child,
+                      _buildDrawerUI(),
+                    ],
+                  ),
+                ),
+                if (widget.showAppBar)
+                  AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      height: _isVisible ? 60 : 0,
+                      child: _isVisible
+                          ? SingleChildScrollView(
+                              child: _buildBottomBar(),
+                            )
+                          : Container()),
               ],
             ),
             if (_showSearch) _buildSearchUI(),
@@ -148,8 +182,8 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
                   _controller.reverse();
                 }
               }),
-              child: const Icon(
-                Icons.menu,
+              child: Icon(
+                _showDrawer ? Icons.close_rounded : Icons.menu,
                 size: 30,
                 color: Colors.white,
               ),
@@ -181,6 +215,42 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
           ),
         ],
       ),
+    );
+  }
+
+  // build category bar
+  Widget _buildCategoryBar() {
+    return SizedBox(
+      height: 48,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: _listCategories.length,
+          itemBuilder: (context, index) {
+            final item = _listCategories[index];
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CategoryScreen(
+                      title: item.name ?? '',
+                      desc: item.description ?? '',
+                      groupId: item.id,
+                    ),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Center(
+                  child: Text(
+                    item.name ?? '',
+                    style: CommonStyles.size15W400Black1D(context),
+                  ),
+                ),
+              ),
+            );
+          }),
     );
   }
 
@@ -245,7 +315,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             _delayInput.run(() {
               if (value.length >= 3) {
                 setState(() {
-                  BlocProvider.of<SearchProductsBloc>(context).add(
+                  BlocProvider.of<ShopdunkBloc>(context).add(
                     RequestGetSearchProductResult(1, value),
                   );
                 });
@@ -256,11 +326,19 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             _showSearch = false;
             _searchController.clear();
             if (value.length >= 3) {
-              Navigator.of(context).push(
+              Navigator.of(context)
+                  .push(
                 MaterialPageRoute(
                   builder: (context) => SearchProductsScreen(keySearch: value),
                 ),
-              );
+              )
+                  .then((value) {
+                setState(() {
+                  _showSearch = false;
+                  _searchController.clear();
+                  _listAllProduct.clear();
+                });
+              });
             }
           },
         ),

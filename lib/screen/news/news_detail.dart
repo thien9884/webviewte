@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
-import 'package:webviewtest/blocs/related_news/related_news_bloc.dart';
-import 'package:webviewtest/blocs/related_news/related_news_event.dart';
-import 'package:webviewtest/blocs/related_news/related_news_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/common/responsive.dart';
@@ -19,6 +19,8 @@ import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+import '../../blocs/shopdunk/shopdunk_event.dart';
 
 class NewsDetail extends StatefulWidget {
   final NewsGroup newsGroup;
@@ -44,9 +46,38 @@ class _NewsDetailState extends State<NewsDetail> {
   String _videoContent = '';
   String _lastContent = '';
   late YoutubePlayerController _controller;
+  late ScrollController _hideButtonController;
+  bool _isVisible = false;
 
   _getRelatedNewsData(int id) {
-    BlocProvider.of<RelatedNewsBloc>(context).add(RequestGetRelatedNews(id));
+    BlocProvider.of<ShopdunkBloc>(context).add(RequestGetRelatedNews(id));
+  }
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
   }
 
   _checkVideo() {
@@ -98,6 +129,7 @@ class _NewsDetailState extends State<NewsDetail> {
   void initState() {
     _getRelatedNewsData(widget.newsItems?.id ?? 0);
     _checkVideo();
+    _getHideBottomValue();
     _controller = YoutubePlayerController(
       initialVideoId: _videoContent,
       flags: const YoutubePlayerFlags(
@@ -111,7 +143,7 @@ class _NewsDetailState extends State<NewsDetail> {
 
   @override
   Widget build(BuildContext context) =>
-      BlocConsumer<RelatedNewsBloc, RelatedNewsState>(
+      BlocConsumer<ShopdunkBloc, ShopdunkState>(
           builder: (context, state) => _newsDetailUI(context),
           listener: (context, state) {
             if (state is RelatedNewsLoading) {
@@ -165,6 +197,7 @@ class _NewsDetailState extends State<NewsDetail> {
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: CustomScrollView(
+          controller: _hideButtonController,
           slivers: [
             _newsAppBar(),
             _newsDetail(context),
@@ -175,6 +208,7 @@ class _NewsDetailState extends State<NewsDetail> {
             if (_relatedNewsData.productOverviewModels != null)
               _relatedProducts(context),
             _addNewsComment(context),
+            _newsCommentTitle(),
             _newsComments(),
             if (_relatedNewsData.newsItemModels != null &&
                 _relatedNewsData.newsItemModels!.isNotEmpty)
@@ -570,7 +604,7 @@ class _NewsDetailState extends State<NewsDetail> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          BlocProvider.of<RelatedNewsBloc>(context).add(
+                          BlocProvider.of<ShopdunkBloc>(context).add(
                             RequestPostNewsComment(
                               widget.newsItems?.id,
                               NewsCommentModel(
@@ -610,25 +644,16 @@ class _NewsDetailState extends State<NewsDetail> {
     );
   }
 
-  // news comments
-  Widget _newsComments() {
+  // news comment title
+  Widget _newsCommentTitle() {
     return SliverToBoxAdapter(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-        ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                'Bình luận',
-                style: CommonStyles.size20W400Black44(context),
-              ),
+            Text(
+              'Bình luận',
+              style: CommonStyles.size20W400Black44(context),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 15),
@@ -637,52 +662,87 @@ class _NewsDetailState extends State<NewsDetail> {
                 thickness: 1,
               ),
             ),
-            Text(
-              'Dat Nguyen',
-              style: CommonStyles.size15W700Black44(context),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 2,
-                  color: const Color(0xffcedbe1),
-                ),
-              ),
-              child: Image.network(
-                'https://api.shopdunk.com/images/thumbs/default-avatar_120.jpg',
-                height: 148,
-                width: 148,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              '17/04/2023 10:38 SA',
-              style: CommonStyles.size13W400Black44(context),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Text(
-              'Thien',
-              style: CommonStyles.size16W700Black44(context),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              'aaaaa',
-              style: CommonStyles.size15W400Grey51(context),
-            ),
           ],
         ),
       ),
     );
+  }
+
+  // news comments
+  Widget _newsComments() {
+    return SliverList(
+        delegate: SliverChildBuilderDelegate(
+            childCount: widget.newsItems?.newsComments?.length,
+            (context, index) {
+      final item = widget.newsItems?.newsComments![index];
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(item?.customerAvatarUrl ??
+                  'https://api.shopdunk.com/images/thumbs/default-avatar_120.jpg'),
+              radius: 20,
+              backgroundColor: Colors.transparent,
+            ),
+            // Container(
+            //   decoration: BoxDecoration(
+            //     border: Border.all(
+            //       width: 2,
+            //       color: Colors.black,
+            //     ),
+            //     shape: BoxShape.circle,
+            //   ),
+            //   child: Image.network(
+            //     'https://api.shopdunk.com/images/thumbs/default-avatar_120.jpg',
+            //     height: 30,
+            //     width: 30,
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(left: 10, bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xffF5F5F7),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          'Dat Nguyen',
+                          style: CommonStyles.size15W700Black44(context),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          '17/04/2023',
+                          style: CommonStyles.size13W400Black44(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      'aaaaa',
+                      style: CommonStyles.size15W400Grey51(context),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    }));
   }
 
   // news comment tittle

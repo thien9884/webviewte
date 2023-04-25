@@ -7,6 +7,7 @@ import 'package:webviewtest/blocs/search_products/search_products_event.dart';
 import 'package:webviewtest/blocs/search_products/search_products_state.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
+import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/constant.dart';
@@ -35,8 +36,11 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
   String _keySearch = '';
   final TextEditingController _emailController = TextEditingController();
   late TextEditingController _searchController;
+  final ScrollController _pageScrollController = ScrollController();
+  final dataKey = GlobalKey();
 
   _getFirstSearchResult() {
+    EasyLoading.show();
     BlocProvider.of<SearchProductsBloc>(context).add(
       RequestGetSearchProductResult(1, _keySearch),
     );
@@ -77,27 +81,32 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
   // build UI
   Widget _buildUI() {
     return Scaffold(
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: Container(
-            color: const Color(0xfff5f5f7),
-            child: CustomScrollView(
-              slivers: [
-                _searchProducts(),
-                _sortListProduct(),
-                _listProduct(_listAllProduct),
-                if (catalogProductsModel.totalPages != null) _pagesNumber(),
-                _receiveInfo(),
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                        childCount: 1,
-                        (context, index) => const CommonFooter())),
-              ],
+      body: _listAllProduct.isEmpty
+          ? Container()
+          : SafeArea(
+              child: CommonNavigateBar(
+                child: GestureDetector(
+                  onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                  child: Container(
+                    color: const Color(0xfff5f5f7),
+                    child: CustomScrollView(
+                      slivers: [
+                        _searchProducts(),
+                        _sortListProduct(),
+                        _listProduct(_listAllProduct),
+                        if (catalogProductsModel.totalPages != null)
+                          _pagesNumber(),
+                        _receiveInfo(),
+                        SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                                childCount: 1,
+                                (context, index) => const CommonFooter())),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -156,6 +165,17 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                       ),
                       enabled: true,
                     ),
+                    onFieldSubmitted: (value) {
+                      setState(() {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        BlocProvider.of<SearchProductsBloc>(context).add(
+                          RequestGetSearchProductResult(
+                            1,
+                            _searchController.text,
+                          ),
+                        );
+                      });
+                    },
                   ),
                 ),
                 Row(
@@ -190,6 +210,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
   // sort list product
   Widget _sortListProduct() {
     return SliverToBoxAdapter(
+      key: dataKey,
       child: Row(
         children: [
           SizedBox(
@@ -277,10 +298,13 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
           (context, index) {
             var item = listProduct[index];
             return GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
-                        url: item.seName,
-                      ))),
+                    url: item.seName,
+                  ),
+                ),
+              ),
               child: Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
@@ -293,16 +317,21 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                       margin: EdgeInsets.only(
                           top: Responsive.isMobile(context) ? 5 : 10,
                           right: Responsive.isMobile(context) ? 5 : 10),
-                      child: Image.asset(
-                        'assets/images/tet_2023.png',
-                        scale: Responsive.isMobile(context) ? 10 : 6,
-                      ),
+                      child: item.defaultPictureModel?.thumbImageUrl != null
+                          ? Image.network(
+                              item.defaultPictureModel?.thumbImageUrl,
+                              scale: Responsive.isMobile(context) ? 10 : 6,
+                            )
+                          : SizedBox(
+                              height: Responsive.isMobile(context) ? 10 : 6,
+                            ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(
                           vertical: Responsive.isMobile(context) ? 10 : 20),
                       child: Image.network(
-                          item.defaultPictureModel?.imageUrl ?? ''),
+                        item.defaultPictureModel?.imageUrl ?? '',
+                      ),
                     ),
                     Expanded(
                       child: Column(
@@ -381,41 +410,121 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
         child: Center(
           child: SizedBox(
             height: 35,
-            width: catalogProductsModel.totalPages! > 6
+            width: catalogProductsModel.totalPages! > 4
                 ? double.infinity
                 : 35 * (catalogProductsModel.totalPages! + 1) + 25,
-            child: ListView.builder(
-              itemCount: catalogProductsModel.totalPages,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => GestureDetector(
-                onTap: () => setState(
-                  () {
-                    _pagesSelected = index;
-                    BlocProvider.of<SearchProductsBloc>(context).add(
-                      RequestGetSearchProductResult(
-                          index + 1, _searchController.text),
-                    );
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (_pagesSelected != 0) {
+                      setState(() {
+                        _pagesSelected = 0;
+                        BlocProvider.of<SearchProductsBloc>(context).add(
+                          RequestGetSearchProductResult(
+                            1,
+                            _searchController.text,
+                          ),
+                        );
+                        _pageScrollController.animateTo(
+                          _pageScrollController.position.minScrollExtent,
+                          duration: const Duration(seconds: 2),
+                          curve: Curves.fastOutSlowIn,
+                        );
+                        Scrollable.ensureVisible(dataKey.currentContext!);
+                      });
+                    }
                   },
-                ),
-                child: Container(
-                  height: 35,
-                  width: 35,
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    color: _pagesSelected == index
-                        ? Colors.blueAccent
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    (index + 1).toString(),
-                    style: _pagesSelected == index
-                        ? CommonStyles.size14W400White(context)
-                        : CommonStyles.size14W400Black1D(context),
+                  child: Container(
+                    height: 35,
+                    width: 35,
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back_ios_outlined,
+                      size: 14,
+                      color: Color(0xff1D1D1D),
+                    ),
                   ),
                 ),
-              ),
+                Expanded(
+                  child: ListView.builder(
+                    controller: _pageScrollController,
+                    itemCount: catalogProductsModel.totalPages,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) => GestureDetector(
+                      onTap: () => setState(() {
+                        _pagesSelected = index;
+                        BlocProvider.of<SearchProductsBloc>(context).add(
+                          RequestGetSearchProductResult(
+                              index + 1, _searchController.text),
+                        );
+                        Scrollable.ensureVisible(dataKey.currentContext!);
+                      }),
+                      child: Container(
+                        height: 35,
+                        width: 35,
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        decoration: BoxDecoration(
+                          color: _pagesSelected == index
+                              ? Colors.blueAccent
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          (index + 1).toString(),
+                          style: _pagesSelected == index
+                              ? CommonStyles.size14W400White(context)
+                              : CommonStyles.size14W400Black1D(context),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (catalogProductsModel.totalPages != null &&
+                        _pagesSelected !=
+                            catalogProductsModel.totalPages! - 1) {
+                      setState(() {
+                        _pagesSelected = catalogProductsModel.totalPages! - 1;
+                        BlocProvider.of<SearchProductsBloc>(context).add(
+                          RequestGetSearchProductResult(
+                            catalogProductsModel.totalPages,
+                            _searchController.text,
+                          ),
+                        );
+                        _pageScrollController.animateTo(
+                          _pageScrollController.position.maxScrollExtent,
+                          duration: const Duration(seconds: 2),
+                          curve: Curves.fastOutSlowIn,
+                        );
+                        Scrollable.ensureVisible(dataKey.currentContext!);
+                      });
+                    }
+                  },
+                  child: Container(
+                    height: 35,
+                    width: 35,
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14,
+                      color: Color(0xff1D1D1D),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

@@ -1,19 +1,21 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:webviewtest/blocs/search_products/search_products_bloc.dart';
-import 'package:webviewtest/blocs/search_products/search_products_event.dart';
-import 'package:webviewtest/blocs/search_products/search_products_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
+import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/search_products/search_products.dart';
-import 'package:webviewtest/screen/store/store_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class NavigationScreen extends StatefulWidget {
@@ -31,9 +33,13 @@ class _NavigationScreenState extends State<NavigationScreen>
   String url = '';
   final TextEditingController _searchController = TextEditingController();
   List<ProductsModel> _listAllProduct = [];
+
+  // Categories
+  List<Categories> _listCategories = [];
   final _delayInput = DelayInput(milliseconds: 1000);
   bool _showSearch = false;
   bool _showDrawer = false;
+  bool _isVisible = true;
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 500),
     reverseDuration: const Duration(milliseconds: 500),
@@ -51,27 +57,47 @@ class _NavigationScreenState extends State<NavigationScreen>
     const NewsScreen(),
     const HomePageScreen(),
     // const LoginScreen(),
-    const StoreScreen(),
+    // const StoreScreen(),
+    const ShopDunkWebView(
+      url: '/find-store',
+      hideBottom: false,
+    )
   ];
+
+  // Sync data
+  _getCategories() async {
+    EasyLoading.show();
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetCategories());
+  }
 
   @override
   void initState() {
     _isSelected = widget.isSelected;
+    _getCategories();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SearchProductsBloc, SearchProductsState>(
+    return BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => _buildNavigationUI(),
         listener: (context, state) {
-          if (state is SearchProductsLoading) {
+          if (state is CategoriesLoading) {
+          } else if (state is CategoriesLoaded) {
+            _listCategories = state.categories
+                .where((element) => element.showOnHomePage == true)
+                .toList();
+          } else if (state is CategoriesLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+          } else if (state is SearchProductsLoading) {
           } else if (state is SearchProductsLoaded) {
             setState(() {
               _listAllProduct = state.catalogProductsModel.products ?? [];
             });
           } else if (state is SearchProductsLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+          } else if (state is HideBottomSuccess) {
+            _isVisible = state.isHide;
           }
         });
   }
@@ -82,11 +108,13 @@ class _NavigationScreenState extends State<NavigationScreen>
       body: WillPopScope(
         onWillPop: () async => false,
         child: SafeArea(
+          bottom: false,
           child: Stack(
             children: [
               Column(
                 children: [
                   _buildAppbar(),
+                  _buildCategoryBar(),
                   Expanded(
                     child: Stack(
                       children: [
@@ -95,7 +123,13 @@ class _NavigationScreenState extends State<NavigationScreen>
                       ],
                     ),
                   ),
-                  _buildBottomBar(),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 500),
+                    height: _isVisible ? 60 : 0,
+                    child: _isVisible
+                        ? SingleChildScrollView(child: _buildBottomBar())
+                        : Container(),
+                  ),
                 ],
               ),
               if (_showSearch) _buildSearchUI(),
@@ -198,6 +232,42 @@ class _NavigationScreenState extends State<NavigationScreen>
     );
   }
 
+  // build category bar
+  Widget _buildCategoryBar() {
+    return SizedBox(
+      height: 48,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: _listCategories.length,
+          itemBuilder: (context, index) {
+            final item = _listCategories[index];
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CategoryScreen(
+                      title: item.name ?? '',
+                      desc: item.description ?? '',
+                      groupId: item.id,
+                    ),
+                  ),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Center(
+                  child: Text(
+                    item.name ?? '',
+                    style: CommonStyles.size15W400Black1D(context),
+                  ),
+                ),
+              ),
+            );
+          }),
+    );
+  }
+
   // build search bar
   Widget _buildSearchBar() {
     return GestureDetector(
@@ -237,7 +307,7 @@ class _NavigationScreenState extends State<NavigationScreen>
             _delayInput.run(() {
               if (value.length >= 3) {
                 setState(() {
-                  BlocProvider.of<SearchProductsBloc>(context).add(
+                  BlocProvider.of<ShopdunkBloc>(context).add(
                     RequestGetSearchProductResult(1, value),
                   );
                 });
@@ -248,11 +318,19 @@ class _NavigationScreenState extends State<NavigationScreen>
             _showSearch = false;
             _searchController.clear();
             if (value.length >= 3) {
-              Navigator.of(context).push(
+              Navigator.of(context)
+                  .push(
                 MaterialPageRoute(
                   builder: (context) => SearchProductsScreen(keySearch: value),
                 ),
-              );
+              )
+                  .then((value) {
+                setState(() {
+                  _showSearch = false;
+                  _searchController.clear();
+                  _listAllProduct.clear();
+                });
+              });
             }
           },
         ),

@@ -1,7 +1,10 @@
+import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
+import 'package:webviewtest/model/category_model/category_group_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
+import 'package:webviewtest/model/news_category/news_category_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
@@ -16,6 +19,18 @@ abstract class ApiInterface {
 
   // Get news
   Future<RelatedNews?> requestGetRelatedNews(int? newsId);
+
+  // Get news group
+  Future<NewsCategoryModel?> requestGetNewsGroup(int? groupId, int? page);
+
+  // Get products group
+  Future<CategoryGroupModel?> requestGetProductsGroup(int? groupId, int? page);
+
+  // get top banner
+  Future<BannerModel?> requestGetTopBanner();
+
+  // get home banner
+  Future<BannerModel?> requestGetHomeBanner();
 
   // Get list product
   Future<List<ProductsModel>> requestGetProduct(int? id);

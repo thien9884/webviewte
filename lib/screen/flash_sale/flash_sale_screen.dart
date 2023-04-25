@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
-import 'package:webviewtest/blocs/categories/categories_bloc.dart';
-import 'package:webviewtest/blocs/categories/categories_event.dart';
-import 'package:webviewtest/blocs/categories/categories_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
@@ -53,13 +53,13 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
 
   // Sync data
   _getCategories() async {
-    BlocProvider.of<CategoriesBloc>(context).add(const RequestGetCategories());
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetCategories());
   }
 
   _getListIphone() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'iphone');
-    BlocProvider.of<CategoriesBloc>(context)
+    BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetIphone(idIphone: _listCategories[index].id));
   }
 
@@ -78,7 +78,7 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
 
   @override
   Widget build(BuildContext context) =>
-      BlocConsumer<CategoriesBloc, CategoriesState>(
+      BlocConsumer<ShopdunkBloc, ShopdunkState>(
           builder: (context, state) => _buildUI(context),
           listener: (context, state) {
             if (state is CategoriesLoading) {

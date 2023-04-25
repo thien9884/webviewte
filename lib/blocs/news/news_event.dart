@@ -20,3 +20,14 @@ class RequestGetRelatedNews extends NewsEvent {
   @override
   List<Object?> get props => [];
 }
+
+class RequestGetHideBottom extends NewsEvent {
+  final bool? isHide;
+
+  const RequestGetHideBottom(
+      this.isHide,
+      );
+
+  @override
+  List<Object?> get props => [];
+}

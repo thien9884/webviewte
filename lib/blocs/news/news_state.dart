@@ -57,3 +57,21 @@ class RelatedNewsLoadError extends NewsState {
   @override
   List<Object?> get props => [message];
 }
+
+class HideBottomSuccess extends NewsState {
+  final bool isHide;
+
+  const HideBottomSuccess({required this.isHide});
+
+  @override
+  List<Object?> get props => [isHide];
+}
+
+class HideBottomError extends NewsState {
+  final String? message;
+
+  const HideBottomError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}

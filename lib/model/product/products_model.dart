@@ -115,12 +115,13 @@ class DefaultPictureModel {
   String? title;
   String? alternateText;
 
-  DefaultPictureModel(
-      {this.imageUrl,
-      this.thumbImageUrl,
-      this.fullSizeImageUrl,
-      this.title,
-      this.alternateText});
+  DefaultPictureModel({
+    this.imageUrl,
+    this.thumbImageUrl,
+    this.fullSizeImageUrl,
+    this.title,
+    this.alternateText,
+  });
 
   DefaultPictureModel.fromJson(Map<String, dynamic> json) {
     imageUrl = json['ImageUrl'];

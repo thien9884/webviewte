@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
-import 'package:webviewtest/blocs/news/news_bloc.dart';
-import 'package:webviewtest/blocs/news/news_event.dart';
-import 'package:webviewtest/blocs/news/news_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
@@ -26,23 +27,53 @@ class _NewsScreenState extends State<NewsScreen> {
   List<NewsGroup> _newsGroup = [];
   List<LatestNews> _latestNews = [];
   List vd = ['fc28Zn8p0wE', 'iLnmTe5Q2Qw', 'KtQKoWrLBLs'];
-
+  late ScrollController _hideButtonController;
+  bool _isVisible = false;
   final TextEditingController _emailController = TextEditingController();
   late YoutubePlayerController controller;
 
   // Sync data
   _getNews() async {
-    BlocProvider.of<NewsBloc>(context).add(const RequestGetNews());
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetNews());
+  }
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
   }
 
   @override
   void initState() {
     _getNews();
+    _getHideBottomValue();
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) => BlocConsumer<NewsBloc, NewsState>(
+  Widget build(BuildContext context) =>
+      BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => _buildNewsUI(),
         listener: (context, state) {
           if (state is NewsLoading) {
@@ -50,9 +81,9 @@ class _NewsScreenState extends State<NewsScreen> {
           } else if (state is NewsLoaded) {
             _newsGroup = state.newsData.newsGroup ?? [];
             _latestNews = state.newsData.latestNews ?? [];
-            _latestNews.removeRange(4, _latestNews.lastIndexOf(_latestNews.last));
+            _latestNews.removeRange(
+                4, _latestNews.lastIndexOf(_latestNews.last));
             if (EasyLoading.isShow) EasyLoading.dismiss();
-
           } else if (state is NewsLoadError) {
             if (EasyLoading.isShow) EasyLoading.dismiss();
 
@@ -68,6 +99,7 @@ class _NewsScreenState extends State<NewsScreen> {
         : Container(
             color: const Color(0xfff5f5f7),
             child: CustomScrollView(
+              controller: _hideButtonController,
               slivers: [
                 _pageView(),
                 _newsScrollBar(),
@@ -112,12 +144,14 @@ class _NewsScreenState extends State<NewsScreen> {
                   ),
                   child: Container(
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          item.pictureModel?.fullSizeImageUrl ?? '',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
+                      image: item.pictureModel?.fullSizeImageUrl != null
+                          ? DecorationImage(
+                              image: NetworkImage(
+                                item.pictureModel?.fullSizeImageUrl ?? '',
+                              ),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                     ),
                     child: Container(
                       alignment: Alignment.bottomCenter,
@@ -270,18 +304,23 @@ class _NewsScreenState extends State<NewsScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          item.pictureModel?.fullSizeImageUrl ?? '',
-                          width: 140,
-                          height: 140,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, value, stackTree) {
-                            return const SizedBox(
-                              width: 140,
-                              height: 140,
-                            );
-                          },
-                        ),
+                        child: item.pictureModel?.fullSizeImageUrl != null
+                            ? Image.network(
+                                item.pictureModel?.fullSizeImageUrl ?? '',
+                                width: 140,
+                                height: 140,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, value, stackTree) {
+                                  return const SizedBox(
+                                    width: 140,
+                                    height: 140,
+                                  );
+                                },
+                              )
+                            : const SizedBox(
+                                height: 140,
+                                width: 140,
+                              ),
                       ),
                       Expanded(
                         child: Padding(

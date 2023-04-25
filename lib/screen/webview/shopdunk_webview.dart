@@ -170,7 +170,7 @@ Page resource error:
   Widget build(BuildContext context) {
     return CommonNavigateBar(
         index: 1,
-        showAppBar: false,
+        showAppBar: widget.hideBottom,
         child: WebViewWidget(controller: _controller));
   }
 }

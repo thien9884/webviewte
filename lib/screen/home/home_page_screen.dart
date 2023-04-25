@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
-import 'package:webviewtest/blocs/categories/categories_bloc.dart';
-import 'package:webviewtest/blocs/categories/categories_event.dart';
-import 'package:webviewtest/blocs/categories/categories_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
@@ -17,6 +19,32 @@ import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart' as dom;
+
+TopBanner payloadFromJson(String str) => TopBanner.fromJson(json.decode(str));
+
+String payloadToJson(TopBanner data) => json.encode(data.toJson());
+
+class TopBanner {
+  final String? link;
+  final String? img;
+
+  TopBanner({
+    this.link,
+    this.img,
+  });
+
+  factory TopBanner.fromJson(Map<String, dynamic> json) => TopBanner(
+        link: json["link"],
+        img: json["img"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "link": link,
+        "img": img,
+      };
+}
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({Key? key}) : super(key: key);
@@ -33,6 +61,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
   int _currentIndex = 0;
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
   List<LatestNews> _latestNews = [];
+  String _topBanner = '';
+  List<TopBanner> _listTopBannerImg = [];
+
+  String _homeBanner = '';
+  List<TopBanner> _listHomeBannerImg = [];
 
   // Categories
   List<Categories> _listCategories = [];
@@ -40,53 +73,61 @@ class _HomePageScreenState extends State<HomePageScreen> {
   // Sync data
   _getCategories() async {
     EasyLoading.show();
-    BlocProvider.of<CategoriesBloc>(context).add(const RequestGetCategories());
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetCategories());
   }
 
   _getNews() async {
-    BlocProvider.of<CategoriesBloc>(context).add(const RequestGetNews());
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetNews());
   }
 
   _getListIpad() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'ipad');
-    BlocProvider.of<CategoriesBloc>(context)
+    BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetIpad(idIpad: _listCategories[index].id));
   }
 
   _getListIphone() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'iphone');
-    BlocProvider.of<CategoriesBloc>(context)
+    BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetIphone(idIphone: _listCategories[index].id));
   }
 
   _getListMac() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'mac');
-    BlocProvider.of<CategoriesBloc>(context)
+    BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetMac(idMac: _listCategories[index].id));
   }
 
   _getListWatch() async {
     int index = _listCategories
         .indexWhere((element) => element.seName == 'apple-watch');
-    BlocProvider.of<CategoriesBloc>(context)
+    BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetAppleWatch(idWatch: _listCategories[index].id));
   }
 
   _getListSound() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'am-thanh');
-    BlocProvider.of<CategoriesBloc>(context)
+    BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetSound(idSound: _listCategories[index].id));
   }
 
   _getListAccessories() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'phu-kien');
-    BlocProvider.of<CategoriesBloc>(context)
+    BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetAccessories(idAccessories: _listCategories[index].id));
+  }
+
+  _getTopBanner() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetTopBanner(156));
+  }
+
+  _getHomeBanner() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetHomeBanner(6));
   }
 
   _getListProduct() async {
@@ -97,26 +138,60 @@ class _HomePageScreenState extends State<HomePageScreen> {
     await _getListSound();
     await _getListAccessories();
     await _getNews();
+    await _getTopBanner();
+    await _getHomeBanner();
     if (EasyLoading.isShow) EasyLoading.dismiss();
   }
 
-  // _autoSlidePage() {
-  //   _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-  //     if (_currentIndex < ListCustom.listIcon.length + 1) {
-  //       _currentIndex++;
-  //     } else {
-  //       _currentIndex = 0;
-  //     }
-  //
-  //     _pageController.nextPage(
-  //         duration: const Duration(seconds: 1), curve: Curves.linear);
-  //   });
-  // }
+  _autoSlidePage() {
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      if (_currentIndex < ListCustom.listIcon.length + 1) {
+        _currentIndex++;
+      } else {
+        _currentIndex = 0;
+      }
+
+      _pageController.nextPage(
+          duration: const Duration(seconds: 1), curve: Curves.linear);
+    });
+  }
+
+  late ScrollController _hideButtonController;
+
+  bool _isVisible = false;
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
+  }
 
   @override
   void initState() {
     _getCategories();
-    // _autoSlidePage();
+    _autoSlidePage();
+    _getHideBottomValue();
     super.initState();
   }
 
@@ -128,7 +203,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CategoriesBloc, CategoriesState>(
+    return BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => _buildHomeUI(context),
         listener: (context, state) {
           if (state is CategoriesLoading) {
@@ -206,8 +281,67 @@ class _HomePageScreenState extends State<HomePageScreen> {
             _latestNews = state.newsData.latestNews ?? [];
             _latestNews.removeRange(
                 2, _latestNews.lastIndexOf(_latestNews.last));
-            print(_latestNews);
           } else if (state is NewsLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+
+          if (state is TopBannerLoading) {
+          } else if (state is TopBannerLoaded) {
+            _topBanner = state.listTopics.topics?.first.body ?? '';
+            var document = parse(
+              _topBanner.replaceAll('src="', 'src="http://shopdunk.com'),
+            );
+            var imgList = document.querySelectorAll("img");
+            var linkList = document.querySelectorAll("a");
+            List<String> imageList = [];
+            List<String> getLinkList = [];
+            List<TopBanner> topBanner = [];
+            for (dom.Element img in imgList) {
+              imageList.add(img.attributes['src']!);
+            }
+            for (dom.Element img in linkList) {
+              getLinkList.add(img.attributes['href']!);
+            }
+            for (int i = 0; i < imageList.length; i++) {
+              topBanner.add(
+                TopBanner(
+                  img: imageList[i].toString(),
+                  link: getLinkList[i].toString(),
+                ),
+              );
+            }
+            _listTopBannerImg = topBanner;
+          } else if (state is TopBannerLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+          }
+
+          if (state is HomeBannerLoading) {
+          } else if (state is HomeBannerLoaded) {
+            _homeBanner = state.listTopics.topics?.first.body ?? '';
+            var document = parse(
+              _homeBanner.replaceAll('src="', 'src="http://shopdunk.com'),
+            );
+            var imgList = document.querySelectorAll("img");
+            var linkList = document.querySelectorAll("a");
+            List<String> imageList = [];
+            List<String> getLinkList = [];
+            List<TopBanner> homeBanner = [];
+            for (dom.Element img in imgList) {
+              imageList.add(img.attributes['src']!);
+            }
+            for (dom.Element img in linkList) {
+              getLinkList.add(img.attributes['href']!);
+            }
+            for (int i = 0; i < imageList.length; i++) {
+              homeBanner.add(
+                TopBanner(
+                  img: imageList[i].toString(),
+                  link: getLinkList[i].toString(),
+                ),
+              );
+            }
+            _listHomeBannerImg = homeBanner;
+          } else if (state is HomeBannerLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
           }
         });
@@ -222,9 +356,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
             child: Stack(
               children: [
                 CustomScrollView(
+                  controller: _hideButtonController,
                   slivers: <Widget>[
-                    // _topPageView(),
-                    // _topListDeal(),
+                    if (_topBanner.isNotEmpty) _topPageView(),
+                    _topListDeal(),
                     _buildCategoriesUI(),
                     SliverToBoxAdapter(
                       child: GestureDetector(
@@ -268,10 +403,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
   // page view deal
   Widget _topPageView() {
     return SliverPadding(
-      padding: const EdgeInsets.only(bottom: 36),
+      padding: const EdgeInsets.only(bottom: 20),
       sliver: SliverToBoxAdapter(
         child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
+            height: MediaQuery.of(context).size.height * 0.4,
             child: Stack(
               children: [
                 PageView.builder(
@@ -279,17 +414,24 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   scrollDirection: Axis.horizontal,
                   onPageChanged: (index) {
                     setState(() {
-                      _currentIndex = index % ListCustom.listIcon.length;
+                      _currentIndex = index % _listTopBannerImg.length;
                     });
                   },
                   itemBuilder: (context, index) {
+                    final item =
+                        _listTopBannerImg[index % _listTopBannerImg.length];
+
                     return GestureDetector(
                       onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const ShopDunkWebView(
-                                url: 'iphone',
+                          builder: (context) => ShopDunkWebView(
+                                baseUrl: item.link,
                               ))),
-                      child: ListCustom
-                          .listIcon[index % ListCustom.listIcon.length],
+                      child: SizedBox(
+                        child: Image.network(
+                          item.img ?? '',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -331,18 +473,25 @@ class _HomePageScreenState extends State<HomePageScreen> {
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
-            final item = ListCustom.listNews[index];
-            return Container(
+            final item = _listHomeBannerImg[index];
+            return GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => ShopDunkWebView(
+                        baseUrl: item.link,
+                      ))),
+              child: Container(
                 margin: const EdgeInsets.only(bottom: 24),
-                child: Image.asset(item.img.toString()));
+                child: Image.network(item.img ?? ''),
+              ),
+            );
           },
-          childCount: ListCustom.listNews.length,
+          childCount: _listHomeBannerImg.length,
         ),
       ),
     );
   }
 
-  // build categories
+  // build shopdunk UI
   Widget _buildCategoriesUI() {
     return SliverList(
         delegate: SliverChildBuilderDelegate(childCount: _listCategories.length,
@@ -353,9 +502,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           _titleProduct(
             item.name ?? '',
             item.description ?? '',
-            item.seName ?? '',
-            item.pageSize ?? 0,
-            item.listProduct ?? [],
+            item.id,
           ),
           CustomScrollView(
             physics: const NeverScrollableScrollPhysics(),
@@ -369,9 +516,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           _allProduct(
             item.name ?? '',
             item.description ?? '',
-            item.seName ?? '',
-            item.pageSize ?? 0,
-            item.listProduct ?? [],
+            item.id,
           ),
         ],
       );
@@ -382,21 +527,19 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget _titleProduct(
     String nameProduct,
     String desc,
-    String seName,
-    int pagesNumber,
-    List<ProductsModel> allProduct,
+    int? groupId,
   ) {
     return GestureDetector(
-      onTap: () =>
-          Navigator.of(context, rootNavigator: false).push(MaterialPageRoute(
-              builder: (context) => CategoryScreen(
-                    title: nameProduct,
-                    desc: desc,
-                    seName: seName,
-                    pagesNumber: pagesNumber,
-                    allProduct: allProduct,
-                  ),
-              maintainState: false)),
+      onTap: () => Navigator.of(context, rootNavigator: false).push(
+        MaterialPageRoute(
+          builder: (context) => CategoryScreen(
+            title: nameProduct,
+            desc: desc,
+            groupId: groupId,
+          ),
+          maintainState: false,
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Text(
@@ -417,10 +560,13 @@ class _HomePageScreenState extends State<HomePageScreen> {
           (context, index) {
             var item = listProduct[index];
             return GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
-                        url: item.seName,
-                      ))),
+                    url: item.seName,
+                  ),
+                ),
+              ),
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -434,10 +580,14 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       margin: EdgeInsets.only(
                           top: Responsive.isMobile(context) ? 5 : 10,
                           right: Responsive.isMobile(context) ? 5 : 10),
-                      child: Image.asset(
-                        'assets/images/tet_2023.png',
-                        scale: Responsive.isMobile(context) ? 10 : 6,
-                      ),
+                      child: item.defaultPictureModel?.thumbImageUrl != null
+                          ? Image.network(
+                              item.defaultPictureModel?.thumbImageUrl,
+                              scale: Responsive.isMobile(context) ? 10 : 6,
+                            )
+                          : SizedBox(
+                              height: Responsive.isMobile(context) ? 10 : 6,
+                            ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(
@@ -518,9 +668,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget _allProduct(
     String nameProduct,
     String desc,
-    String seName,
-    int pagesNumber,
-    List<ProductsModel> allProduct,
+    int? groupId,
   ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -536,9 +684,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       builder: (context) => CategoryScreen(
                             title: nameProduct,
                             desc: desc,
-                            seName: seName,
-                            pagesNumber: pagesNumber,
-                            allProduct: allProduct,
+                            groupId: groupId,
                           ),
                       maintainState: false)),
               child: Container(
@@ -593,12 +739,16 @@ class _HomePageScreenState extends State<HomePageScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.network(
-                  item.pictureModel?.fullSizeImageUrl ?? '',
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                item.pictureModel?.fullSizeImageUrl != null
+                    ? Image.network(
+                        item.pictureModel?.fullSizeImageUrl ?? '',
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
+                    : const SizedBox(
+                        height: 80,
+                      ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 30,

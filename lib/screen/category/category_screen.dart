@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
+import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/common/responsive.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/constant.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/category_model/category_group_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class CategoryScreen extends StatefulWidget {
   final String title;
   final String desc;
-  final String seName;
-  final int pagesNumber;
-  final List<ProductsModel> allProduct;
+  final int? groupId;
 
-  const CategoryScreen(
-      {required this.title,
-      required this.desc,
-      required this.seName,
-      required this.pagesNumber,
-      required this.allProduct,
-      Key? key})
-      : super(key: key);
+  const CategoryScreen({
+    required this.title,
+    required this.desc,
+    required this.groupId,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
@@ -37,40 +42,105 @@ class _CategoryScreenState extends State<CategoryScreen> {
   bool _isExpand = false;
   String _sortBy = ListCustom.listSortProduct[0].name;
   final List<ProductsModel> _listAllProduct = [];
+  final List<ProductsModel> _listSortProduct = [];
+  CategoryGroupModel _categoryGroupModel = CategoryGroupModel();
+  final dataKey = GlobalKey();
+  final ScrollController _pageScrollController = ScrollController();
+  late ScrollController _hideButtonController;
+
+  bool _isVisible = false;
+
+  _getListProducts() async {
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(RequestGetProductsCategory(widget.groupId, 1));
+  }
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
+  }
 
   @override
   void initState() {
-    _listAllProduct.addAll(widget.allProduct);
+    _getListProducts();
+    _getHideBottomValue();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          color: const Color(0xfff5f5f7),
-          child: CustomScrollView(
-            slivers: [
-              _pageView(),
-              _scrollBar(),
-              _sortListProduct(),
-              _tittle(widget.title),
-              _listProduct(_listAllProduct),
-              _pagesNumber(),
-              widget.title != 'Sounds' && widget.title != 'Accessories'
-                  ? _relatedProducts()
-                  : const SliverToBoxAdapter(),
-              _description(widget.desc),
-              _receiveInfo(),
-              SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                      childCount: 1, (context, index) => const CommonFooter())),
-            ],
-          ),
-        ),
-      ),
-    );
+    return BlocConsumer<ShopdunkBloc, ShopdunkState>(
+        builder: (context, state) => _buildCategoryUI(),
+        listener: (context, state) {
+          if (state is ProductsCategoryLoading) {
+            EasyLoading.show();
+          } else if (state is ProductsCategoryLoaded) {
+            _listAllProduct.clear();
+            _listSortProduct.clear();
+            _categoryGroupModel = state.categoryGroupModel;
+            _listAllProduct.addAll(state.categoryGroupModel.productModel ?? []);
+            _listSortProduct
+                .addAll(state.categoryGroupModel.productModel ?? []);
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is ProductsCategoryLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+        });
+  }
+
+  // build category UI
+  Widget _buildCategoryUI() {
+    return _categoryGroupModel.productModel != null
+        ? CommonNavigateBar(
+            child: Container(
+            color: const Color(0xfff5f5f7),
+            child: CustomScrollView(
+              controller: _hideButtonController,
+              slivers: [
+                _pageView(),
+                // _scrollBar(),
+                _sortListProduct(),
+                _tittle(widget.title),
+                _listProduct(),
+                if (_categoryGroupModel.total != null) _pagesNumber(),
+                widget.title != 'Sounds' && widget.title != 'Accessories'
+                    ? _relatedProducts()
+                    : const SliverToBoxAdapter(),
+                _description(widget.desc),
+                _receiveInfo(),
+                SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                        childCount: 1,
+                        (context, index) => const CommonFooter())),
+              ],
+            ),
+          ))
+        : Container();
   }
 
   // page view
@@ -203,6 +273,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   // sort list product
   Widget _sortListProduct() {
     return SliverToBoxAdapter(
+      key: dataKey,
       child: Row(
         children: [
           SizedBox(
@@ -233,7 +304,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       switch (value) {
                         case Constant.sttDefault:
                           _listAllProduct.clear();
-                          _listAllProduct.addAll(widget.allProduct);
+                          _listAllProduct.addAll(_listSortProduct);
                           break;
                         case Constant.price91:
                           _listAllProduct.sort((a, b) =>
@@ -296,14 +367,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   // list product
-  Widget _listProduct(List<ProductsModel> listProduct) {
+  Widget _listProduct() {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate(
-          childCount: listProduct.length,
+          childCount: _listAllProduct.length,
           (context, index) {
-            var item = listProduct[index];
+            var item = _listAllProduct[index];
             return GestureDetector(
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
@@ -321,10 +392,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       margin: EdgeInsets.only(
                           top: Responsive.isMobile(context) ? 5 : 10,
                           right: Responsive.isMobile(context) ? 5 : 10),
-                      child: Image.asset(
-                        'assets/images/tet_2023.png',
-                        scale: Responsive.isMobile(context) ? 10 : 6,
-                      ),
+                      child: item.defaultPictureModel?.thumbImageUrl != null
+                          ? Image.network(
+                              item.defaultPictureModel?.thumbImageUrl,
+                              scale: Responsive.isMobile(context) ? 10 : 6,
+                            )
+                          : SizedBox(
+                              height: Responsive.isMobile(context) ? 10 : 6,
+                            ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(
@@ -403,43 +478,129 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   // pages number
   Widget _pagesNumber() {
+    var totalPage = (_categoryGroupModel.total! / 8).ceil();
+
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
       sliver: SliverToBoxAdapter(
         child: Center(
           child: SizedBox(
             height: 35,
-            width: widget.pagesNumber > 6
-                ? double.infinity
-                : 35 * (widget.pagesNumber + 1) + 25,
-            child: ListView.builder(
-              itemCount: widget.pagesNumber,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => GestureDetector(
-                onTap: () => setState(
-                  () {
-                    _pagesSelected = index;
-                  },
-                ),
-                child: Container(
-                  height: 35,
-                  width: 35,
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    color: _pagesSelected == index
-                        ? Colors.blueAccent
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(4),
+            width: totalPage > 6 ? double.infinity : 35 * (totalPage + 1) + 25,
+            child: Row(
+              children: [
+                if (totalPage > 6 && _pagesSelected >= 5)
+                  GestureDetector(
+                    onTap: () {
+                      if (_pagesSelected != 0) {
+                        setState(() {
+                          _pagesSelected = 0;
+                          BlocProvider.of<ShopdunkBloc>(context).add(
+                            RequestGetProductsCategory(
+                              widget.groupId,
+                              1,
+                            ),
+                          );
+                          _pageScrollController.animateTo(
+                            _pageScrollController.position.minScrollExtent,
+                            duration: const Duration(seconds: 2),
+                            curve: Curves.fastOutSlowIn,
+                          );
+                          Scrollable.ensureVisible(dataKey.currentContext!);
+                        });
+                      }
+                    },
+                    child: Container(
+                      height: 35,
+                      width: 35,
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_outlined,
+                        size: 14,
+                        color: Color(0xff1D1D1D),
+                      ),
+                    ),
                   ),
-                  child: Text(
-                    (index + 1).toString(),
-                    style: _pagesSelected == index
-                        ? CommonStyles.size14W400White(context)
-                        : CommonStyles.size14W400Black1D(context),
+                Expanded(
+                  child: ListView.builder(
+                    controller: _pageScrollController,
+                    itemCount: totalPage,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) => GestureDetector(
+                      onTap: () => setState(() {
+                        _pagesSelected = index;
+                        BlocProvider.of<ShopdunkBloc>(context).add(
+                          RequestGetProductsCategory(widget.groupId, index + 1),
+                        );
+                        Scrollable.ensureVisible(dataKey.currentContext!);
+                      }),
+                      child: Container(
+                        height: 35,
+                        width: 35,
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        decoration: BoxDecoration(
+                          color: _pagesSelected == index
+                              ? Colors.blueAccent
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          (index + 1).toString(),
+                          style: _pagesSelected == index
+                              ? CommonStyles.size14W400White(context)
+                              : CommonStyles.size14W400Black1D(context),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                if (totalPage > 6 &&
+                    _pagesSelected <=
+                        (_categoryGroupModel.productModel!.length - 5))
+                  GestureDetector(
+                    onTap: () {
+                      if (_categoryGroupModel.total != null &&
+                          _pagesSelected != totalPage - 1) {
+                        setState(() {
+                          _pagesSelected = totalPage - 1;
+                          BlocProvider.of<ShopdunkBloc>(context).add(
+                            RequestGetProductsCategory(
+                              widget.groupId,
+                              totalPage,
+                            ),
+                          );
+                          _pageScrollController.animateTo(
+                            _pageScrollController.position.maxScrollExtent,
+                            duration: const Duration(seconds: 2),
+                            curve: Curves.fastOutSlowIn,
+                          );
+                          Scrollable.ensureVisible(dataKey.currentContext!);
+                        });
+                      }
+                    },
+                    child: Container(
+                      height: 35,
+                      width: 35,
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14,
+                        color: Color(0xff1D1D1D),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

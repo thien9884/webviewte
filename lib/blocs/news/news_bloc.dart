@@ -9,6 +9,15 @@ class NewsBloc extends BaseBloc<NewsEvent, NewsState> {
   NewsBloc() : super(const NewsInitial()) {
     // GET NEWS EVENT
     on<RequestGetNews>((event, emit) => _handleGetNews(event, emit));
+
+    // GET HIDE BOTTOM
+    on<RequestGetHideBottom>((event, emit) {
+      bool? isHide = event.isHide;
+      return _handleGetHideBottom(
+        emit,
+        isHide,
+      );
+    });
   }
 
   _handleGetNews(RequestGetNews event, Emitter emit) async {
@@ -21,6 +30,22 @@ class NewsBloc extends BaseBloc<NewsEvent, NewsState> {
     } catch (e) {
       emit(
         NewsLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleGetHideBottom(Emitter<NewsState> emit, bool? isHide) async {
+    try {
+      emit(
+        HideBottomSuccess(
+          isHide: isHide ?? false,
+        ),
+      );
+    } catch (e) {
+      emit(
+        HideBottomError(
           message: handleError(e),
         ),
       );

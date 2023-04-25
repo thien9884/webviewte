@@ -105,7 +105,7 @@ class LatestNews {
   int? numberOfComments;
   String? createdOn;
   PictureModel? pictureModel;
-  dynamic comments;
+  List<NewsComments>? newsComments;
   AddNewComment? addNewComment;
   int? id;
 
@@ -122,7 +122,7 @@ class LatestNews {
       this.numberOfComments,
       this.createdOn,
       this.pictureModel,
-      this.comments,
+      this.newsComments,
       this.addNewComment,
       this.id});
 
@@ -142,6 +142,12 @@ class LatestNews {
     pictureModel = json['PictureModel'] != null
         ? PictureModel.fromJson(json['PictureModel'])
         : null;
+    if (json['Comments'] != null) {
+      newsComments = <NewsComments>[];
+      json['Comments'].forEach((v) {
+        newsComments!.add(NewsComments.fromJson(v));
+      });
+    }
     addNewComment = json['AddNewComment'] != null
         ? AddNewComment.fromJson(json['AddNewComment'])
         : null;
@@ -202,6 +208,51 @@ class PictureModel {
     data['FullSizeImageUrl'] = fullSizeImageUrl;
     data['Title'] = title;
     data['AlternateText'] = alternateText;
+    return data;
+  }
+}
+
+class NewsComments {
+  int? customerId;
+  String? customerName;
+  String? customerAvatarUrl;
+  String? commentTitle;
+  String? commentText;
+  String? createdOn;
+  bool? allowViewingProfiles;
+  int? id;
+
+  NewsComments(
+      {this.customerId,
+      this.customerName,
+      this.customerAvatarUrl,
+      this.commentTitle,
+      this.commentText,
+      this.createdOn,
+      this.allowViewingProfiles,
+      this.id});
+
+  NewsComments.fromJson(Map<String, dynamic> json) {
+    customerId = json['CustomerId'];
+    customerName = json['CustomerName'];
+    customerAvatarUrl = json['CustomerAvatarUrl'];
+    commentTitle = json['CommentTitle'];
+    commentText = json['CommentText'];
+    createdOn = json['CreatedOn'];
+    allowViewingProfiles = json['AllowViewingProfiles'];
+    id = json['Id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['CustomerId'] = customerId;
+    data['CustomerName'] = customerName;
+    data['CustomerAvatarUrl'] = customerAvatarUrl;
+    data['CommentTitle'] = commentTitle;
+    data['CommentText'] = commentText;
+    data['CreatedOn'] = createdOn;
+    data['AllowViewingProfiles'] = allowViewingProfiles;
+    data['Id'] = id;
     return data;
   }
 }
@@ -293,7 +344,7 @@ class NewsItems {
   int? numberOfComments;
   String? createdOn;
   PictureModel? pictureModel;
-  dynamic comments;
+  List<NewsComments>? newsComments;
   AddNewComment? addNewComment;
   int? id;
 
@@ -310,7 +361,7 @@ class NewsItems {
       this.numberOfComments,
       this.createdOn,
       this.pictureModel,
-      this.comments,
+      this.newsComments,
       this.addNewComment,
       this.id});
 
@@ -330,6 +381,12 @@ class NewsItems {
     pictureModel = json['PictureModel'] != null
         ? PictureModel.fromJson(json['PictureModel'])
         : null;
+    if (json['Comments'] != null) {
+      newsComments = <NewsComments>[];
+      json['Comments'].forEach((v) {
+        newsComments!.add(NewsComments.fromJson(v));
+      });
+    }
     addNewComment = json['AddNewComment'] != null
         ? AddNewComment.fromJson(json['AddNewComment'])
         : null;
@@ -353,8 +410,8 @@ class NewsItems {
     if (pictureModel != null) {
       data['PictureModel'] = pictureModel!.toJson();
     }
-    if (comments != null) {
-      data['Comments'] = comments!.map((v) => v.toJson()).toList();
+    if (newsComments != null) {
+      data['Comments'] = newsComments!.map((v) => v.toJson()).toList();
     }
     if (addNewComment != null) {
       data['AddNewComment'] = addNewComment!.toJson();
