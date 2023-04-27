@@ -31,7 +31,7 @@ class CommonFooter extends StatefulWidget {
 }
 
 class _CommonFooterState extends State<CommonFooter> {
-  List<Footer> _listFooter = [];
+  final List<Footer> _listFooter = [];
 
   // Sync data
   _getCategories() async {
@@ -50,8 +50,8 @@ class _CommonFooterState extends State<CommonFooter> {
         builder: (context, state) => _footerUI(),
         listener: (context, state) {
           if (state is FooterLoading) {
-            EasyLoading.show();
           } else if (state is FooterLoaded) {
+            _listFooter.clear();
             _listFooter.add(Footer(
               name: 'Thông tin',
               listFooter: state.listTopics.topics
@@ -83,18 +83,20 @@ class _CommonFooterState extends State<CommonFooter> {
 
   // footer UI
   Widget _footerUI() {
-    return Container(
-      color: Colors.black,
-      child: CustomScrollView(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        slivers: [
-          _footerShop(),
-          _listFooterExpand(),
-          _infoShop(),
-        ],
-      ),
-    );
+    return _listFooter.isNotEmpty
+        ? Container(
+            color: Colors.black,
+            child: CustomScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              slivers: [
+                _footerShop(),
+                _listFooterExpand(),
+                _infoShop(),
+              ],
+            ),
+          )
+        : Container();
   }
 
   // footer web

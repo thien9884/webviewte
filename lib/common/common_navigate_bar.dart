@@ -114,7 +114,6 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
           }
 
           if (state is NewsLoading) {
-            EasyLoading.show();
           } else if (state is NewsLoaded) {
             _newsGroup = state.newsData.newsGroup!
                 .lastWhere((element) => element.id == 1);
