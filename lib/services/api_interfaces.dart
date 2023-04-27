@@ -9,6 +9,7 @@ import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/model/search_products/search_products_model.dart';
+import 'package:webviewtest/model/subcategory/subcategory_model.dart';
 
 abstract class ApiInterface {
   // Get categories
@@ -31,6 +32,12 @@ abstract class ApiInterface {
 
   // get home banner
   Future<BannerModel?> requestGetHomeBanner();
+
+  // get category banner
+  Future<BannerModel?> requestGetCategoryBanner(int? id);
+
+  // get category banner
+  Future<List<SubCategories>?> requestGetSubCategories(int? id);
 
   // Get list product
   Future<List<ProductsModel>> requestGetProduct(int? id);

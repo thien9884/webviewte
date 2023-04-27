@@ -8,6 +8,7 @@ import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/model/search_products/search_products_model.dart';
+import 'package:webviewtest/model/subcategory/subcategory_model.dart';
 
 abstract class ShopdunkState extends Equatable {
   const ShopdunkState();
@@ -370,6 +371,50 @@ class HomeBannerLoadError extends ShopdunkState {
   final String message;
 
   const HomeBannerLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class CategoryBannerLoading extends ShopdunkState {
+  const CategoryBannerLoading();
+}
+
+class CategoryBannerLoaded extends ShopdunkState {
+  final BannerModel listTopics;
+
+  const CategoryBannerLoaded({required this.listTopics});
+
+  @override
+  List<Object?> get props => [listTopics];
+}
+
+class CategoryBannerLoadError extends ShopdunkState {
+  final String message;
+
+  const CategoryBannerLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class SubCategoryLoading extends ShopdunkState {
+  const SubCategoryLoading();
+}
+
+class SubCategoryLoaded extends ShopdunkState {
+  final List<SubCategories>? subCategory;
+
+  const SubCategoryLoaded({required this.subCategory});
+
+  @override
+  List<Object?> get props => [subCategory];
+}
+
+class SubCategoryLoadError extends ShopdunkState {
+  final String message;
+
+  const SubCategoryLoadError({required this.message});
 
   @override
   List<Object?> get props => [message];

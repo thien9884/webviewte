@@ -9,6 +9,7 @@ import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
+import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
@@ -211,6 +212,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
             _listCategories = state.categories
                 .where((element) => element.showOnHomePage == true)
                 .toList();
+            int indexSound = _listCategories
+                .indexWhere((element) => element.seName == 'am-thanh');
+            int indexAccessories = _listCategories
+                .indexWhere((element) => element.seName == 'phu-kien');
+            _listCategories[indexSound].name = 'Âm thanh';
+            _listCategories[indexAccessories].name = 'Phụ kiện';
             _getListProduct();
           } else if (state is CategoriesLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
@@ -349,7 +356,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   // home UI
   Widget _buildHomeUI(BuildContext context) {
-    return EasyLoading.isShow
+    return _listTopBannerImg.isEmpty &&
+            _listHomeBannerImg.isEmpty &&
+            _listCategories.isEmpty
         ? Container()
         : Container(
             color: const Color(0xffF5F5F7),
@@ -364,7 +373,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     SliverToBoxAdapter(
                       child: GestureDetector(
                         onTap: () =>
-                            Navigator.of(context).push(MaterialPageRoute(
+                            Navigator.of(context).push(CustomMaterialPageRoute(
                                 builder: (context) => const ShopDunkWebView(
                                       baseUrl:
                                           'https://doanhnghiep.shopdunk.com/',
@@ -422,10 +431,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         _listTopBannerImg[index % _listTopBannerImg.length];
 
                     return GestureDetector(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => ShopDunkWebView(
-                                baseUrl: item.link,
-                              ))),
+                      onTap: () =>
+                          Navigator.of(context).push(CustomMaterialPageRoute(
+                              builder: (context) => ShopDunkWebView(
+                                    baseUrl: item.link,
+                                  ))),
                       child: SizedBox(
                         child: Image.network(
                           item.img ?? '',
@@ -443,7 +453,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
-                          ListCustom.listIcon.length,
+                          _listTopBannerImg.length,
                           (index) => Container(
                                 height: Responsive.isMobile(context) ? 10 : 15,
                                 width: Responsive.isMobile(context) ? 10 : 15,
@@ -475,7 +485,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           (BuildContext context, int index) {
             final item = _listHomeBannerImg[index];
             return GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              onTap: () => Navigator.of(context).push(CustomMaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
                         baseUrl: item.link,
                       ))),
@@ -497,11 +507,15 @@ class _HomePageScreenState extends State<HomePageScreen> {
         delegate: SliverChildBuilderDelegate(childCount: _listCategories.length,
             (context, index) {
       final item = _listCategories[index];
+      final cIndex =
+          _listCategories.indexWhere((element) => element.seName == 'phu-kien');
       return Column(
         children: [
           _titleProduct(
             item.name ?? '',
             item.description ?? '',
+            _listCategories[cIndex].description ?? '',
+            item.seName ?? '',
             item.id,
           ),
           CustomScrollView(
@@ -516,6 +530,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
           _allProduct(
             item.name ?? '',
             item.description ?? '',
+            _listCategories[cIndex].description ?? '',
+            item.seName ?? '',
             item.id,
           ),
         ],
@@ -527,6 +543,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget _titleProduct(
     String nameProduct,
     String desc,
+    String descAccessories,
+    String seName,
     int? groupId,
   ) {
     return GestureDetector(
@@ -535,6 +553,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
           builder: (context) => CategoryScreen(
             title: nameProduct,
             desc: desc,
+            descAccessories: descAccessories,
+            seName: seName,
             groupId: groupId,
           ),
           maintainState: false,
@@ -561,7 +581,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
             var item = listProduct[index];
             return GestureDetector(
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                CustomMaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
                     url: item.seName,
                   ),
@@ -668,6 +688,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget _allProduct(
     String nameProduct,
     String desc,
+    String descAccessories,
+    String seName,
     int? groupId,
   ) {
     return Row(
@@ -684,6 +706,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       builder: (context) => CategoryScreen(
                             title: nameProduct,
                             desc: desc,
+                            descAccessories: descAccessories,
+                            seName: seName,
                             groupId: groupId,
                           ),
                       maintainState: false)),

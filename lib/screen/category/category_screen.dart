@@ -3,12 +3,15 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
+import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/constant.dart';
@@ -16,16 +19,22 @@ import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category_model/category_group_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
+import 'package:webviewtest/model/subcategory/subcategory_model.dart';
+import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class CategoryScreen extends StatefulWidget {
   final String title;
   final String desc;
+  final String descAccessories;
+  final String seName;
   final int? groupId;
 
   const CategoryScreen({
     required this.title,
     required this.desc,
+    required this.descAccessories,
+    required this.seName,
     required this.groupId,
     Key? key,
   }) : super(key: key);
@@ -37,6 +46,7 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   int _indexSelected = 0;
   int _pagesSelected = 0;
+  int _categorySelected = 0;
   final TextEditingController _emailController = TextEditingController();
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
   bool _isExpand = false;
@@ -47,12 +57,52 @@ class _CategoryScreenState extends State<CategoryScreen> {
   final dataKey = GlobalKey();
   final ScrollController _pageScrollController = ScrollController();
   late ScrollController _hideButtonController;
+  int? _groupId;
+  String _desc = '';
+  String _seName = '';
+  String _categoryTitle = "";
+  String _categoryBanner = '';
+  List<TopBanner> _listCategoryBannerImg = [];
+  List<SubCategories> _listSubCategories = [];
 
   bool _isVisible = false;
 
   _getListProducts() async {
     BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetProductsCategory(widget.groupId, 1));
+        .add(RequestGetProductsCategory(_groupId, 1));
+  }
+
+  _getListSubCategories() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(RequestGetSubCategory(_groupId));
+  }
+
+  _getListBanner() async {
+    switch (_seName) {
+      case 'ipad':
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetCategoryBanner(57));
+        break;
+      case 'iphone':
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetCategoryBanner(41));
+        break;
+      case 'mac':
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetCategoryBanner(58));
+        break;
+      case 'apple-watch':
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetCategoryBanner(59));
+        break;
+      case 'am-thanh':
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetCategoryBanner(60));
+        break;
+      case 'phu-kien':
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetCategoryBanner(61));
+        break;
+    }
   }
 
   _getHideBottomValue() {
@@ -84,7 +134,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   @override
   void initState() {
+    _categoryTitle = widget.title;
+    _groupId = widget.groupId;
+    _desc = widget.desc;
+    _seName = widget.seName;
     _getListProducts();
+    _getListSubCategories();
+    _getListBanner();
     _getHideBottomValue();
     super.initState();
   }
@@ -110,6 +166,59 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
+
+          if (state is CategoryBannerLoading) {
+            EasyLoading.show();
+          } else if (state is CategoryBannerLoaded) {
+            _categoryBanner = state.listTopics.topics?.first.body ?? '';
+            var document = parse(
+              _categoryBanner.replaceAll('src="', 'src="http://shopdunk.com'),
+            );
+            var imgList = document.querySelectorAll("img");
+            var linkList = document.querySelectorAll("a");
+            List<String> imageList = [];
+            List<String> getLinkList = [];
+            List<TopBanner> homeBanner = [];
+            for (dom.Element img in imgList) {
+              imageList.add(img.attributes['src']!);
+            }
+            for (dom.Element img in linkList) {
+              getLinkList.add(img.attributes['href']!);
+            }
+            for (int i = 0; i < imageList.length; i++) {
+              homeBanner.add(
+                TopBanner(
+                  img: imageList[i],
+                ),
+              );
+            }
+            _listCategoryBannerImg = homeBanner;
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is CategoryBannerLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is SubCategoryLoading) {
+            EasyLoading.show();
+          } else if (state is SubCategoryLoaded) {
+            _listSubCategories = state.subCategory ?? [];
+            _listSubCategories.insert(
+              0,
+              SubCategories(
+                name: 'Tất cả',
+                id: widget.groupId,
+              ),
+            );
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is SubCategoryLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
         });
   }
 
@@ -122,16 +231,18 @@ class _CategoryScreenState extends State<CategoryScreen> {
             child: CustomScrollView(
               controller: _hideButtonController,
               slivers: [
-                _pageView(),
-                // _scrollBar(),
+                if (_listCategoryBannerImg.isNotEmpty) _pageView(),
+                _listCategoryScrollBar(),
                 _sortListProduct(),
-                _tittle(widget.title),
+                _tittle(),
                 _listProduct(),
-                if (_categoryGroupModel.total != null) _pagesNumber(),
+                if (_categoryGroupModel.total != null &&
+                    _categoryGroupModel.total! > 8)
+                  _pagesNumber(),
                 widget.title != 'Sounds' && widget.title != 'Accessories'
                     ? _relatedProducts()
                     : const SliverToBoxAdapter(),
-                _description(widget.desc),
+                _description(),
                 _receiveInfo(),
                 SliverList(
                     delegate: SliverChildBuilderDelegate(
@@ -152,84 +263,60 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: Stack(
           children: [
             PageView.builder(
-              onPageChanged: (value) {
-                setState(() {
-                  _indexSelected = value % ListCustom.listIcon.length;
-                });
+              physics: _listCategoryBannerImg.length == 1
+                  ? const NeverScrollableScrollPhysics()
+                  : null,
+              scrollDirection: Axis.horizontal,
+              onPageChanged: (index) {
+                if (_listCategoryBannerImg.length > 1) {
+                  setState(() {
+                    _indexSelected = index % _listCategoryBannerImg.length;
+                  });
+                }
               },
               itemBuilder: (context, index) {
-                return Container(
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(
-                        'assets/images/news_banner.jpeg',
-                      ),
-                      fit: BoxFit.fill,
+                final item = _listCategoryBannerImg[
+                    index % _listCategoryBannerImg.length];
+
+                return GestureDetector(
+                  // onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  //     builder: (context) => ShopDunkWebView(
+                  //           baseUrl: item.link,
+                  //         ))),
+                  child: SizedBox(
+                    child: Image.network(
+                      item.img ?? '',
+                      fit: BoxFit.cover,
                     ),
-                  ),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                      colors: [
-                        Colors.black,
-                        Colors.transparent,
-                      ],
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      tileMode: TileMode.clamp,
-                    )),
                   ),
                 );
               },
             ),
-            Positioned(
+            if (_listCategoryBannerImg.length > 1)
+              Positioned(
                 bottom: 20,
                 width: MediaQuery.of(context).size.width,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: Text(
-                                'TRÒ CHƠI “ÔM CÀNG LÂU, ƯU ĐÃI CÀNG SÂU” SHOPDUNK THU HÚT PHỐ ĐI BỘ HÀ NỘI',
-                                style: CommonStyles.size18W700White(context),
-                                maxLines: 3,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                              ListCustom.listIcon.length,
-                              (index) => Container(
-                                    height:
-                                        Responsive.isMobile(context) ? 10 : 15,
-                                    width:
-                                        Responsive.isMobile(context) ? 10 : 15,
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    decoration: BoxDecoration(
-                                        color: _indexSelected == index
-                                            ? const Color(0xff4AB2F1)
-                                                .withOpacity(0.5)
-                                            : const Color(0xff515154)
-                                                .withOpacity(0.5),
-                                        shape: BoxShape.circle),
-                                  )),
-                        ),
-                      ),
-                    ],
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                        _listCategoryBannerImg.length,
+                        (index) => Container(
+                              height: Responsive.isMobile(context) ? 10 : 15,
+                              width: Responsive.isMobile(context) ? 10 : 15,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                  color: _indexSelected == index
+                                      ? const Color(0xff4AB2F1).withOpacity(0.5)
+                                      : const Color(0xff515154)
+                                          .withOpacity(0.5),
+                                  shape: BoxShape.circle),
+                            )),
                   ),
-                ))
+                ),
+              )
           ],
         ),
       ),
@@ -237,20 +324,30 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   // news scroll bar
-  Widget _scrollBar() {
+  Widget _listCategoryScrollBar() {
     return SliverToBoxAdapter(
+      key: dataKey,
       child: Scrollbar(
           child: SizedBox(
         height: 70,
         child: ListView.builder(
-          itemCount: 5,
+          itemCount: _listSubCategories.length,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) {
+            final item = _listSubCategories[index];
+
             return GestureDetector(
-              onTap: () {},
+              onTap: () {
+                setState(() {
+                  _categorySelected = index;
+                  BlocProvider.of<ShopdunkBloc>(context)
+                      .add(RequestGetProductsCategory(item.id, 1));
+                });
+              },
               child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.white,
+                    color:
+                        _categorySelected == index ? Colors.blue : Colors.white,
                     borderRadius: BorderRadius.circular(10)),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -258,8 +355,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                 child: Center(
                   child: Text(
-                    'iPhone',
-                    style: CommonStyles.size15W400Grey51(context),
+                    item.name ?? '',
+                    style: _categorySelected == index
+                        ? CommonStyles.size15W700White(context)
+                        : CommonStyles.size15W400Grey51(context),
                   ),
                 ),
               ),
@@ -273,7 +372,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
   // sort list product
   Widget _sortListProduct() {
     return SliverToBoxAdapter(
-      key: dataKey,
       child: Row(
         children: [
           SizedBox(
@@ -352,13 +450,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   // title
-  Widget _tittle(String tittle) {
+  Widget _tittle() {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       sliver: SliverToBoxAdapter(
         child: Center(
           child: Text(
-            tittle,
+            _categoryTitle,
             style: CommonStyles.size24W700Black1D(context),
           ),
         ),
@@ -376,7 +474,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           (context, index) {
             var item = _listAllProduct[index];
             return GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              onTap: () => Navigator.of(context).push(CustomMaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
                         url: item.seName,
                       ))),
@@ -497,7 +595,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           _pagesSelected = 0;
                           BlocProvider.of<ShopdunkBloc>(context).add(
                             RequestGetProductsCategory(
-                              widget.groupId,
+                              _groupId,
                               1,
                             ),
                           );
@@ -535,7 +633,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       onTap: () => setState(() {
                         _pagesSelected = index;
                         BlocProvider.of<ShopdunkBloc>(context).add(
-                          RequestGetProductsCategory(widget.groupId, index + 1),
+                          RequestGetProductsCategory(_groupId, index + 1),
                         );
                         Scrollable.ensureVisible(dataKey.currentContext!);
                       }),
@@ -571,7 +669,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           _pagesSelected = totalPage - 1;
                           BlocProvider.of<ShopdunkBloc>(context).add(
                             RequestGetProductsCategory(
-                              widget.groupId,
+                              _groupId,
                               totalPage,
                             ),
                           );
@@ -622,61 +720,82 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   // related Items
   Widget _relatedItems(int index) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Image.network(
-            'https://shopdunk.com/images/uploaded/trang%20danh%20muc/iphone/Image-Standard-1.png',
-            width: 139,
-            height: 121,
-          ),
-          const SizedBox(
-            width: 5,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  index == 0
-                      ? 'Phụ kiện ${widget.title} thường mua đi kèm'
-                      : 'Tìm ${widget.title} phù hợp với bạn',
-                  style: CommonStyles.size18W700Black1D(context),
-                  maxLines: 2,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      index == 0
-                          ? 'Tìm phụ kiện'
-                          : 'So sánh các ${widget.title}',
-                      style: CommonStyles.size14W400Blue00(context),
-                    ),
-                    const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: Color(0xff0066CC),
-                      size: 14,
-                    )
-                  ],
-                )
-              ],
+    return GestureDetector(
+      onTap: () {
+        if (index == 0) {
+          setState(() {
+            _categoryTitle = "Accessories";
+            _groupId = 15;
+            _desc = widget.descAccessories;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(const RequestGetCategoryBanner(61));
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(const RequestGetProductsCategory(15, 1));
+            Scrollable.ensureVisible(dataKey.currentContext!);
+          });
+        } else {
+          Navigator.of(context).push(CustomMaterialPageRoute(
+              builder: (context) => const ShopDunkWebView(
+                    url: 'compareproducts',
+                  )));
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Image.network(
+              'https://shopdunk.com/images/uploaded/trang%20danh%20muc/iphone/Image-Standard-1.png',
+              width: 139,
+              height: 121,
             ),
-          )
-        ],
+            const SizedBox(
+              width: 5,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    index == 0
+                        ? 'Phụ kiện ${widget.title} thường mua đi kèm'
+                        : 'Tìm ${widget.title} phù hợp với bạn',
+                    style: CommonStyles.size18W700Black1D(context),
+                    maxLines: 2,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        index == 0
+                            ? 'Tìm phụ kiện'
+                            : 'So sánh các ${widget.title}',
+                        style: CommonStyles.size14W400Blue00(context),
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        color: Color(0xff0066CC),
+                        size: 14,
+                      )
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
   // description
-  Widget _description(String description) {
+  Widget _description() {
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -688,22 +807,31 @@ class _CategoryScreenState extends State<CategoryScreen> {
           children: [
             Html(
               data: _isExpand
-                  ? description
-                  : description
-                      .substring(0, 1000)
-                      .replaceRange(1000, 1000, '...'),
+                  ? _desc
+                  : _desc.substring(0, 3000).replaceRange(3000, 3000, '...'),
               style: {
                 "h3": Style(
-                    fontSize: FontSize.xxLarge, textAlign: TextAlign.justify),
+                  fontSize: FontSize.xxLarge,
+                  textAlign: TextAlign.justify,
+                  fontFamily: "ArialCustom",
+                ),
                 "p": Style(
                   fontSize: FontSize.xLarge,
                   textAlign: TextAlign.justify,
                   lineHeight: LineHeight.number(1.1),
+                  fontFamily: "ArialCustom",
+                ),
+                "span": Style(
+                  fontSize: FontSize.xLarge,
+                  textAlign: TextAlign.justify,
+                  lineHeight: LineHeight.number(1.1),
+                  fontFamily: "ArialCustom",
                 ),
                 "li": Style(
                   fontSize: FontSize.xLarge,
                   textAlign: TextAlign.justify,
                   lineHeight: LineHeight.number(1.1),
+                  fontFamily: "ArialCustom",
                 ),
                 "img": Style(alignment: Alignment.center),
               },

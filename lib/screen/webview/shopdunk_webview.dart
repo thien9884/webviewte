@@ -171,6 +171,15 @@ Page resource error:
     return CommonNavigateBar(
         index: 1,
         showAppBar: widget.hideBottom,
-        child: WebViewWidget(controller: _controller));
+        child: WillPopScope(
+            onWillPop: () async {
+              if(await _controller.canGoBack()) {
+                _controller.goBack();
+                return false;
+              } else {
+                return true;
+              }
+            },
+            child: WebViewWidget(controller: _controller)));
   }
 }

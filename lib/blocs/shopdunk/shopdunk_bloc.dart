@@ -120,6 +120,22 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
         bannerId,
       );
     });
+
+    on<RequestGetCategoryBanner>((event, emit) {
+      int? bannerId = event.bannerId;
+      return _handleGetCategoryBanner(
+        emit,
+        bannerId,
+      );
+    });
+
+    on<RequestGetSubCategory>((event, emit) {
+      int? categoryId = event.categoryId;
+      return _handleGetSubCategory(
+        emit,
+        categoryId,
+      );
+    });
   }
 
   _handleGetNews(RequestGetNews event, Emitter emit) async {
@@ -365,6 +381,44 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
     } catch (e) {
       emit(
         HomeBannerLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleGetCategoryBanner(
+    Emitter<ShopdunkState> emit,
+    int? bannerId,
+  ) async {
+    emit(const CategoryBannerLoading());
+    try {
+      final data = await ApiCall().requestGetCategoryBanner(bannerId);
+      emit(
+        CategoryBannerLoaded(listTopics: data ?? BannerModel()),
+      );
+    } catch (e) {
+      emit(
+        CategoryBannerLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleGetSubCategory(
+    Emitter<ShopdunkState> emit,
+    int? categoryId,
+  ) async {
+    emit(const SubCategoryLoading());
+    try {
+      final data = await ApiCall().requestGetSubCategories(categoryId);
+      emit(
+        SubCategoryLoaded(subCategory: data ?? []),
+      );
+    } catch (e) {
+      emit(
+        SubCategoryLoadError(
           message: handleError(e),
         ),
       );

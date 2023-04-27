@@ -81,8 +81,10 @@ class _NewsScreenState extends State<NewsScreen> {
           } else if (state is NewsLoaded) {
             _newsGroup = state.newsData.newsGroup ?? [];
             _latestNews = state.newsData.latestNews ?? [];
-            _latestNews.removeRange(
-                4, _latestNews.lastIndexOf(_latestNews.last));
+            if (_latestNews.length > 4) {
+              _latestNews.removeRange(4, _latestNews.length);
+            }
+
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is NewsLoadError) {
             if (EasyLoading.isShow) EasyLoading.dismiss();
@@ -198,7 +200,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
-                        5,
+                        _latestNews.length,
                         (index) => Container(
                               height: Responsive.isMobile(context) ? 10 : 15,
                               width: Responsive.isMobile(context) ? 10 : 15,

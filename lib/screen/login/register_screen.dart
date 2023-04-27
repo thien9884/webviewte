@@ -31,7 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Text(
-                    'Đăng nhập',
+                    'Đăng ký',
                     style: CommonStyles.size24W700Black1D(context),
                   ),
                 ),
@@ -103,6 +103,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                   height: 15,
                                                   width: 15,
                                                 ),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
                                           Text(
                                             item.name,
                                             style:
@@ -290,8 +293,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child: GestureDetector(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const LoginScreen())),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const LoginScreen()));
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(

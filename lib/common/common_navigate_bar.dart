@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
+import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category/category_model.dart';
+import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
+import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/search_products/search_products.dart';
 import 'package:webviewtest/screen/store/store_screen.dart';
@@ -45,6 +49,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
   final _delayInput = DelayInput(milliseconds: 1000);
   bool _showDrawer = false;
   bool _isVisible = true;
+  NewsGroup _newsGroup = NewsGroup();
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 500),
     reverseDuration: const Duration(milliseconds: 500),
@@ -69,9 +74,15 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetCategories());
   }
 
+  // Sync data
+  _getNews() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetNews());
+  }
+
   @override
   void initState() {
     _getCategories();
+    _getNews();
     super.initState();
   }
 
@@ -100,6 +111,19 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             AlertUtils.displayErrorAlert(context, state.message);
           } else if (state is HideBottomSuccess) {
             _isVisible = state.isHide;
+          }
+
+          if (state is NewsLoading) {
+            EasyLoading.show();
+          } else if (state is NewsLoaded) {
+            _newsGroup = state.newsData.newsGroup!
+                .lastWhere((element) => element.id == 1);
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is NewsLoadError) {
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+
+            AlertUtils.displayErrorAlert(context, state.message);
           }
         });
   }
@@ -148,7 +172,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
       axis: Axis.vertical,
       axisAlignment: -1,
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.4,
+        height: 56 * 2,
         margin: const EdgeInsets.only(bottom: 40),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -159,6 +183,92 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
               offset: const Offset(0, 20),
             ),
           ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: ListView(
+            children: [
+              // GestureDetector(
+              //   onTap: () {
+              //     Navigator.of(context).push(MaterialPageRoute(
+              //         builder: (context) => const RegisterScreen()));
+              //   },
+              //   child: Container(
+              //     height: 56,
+              //     alignment: Alignment.centerLeft,
+              //     decoration: BoxDecoration(
+              //         border: Border(
+              //             bottom: BorderSide(
+              //                 width: 1, color: Colors.grey.withOpacity(0.5)))),
+              //     child: Text(
+              //       'Tạo tài khoản ngay',
+              //       style: CommonStyles.size15W400Black1D(context),
+              //     ),
+              //   ),
+              // ),
+              // GestureDetector(
+              //   onTap: () {
+              //     Navigator.of(context).push(MaterialPageRoute(
+              //         builder: (context) => const LoginScreen()));
+              //   },
+              //   child: Container(
+              //     height: 56,
+              //     alignment: Alignment.centerLeft,
+              //     decoration: BoxDecoration(
+              //         border: Border(
+              //             bottom: BorderSide(
+              //                 width: 1, color: Colors.grey.withOpacity(0.5)))),
+              //     child: Text(
+              //       'Đăng nhập',
+              //       style: CommonStyles.size15W400Black1D(context),
+              //     ),
+              //   ),
+              // ),
+              GestureDetector(
+                onTap: () {
+                  final cIndex = _listCategories
+                      .indexWhere((element) => element.seName == 'phu-kien');
+
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => CategoryScreen(
+                        title: _listCategories[cIndex].name ?? '',
+                        desc: _listCategories[cIndex].description ?? '',
+                        descAccessories:
+                        _listCategories[cIndex].description ?? '',
+                        seName: _listCategories[cIndex].seName ?? '',
+                        groupId: _listCategories[cIndex].id,
+                      )));
+                },
+                child: Container(
+                  height: 56,
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              width: 1, color: Colors.grey.withOpacity(0.5)))),
+                  child: Text(
+                    'Phụ kiện',
+                    style: CommonStyles.size15W400Black1D(context),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          NewsCategory(newsGroup: _newsGroup)));
+                },
+                child: Container(
+                  height: 56,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Khuyến mãi',
+                    style: CommonStyles.size15W400Black1D(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -220,13 +330,24 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
 
   // build category bar
   Widget _buildCategoryBar() {
-    return SizedBox(
+    return Container(
       height: 48,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(
+            width: 0.5,
+            color: Colors.grey.withOpacity(0.5),
+          ),
+        ),
+      ),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: _listCategories.length,
           itemBuilder: (context, index) {
             final item = _listCategories[index];
+            final cIndex = _listCategories
+                .indexWhere((element) => element.seName == 'phu-kien');
 
             return GestureDetector(
               onTap: () {
@@ -235,6 +356,9 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
                     builder: (context) => CategoryScreen(
                       title: item.name ?? '',
                       desc: item.description ?? '',
+                      descAccessories:
+                          _listCategories[cIndex].description ?? '',
+                      seName: item.seName ?? '',
                       groupId: item.id,
                     ),
                   ),
@@ -375,7 +499,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
                   );
                 } else {
                   Navigator.of(context).push(
-                    MaterialPageRoute(
+                    CustomMaterialPageRoute(
                       builder: (context) => ShopDunkWebView(
                         url: item.seName,
                       ),

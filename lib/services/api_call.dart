@@ -10,6 +10,7 @@ import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/model/search_products/search_products_model.dart';
+import 'package:webviewtest/model/subcategory/subcategory_model.dart';
 import 'package:webviewtest/services/api_interfaces.dart';
 import 'package:webviewtest/services/dio_client.dart';
 
@@ -91,11 +92,35 @@ class ApiCall implements ApiInterface {
   }
 
   @override
+  Future<BannerModel?> requestGetCategoryBanner(int? id) async {
+    await login(
+      LoginModel(
+        rememberMe: true,
+        guest: true,
+        username: 'thien',
+        password: 'a',
+      ),
+    );
+    var response = await DioClient().get('${ApiConstant.categoryBanner}$id');
+    if (response == null) return null;
+    final data = response;
+    return BannerModel.fromJson(data);
+  }
+
+  @override
   Future<List<ProductsModel>> requestGetProduct(int? id) async {
     var response = await DioClient().get(ApiConstant.products + id.toString());
     if (response == null) return [];
     Iterable list = response;
     return list.map((e) => ProductsModel.fromJson(e)).toList();
+  }
+
+  @override
+  Future<List<SubCategories>?> requestGetSubCategories(int? id) async {
+    var response = await DioClient().get('${ApiConstant.subCategory}$id');
+    if (response == null) return [];
+    Iterable list = response["Model"]["SubCategories"];
+    return list.map((e) => SubCategories.fromJson(e)).toList();
   }
 
   @override

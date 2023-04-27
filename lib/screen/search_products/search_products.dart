@@ -8,6 +8,7 @@ import 'package:webviewtest/blocs/search_products/search_products_state.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
+import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/constant.dart';
@@ -299,7 +300,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
             var item = listProduct[index];
             return GestureDetector(
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
+                CustomMaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
                     url: item.seName,
                   ),

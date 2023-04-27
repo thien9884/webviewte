@@ -9,6 +9,7 @@ import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
+import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
@@ -320,7 +321,7 @@ class _NewsDetailState extends State<NewsDetail> {
                         data: _firstContent.replaceAll(
                             'src="', 'src="http://shopdunk.com'),
                         onLinkTap: (str, contextRender, list, element) =>
-                            Navigator.of(context).push(MaterialPageRoute(
+                            Navigator.of(context).push(CustomMaterialPageRoute(
                                 builder: (context) => ShopDunkWebView(
                                       baseUrl: str,
                                     ))),
@@ -328,19 +329,28 @@ class _NewsDetailState extends State<NewsDetail> {
                           "h3": Style(
                             fontSize: FontSize.xxLarge,
                             textAlign: TextAlign.justify,
+                            fontFamily: "Arial",
+                          ),
+                          "strong": Style(
+                            fontSize: FontSize.xLarge,
+                            textAlign: TextAlign.justify,
+                            fontFamily: "Arial",
                           ),
                           "p": Style(
                             fontSize: FontSize.xLarge,
                             textAlign: TextAlign.justify,
+                            fontFamily: "Arial",
                           ),
                           "span": Style(
                             fontSize: FontSize.xLarge,
                             textAlign: TextAlign.justify,
+                            fontFamily: "Arial",
                           ),
                           "li": Style(
                             fontSize: FontSize.xLarge,
                             textAlign: TextAlign.justify,
                             lineHeight: LineHeight.number(1.1),
+                            fontFamily: "Arial",
                           ),
                           "img": Style(alignment: Alignment.center),
                         },
@@ -350,7 +360,7 @@ class _NewsDetailState extends State<NewsDetail> {
                         data: _lastContent.replaceAll(
                             'src="', 'src="http://shopdunk.com'),
                         onLinkTap: (str, contextRender, list, element) =>
-                            Navigator.of(context).push(MaterialPageRoute(
+                            Navigator.of(context).push(CustomMaterialPageRoute(
                                 builder: (context) => ShopDunkWebView(
                                       baseUrl: str,
                                     ))),
@@ -358,19 +368,23 @@ class _NewsDetailState extends State<NewsDetail> {
                           "h3": Style(
                             fontSize: FontSize.xxLarge,
                             textAlign: TextAlign.justify,
+                            fontFamily: "Arial",
                           ),
                           "p": Style(
                             fontSize: FontSize.xLarge,
                             textAlign: TextAlign.justify,
+                            fontFamily: "Arial",
                           ),
                           "span": Style(
                             fontSize: FontSize.xLarge,
                             textAlign: TextAlign.justify,
+                            fontFamily: "Arial",
                           ),
                           "li": Style(
                             fontSize: FontSize.xLarge,
                             textAlign: TextAlign.justify,
                             lineHeight: LineHeight.number(1.1),
+                            fontFamily: "Arial",
                           ),
                           "img": Style(alignment: Alignment.center),
                         },
@@ -384,7 +398,7 @@ class _NewsDetailState extends State<NewsDetail> {
                         : widget.newsItems?.full
                             ?.replaceAll('src="', 'src="http://shopdunk.com'),
                     onLinkTap: (str, contextRender, list, element) =>
-                        Navigator.of(context).push(MaterialPageRoute(
+                        Navigator.of(context).push(CustomMaterialPageRoute(
                             builder: (context) => ShopDunkWebView(
                                   baseUrl: str,
                                 ))),
@@ -392,19 +406,23 @@ class _NewsDetailState extends State<NewsDetail> {
                       "h3": Style(
                         fontSize: FontSize.xxLarge,
                         textAlign: TextAlign.justify,
+                        fontFamily: "Arial",
                       ),
                       "p": Style(
                         fontSize: FontSize.xLarge,
                         textAlign: TextAlign.justify,
+                        fontFamily: "Arial",
                       ),
                       "span": Style(
                         fontSize: FontSize.xLarge,
                         textAlign: TextAlign.justify,
+                        fontFamily: "Arial",
                       ),
                       "li": Style(
                         fontSize: FontSize.xLarge,
                         textAlign: TextAlign.justify,
                         lineHeight: LineHeight.number(1.1),
+                        fontFamily: "Arial",
                       ),
                       "img": Style(alignment: Alignment.center),
                     },
@@ -472,7 +490,7 @@ class _NewsDetailState extends State<NewsDetail> {
               ),
               child: Material(
                 child: InkWell(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  onTap: () => Navigator.of(context).push(CustomMaterialPageRoute(
                       builder: (context) => ShopDunkWebView(
                             url: item?.seName,
                           ))),

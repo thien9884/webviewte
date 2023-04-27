@@ -64,12 +64,12 @@ class ListCustom {
     //     imgUnselect: 'assets/icons/ic_flash_sale_uns.png'),
     Resource(
         id: 0,
-        name: 'News',
+        name: 'Tin tức',
         img: 'assets/icons/ic_news_sel.png',
         imgUnselect: 'assets/icons/ic_news_uns.png'),
     Resource(
         id: 1,
-        name: 'Home',
+        name: 'Trang chủ',
         img: 'assets/icons/ic_home_sel.png',
         imgUnselect: 'assets/icons/ic_home_uns.png'),
     // Resource(
@@ -79,7 +79,7 @@ class ListCustom {
     //     imgUnselect: 'assets/icons/ic_user_uns.png'),
     Resource(
         id: 2,
-        name: 'Store',
+        name: 'Cửa hàng',
         img: 'assets/icons/ic_shop_sel.png',
         imgUnselect: 'assets/icons/ic_shop_uns.png'),
   ];
