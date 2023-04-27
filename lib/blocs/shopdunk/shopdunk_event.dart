@@ -170,6 +170,13 @@ class RequestGetHomeBanner extends ShopdunkEvent {
   List<Object?> get props => [];
 }
 
+class RequestGetFooterBanner extends ShopdunkEvent {
+  const RequestGetFooterBanner();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class RequestGetCategoryBanner extends ShopdunkEvent {
   final int? bannerId;
 

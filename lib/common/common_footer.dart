@@ -1,8 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/responsive.dart';
-import 'package:webviewtest/constant/list_constant.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/banner/banner_model.dart';
+import 'package:webviewtest/screen/load_html/load_html_screen.dart';
+
+class Footer {
+  final String? name;
+  final String? img;
+  List<Topics>? listFooter;
+
+  Footer({
+    this.name,
+    this.img,
+    this.listFooter,
+  });
+}
 
 class CommonFooter extends StatefulWidget {
   const CommonFooter({Key? key}) : super(key: key);
@@ -12,8 +31,58 @@ class CommonFooter extends StatefulWidget {
 }
 
 class _CommonFooterState extends State<CommonFooter> {
+  List<Footer> _listFooter = [];
+
+  // Sync data
+  _getCategories() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetFooterBanner());
+  }
+
+  @override
+  void initState() {
+    _getCategories();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<ShopdunkBloc, ShopdunkState>(
+        builder: (context, state) => _footerUI(),
+        listener: (context, state) {
+          if (state is FooterLoading) {
+            EasyLoading.show();
+          } else if (state is FooterLoaded) {
+            _listFooter.add(Footer(
+              name: 'Thông tin',
+              listFooter: state.listTopics.topics
+                  ?.where((element) => element.includeInFooterColumn1 == true)
+                  .toList(),
+            ));
+            _listFooter.add(Footer(
+              name: 'Chính sách',
+              listFooter: state.listTopics.topics
+                  ?.where((element) => element.includeInFooterColumn2 == true)
+                  .toList(),
+            ));
+            _listFooter.add(Footer(
+              name: 'Địa chỉ & liên hệ',
+              listFooter: state.listTopics.topics
+                  ?.where((element) => element.includeInFooterColumn3 == true)
+                  .toList(),
+            ));
+            print(_listFooter);
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is FooterLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+        });
+  }
+
+  // footer UI
+  Widget _footerUI() {
     return Container(
       color: Colors.black,
       child: CustomScrollView(
@@ -83,9 +152,9 @@ class _CommonFooterState extends State<CommonFooter> {
   // list footer expand information
   Widget _listFooterExpand() {
     return SliverList(
-        delegate: SliverChildBuilderDelegate(
-            childCount: ListCustom.listFooter.length, (context, index) {
-      final items = ListCustom.listFooter[index];
+        delegate: SliverChildBuilderDelegate(childCount: _listFooter.length,
+            (context, index) {
+      final items = _listFooter[index];
       return Theme(
         data: ThemeData().copyWith(dividerColor: Colors.transparent),
         child: ListTileTheme(
@@ -102,7 +171,7 @@ class _CommonFooterState extends State<CommonFooter> {
                   border: Border(
                       bottom: BorderSide(width: 1, color: Color(0xff424245)))),
               child: Text(
-                items.name,
+                items.name ?? '',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: CommonStyles.size15W400WhiteD2(context),
@@ -111,7 +180,7 @@ class _CommonFooterState extends State<CommonFooter> {
             childrenPadding: const EdgeInsets.symmetric(horizontal: 40),
             trailing: const Icon(Icons.keyboard_arrow_down_rounded),
             children: [
-              _listItemExpand(items.listExpand),
+              _listItemExpand(items.listFooter ?? []),
             ],
           ),
         ),
@@ -120,7 +189,7 @@ class _CommonFooterState extends State<CommonFooter> {
   }
 
   // list item expand
-  Widget _listItemExpand(List<Resource> listResource) {
+  Widget _listItemExpand(List<Topics> listResource) {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -133,13 +202,14 @@ class _CommonFooterState extends State<CommonFooter> {
             children: [
               GestureDetector(
                 onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => item.screen ?? Container())),
+                    builder: (context) =>
+                        LoadHtmlScreen(data: item.body ?? ''))),
                 child: Text(
-                  item.name,
+                  item.title,
                   style: CommonStyles.size13W400Grey86(context),
                 ),
               ),
-              item.showAddress ? _itemFooterInfo() : const SizedBox(),
+              // item.showAddress ? _itemFooterInfo() : const SizedBox(),
             ],
           ),
         );

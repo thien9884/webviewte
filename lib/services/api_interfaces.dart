@@ -33,6 +33,9 @@ abstract class ApiInterface {
   // get home banner
   Future<BannerModel?> requestGetHomeBanner();
 
+  // get home banner
+  Future<BannerModel?> requestGetFooterBanner();
+
   // get category banner
   Future<BannerModel?> requestGetCategoryBanner(int? id);
 

@@ -376,6 +376,28 @@ class HomeBannerLoadError extends ShopdunkState {
   List<Object?> get props => [message];
 }
 
+class FooterLoading extends ShopdunkState {
+  const FooterLoading();
+}
+
+class FooterLoaded extends ShopdunkState {
+  final BannerModel listTopics;
+
+  const FooterLoaded({required this.listTopics});
+
+  @override
+  List<Object?> get props => [listTopics];
+}
+
+class FooterLoadError extends ShopdunkState {
+  final String message;
+
+  const FooterLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class CategoryBannerLoading extends ShopdunkState {
   const CategoryBannerLoading();
 }

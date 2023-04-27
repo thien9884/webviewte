@@ -13,4 +13,5 @@ class ApiConstant {
   static const String homeBanner = '/api/topics/6';
   static const String categoryBanner = '/api/topics/';
   static const String subCategory = '/api/category/';
+  static const String footer = '/api/topics';
 }

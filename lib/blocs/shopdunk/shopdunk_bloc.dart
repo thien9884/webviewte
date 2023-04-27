@@ -121,6 +121,13 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
       );
     });
 
+    on<RequestGetFooterBanner>((event, emit) {
+      return _handleGetFooterBanner(
+        event,
+        emit,
+      );
+    });
+
     on<RequestGetCategoryBanner>((event, emit) {
       int? bannerId = event.bannerId;
       return _handleGetCategoryBanner(
@@ -381,6 +388,25 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
     } catch (e) {
       emit(
         HomeBannerLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleGetFooterBanner(
+    RequestGetFooterBanner event,
+    Emitter emit,
+  ) async {
+    emit(const FooterLoading());
+    try {
+      final data = await ApiCall().requestGetFooterBanner();
+      emit(
+        FooterLoaded(listTopics: data ?? BannerModel()),
+      );
+    } catch (e) {
+      emit(
+        FooterLoadError(
           message: handleError(e),
         ),
       );

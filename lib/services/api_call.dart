@@ -92,6 +92,22 @@ class ApiCall implements ApiInterface {
   }
 
   @override
+  Future<BannerModel?> requestGetFooterBanner() async {
+    await login(
+      LoginModel(
+        rememberMe: true,
+        guest: true,
+        username: 'thien',
+        password: 'a',
+      ),
+    );
+    var response = await DioClient().get(ApiConstant.footer);
+    if (response == null) return null;
+    final data = response;
+    return BannerModel.fromJson(data);
+  }
+
+  @override
   Future<BannerModel?> requestGetCategoryBanner(int? id) async {
     await login(
       LoginModel(
