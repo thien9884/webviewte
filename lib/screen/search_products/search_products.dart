@@ -10,12 +10,12 @@ import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
-import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/constant.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/search_products/search_products_model.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class SearchProductsScreen extends StatefulWidget {
@@ -39,6 +39,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
   late TextEditingController _searchController;
   final ScrollController _pageScrollController = ScrollController();
   final dataKey = GlobalKey();
+  Widget? _widget;
 
   _getFirstSearchResult() {
     EasyLoading.show();
@@ -73,8 +74,17 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is SearchProductsLoadError) {
             if (EasyLoading.isShow) EasyLoading.dismiss();
-
-            AlertUtils.displayErrorAlert(context, state.message);
+            _widget = Center(
+              child: GestureDetector(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const NavigationScreen(
+                            isSelected: 1,
+                          ))),
+                  child: Text(
+                    'Trở về trang chủ',
+                    style: CommonStyles.size15W400Black1D(context),
+                  )),
+            );
           }
         });
   }
@@ -82,11 +92,11 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
   // build UI
   Widget _buildUI() {
     return Scaffold(
-      body: _listAllProduct.isEmpty
-          ? Container()
-          : SafeArea(
-              child: CommonNavigateBar(
-                child: GestureDetector(
+      body: SafeArea(
+        child: CommonNavigateBar(
+          child: _listAllProduct.isEmpty
+              ? _widget ?? Container()
+              : GestureDetector(
                   onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
                   child: Container(
                     color: const Color(0xfff5f5f7),
@@ -106,8 +116,8 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                     ),
                   ),
                 ),
-              ),
-            ),
+        ),
+      ),
     );
   }
 

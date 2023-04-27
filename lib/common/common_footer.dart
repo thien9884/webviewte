@@ -12,13 +12,13 @@ import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/screen/load_html/load_html_screen.dart';
 
 class Footer {
-  final String? name;
-  final String? img;
+  String? name;
+  bool expand;
   List<Topics>? listFooter;
 
   Footer({
     this.name,
-    this.img,
+    this.expand = false,
     this.listFooter,
   });
 }
@@ -33,7 +33,6 @@ class CommonFooter extends StatefulWidget {
 class _CommonFooterState extends State<CommonFooter> {
   final List<Footer> _listFooter = [];
 
-  // Sync data
   _getCategories() async {
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetFooterBanner());
   }
@@ -70,7 +69,6 @@ class _CommonFooterState extends State<CommonFooter> {
                   ?.where((element) => element.includeInFooterColumn3 == true)
                   .toList(),
             ));
-            print(_listFooter);
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is FooterLoadError) {
@@ -118,6 +116,7 @@ class _CommonFooterState extends State<CommonFooter> {
                 child: Text(
                   CommonText.footerInfo(context),
                   style: CommonStyles.size15W400WhiteD2(context),
+                  textAlign: TextAlign.justify,
                 ),
               ),
               Row(
@@ -157,121 +156,124 @@ class _CommonFooterState extends State<CommonFooter> {
         delegate: SliverChildBuilderDelegate(childCount: _listFooter.length,
             (context, index) {
       final items = _listFooter[index];
-      return Theme(
-        data: ThemeData().copyWith(dividerColor: Colors.transparent),
-        child: ListTileTheme(
-          dense: true,
-          child: ExpansionTile(
-            iconColor: const Color(0xff424245),
-            collapsedIconColor: const Color(0xff424245),
-            backgroundColor: Colors.black,
-            collapsedBackgroundColor: Colors.black,
-            title: Container(
-              height: 42,
+      return Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                items.expand = !items.expand;
+              });
+            },
+            child: Container(
+              height: 40,
+              width: double.infinity,
               alignment: Alignment.centerLeft,
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               decoration: const BoxDecoration(
                   border: Border(
                       bottom: BorderSide(width: 1, color: Color(0xff424245)))),
-              child: Text(
-                items.name ?? '',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CommonStyles.size15W400WhiteD2(context),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text(
+                      items.name ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CommonStyles.size15W400WhiteD2(context),
+                    ),
+                  ),
+                  const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 30,
+                    color: Color(0xff424245),
+                  )
+                ],
               ),
             ),
-            childrenPadding: const EdgeInsets.symmetric(horizontal: 40),
-            trailing: const Icon(Icons.keyboard_arrow_down_rounded),
-            children: [
-              _listItemExpand(items.listFooter ?? []),
-            ],
           ),
-        ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 500),
+            height: items.expand ? 40 * items.listFooter!.length.toDouble() : 0,
+            child: items.expand
+                ? CustomScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    slivers: [
+                        SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                                childCount: items.listFooter?.length,
+                                (context, i) {
+                          final item = items.listFooter![i];
+
+                          return GestureDetector(
+                            onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        LoadHtmlScreen(data: item.body ?? ''))),
+                            child: Container(
+                              height: 40,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 40),
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                item.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: CommonStyles.size13W400Grey86(context),
+                              ),
+                            ),
+                          );
+                        })),
+                      ])
+                : const SizedBox(),
+          ),
+        ],
       );
     }));
   }
 
-  // list item expand
-  Widget _listItemExpand(List<Topics> listResource) {
-    return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (BuildContext context, int childIdx) {
-        final item = listResource[childIdx];
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        LoadHtmlScreen(data: item.body ?? ''))),
-                child: Text(
-                  item.title,
-                  style: CommonStyles.size13W400Grey86(context),
-                ),
-              ),
-              // item.showAddress ? _itemFooterInfo() : const SizedBox(),
-            ],
-          ),
-        );
-      },
-      itemCount: listResource.length,
-    );
-  }
-
-  // item footer info
-  Widget _itemFooterInfo() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 20, bottom: 10),
-          child: RichText(
-              text: TextSpan(
-                  text: 'Mua hàng: ',
-                  style: CommonStyles.size13W400Grey86(context),
-                  children: [
-                TextSpan(
-                  text: '1900.6626',
-                  style: CommonStyles.size16W400Blue00(context),
-                )
-              ])),
-        ),
-        Text(
-          CommonText.footerNhanh1(context),
-          style: CommonStyles.size13W400Grey86(context),
-        ),
-        const SizedBox(
-          height: 4,
-        ),
-        Text(
-          CommonText.footerNhanh2(context),
-          style: CommonStyles.size13W400Grey86(context),
-        ),
-        const SizedBox(
-          height: 4,
-        ),
-        Text(
-          CommonText.footerNhanh3(context),
-          style: CommonStyles.size13W400Grey86(context),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: RichText(
-              text: TextSpan(
-                  text: 'Doanh nghiệp: ',
-                  style: CommonStyles.size13W400Grey86(context),
-                  children: [
-                TextSpan(
-                  text: '0822.688.668',
-                  style: CommonStyles.size13W400Blue00(context),
-                )
-              ])),
-        ),
-      ],
-    );
-  }
+  // Widget _listFooterExpand() {
+  //   return SliverList(
+  //       delegate: SliverChildBuilderDelegate(childCount: _listFooter.length,
+  //           (context, index) {
+  //     final items = _listFooter[index];
+  //     return Theme(
+  //       data: ThemeData().copyWith(dividerColor: Colors.transparent),
+  //       child: ListTileTheme(
+  //         dense: true,
+  //         child: ExpansionTile(
+  //           iconColor: const Color(0xff424245),
+  //           collapsedIconColor: const Color(0xff424245),
+  //           backgroundColor: Colors.black,
+  //           collapsedBackgroundColor: Colors.black,
+  //           title: Container(
+  //             height: 42,
+  //             alignment: Alignment.centerLeft,
+  //             decoration: const BoxDecoration(
+  //                 border: Border(
+  //                     bottom: BorderSide(width: 1, color: Color(0xff424245)))),
+  //             child: Text(
+  //               items.name ?? '',
+  //               maxLines: 1,
+  //               overflow: TextOverflow.ellipsis,
+  //               style: CommonStyles.size15W400WhiteD2(context),
+  //             ),
+  //           ),
+  //           childrenPadding: const EdgeInsets.symmetric(horizontal: 40),
+  //           trailing: Padding(
+  //             padding: const EdgeInsets.only(top: 25),
+  //             child: const Icon(Icons.keyboard_arrow_down_rounded),
+  //           ),
+  //           children: [
+  //             _listItemExpand(items.listFooter ?? []),
+  //           ],
+  //         ),
+  //       ),
+  //     );
+  //   }));
+  // }
 
   // info shop
   Widget _infoShop() {

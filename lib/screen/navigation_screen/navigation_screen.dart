@@ -361,42 +361,38 @@ class _NavigationScreenState extends State<NavigationScreen>
           ),
         ),
       ),
-      child: Center(
-        child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            itemCount: _listCategories.length,
-            itemBuilder: (context, index) {
-              final item = _listCategories[index];
-              final cIndex = _listCategories
-                  .indexWhere((element) => element.seName == 'phu-kien');
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(_listCategories.length, (index) {
+          final item = _listCategories[index];
+          final cIndex = _listCategories
+              .indexWhere((element) => element.seName == 'phu-kien');
 
-              return GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CategoryScreen(
-                        title: item.name ?? '',
-                        desc: item.description ?? '',
-                        descAccessories:
-                            _listCategories[cIndex].description ?? '',
-                        seName: item.seName ?? '',
-                        groupId: item.id,
-                      ),
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Center(
-                    child: Text(
-                      item.name ?? '',
-                      style: CommonStyles.size15W400Black1D(context),
-                    ),
+          return GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => CategoryScreen(
+                    title: item.name ?? '',
+                    desc: item.description ?? '',
+                    descAccessories:
+                        _listCategories[cIndex].description ?? '',
+                    seName: item.seName ?? '',
+                    groupId: item.id,
                   ),
                 ),
               );
-            }),
+            },
+            child: Center(
+              child: FittedBox(
+                child: Text(
+                  item.name ?? '',
+                  style: CommonStyles.size15W400Black1D(context),
+                ),
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

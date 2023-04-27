@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -227,34 +228,34 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   // build category UI
   Widget _buildCategoryUI() {
-    return _categoryGroupModel.productModel != null
-        ? CommonNavigateBar(
-            child: Container(
-            color: const Color(0xfff5f5f7),
-            child: CustomScrollView(
-              controller: _hideButtonController,
-              slivers: [
-                if (_listCategoryBannerImg.isNotEmpty) _pageView(),
-                _listCategoryScrollBar(),
-                _sortListProduct(),
-                _tittle(),
-                _listProduct(),
-                if (_categoryGroupModel.total != null &&
-                    _categoryGroupModel.total! > 8)
-                  _pagesNumber(),
-                widget.title != 'Sounds' && widget.title != 'Accessories'
-                    ? _relatedProducts()
-                    : const SliverToBoxAdapter(),
-                _description(),
-                _receiveInfo(),
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                        childCount: 1,
-                        (context, index) => const CommonFooter())),
-              ],
-            ),
-          ))
-        : Container();
+    return CommonNavigateBar(
+        child: _categoryGroupModel.productModel != null
+            ? Container(
+                color: const Color(0xfff5f5f7),
+                child: CustomScrollView(
+                  controller: _hideButtonController,
+                  slivers: [
+                    if (_listCategoryBannerImg.isNotEmpty) _pageView(),
+                    _listCategoryScrollBar(),
+                    _sortListProduct(),
+                    _tittle(),
+                    _listProduct(),
+                    if (_categoryGroupModel.total != null &&
+                        _categoryGroupModel.total! > 8)
+                      _pagesNumber(),
+                    widget.title != 'Sounds' && widget.title != 'Accessories'
+                        ? _relatedProducts()
+                        : const SliverToBoxAdapter(),
+                    _description(),
+                    _receiveInfo(),
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                            childCount: 1,
+                            (context, index) => const CommonFooter())),
+                  ],
+                ),
+              )
+            : Container());
   }
 
   // page view
@@ -330,7 +331,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget _listCategoryScrollBar() {
     return SliverToBoxAdapter(
       key: dataKey,
-      child: Scrollbar(
+      child: CupertinoScrollbar(
           controller: _scrollController,
           thumbVisibility: true,
           radius: const Radius.circular(8),
