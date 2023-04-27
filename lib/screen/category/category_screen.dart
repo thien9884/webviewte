@@ -62,8 +62,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
   String _seName = '';
   String _categoryTitle = "";
   String _categoryBanner = '';
-  List<TopBanner> _listCategoryBannerImg = [];
-  List<SubCategories> _listSubCategories = [];
+  final List<TopBanner> _listCategoryBannerImg = [];
+  final List<SubCategories> _listSubCategories = [];
+  final ScrollController _scrollController = ScrollController();
 
   bool _isVisible = false;
 
@@ -192,7 +193,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 ),
               );
             }
-            _listCategoryBannerImg = homeBanner;
+            _listCategoryBannerImg.clear();
+            _listCategoryBannerImg.addAll(homeBanner);
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is CategoryBannerLoadError) {
@@ -204,7 +206,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
           if (state is SubCategoryLoading) {
             EasyLoading.show();
           } else if (state is SubCategoryLoaded) {
-            _listSubCategories = state.subCategory ?? [];
+            _listSubCategories.clear();
+            _listSubCategories.addAll(state.subCategory ?? []);
             _listSubCategories.insert(
               0,
               SubCategories(
@@ -328,44 +331,49 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return SliverToBoxAdapter(
       key: dataKey,
       child: Scrollbar(
+          controller: _scrollController,
+          thumbVisibility: true,
+          radius: const Radius.circular(8),
           child: SizedBox(
-        height: 70,
-        child: ListView.builder(
-          itemCount: _listSubCategories.length,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            final item = _listSubCategories[index];
+            height: 70,
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: _listSubCategories.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final item = _listSubCategories[index];
 
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _categorySelected = index;
-                  BlocProvider.of<ShopdunkBloc>(context)
-                      .add(RequestGetProductsCategory(item.id, 1));
-                });
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                    color:
-                        _categorySelected == index ? Colors.blue : Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                child: Center(
-                  child: Text(
-                    item.name ?? '',
-                    style: _categorySelected == index
-                        ? CommonStyles.size15W700White(context)
-                        : CommonStyles.size15W400Grey51(context),
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _categorySelected = index;
+                      BlocProvider.of<ShopdunkBloc>(context)
+                          .add(RequestGetProductsCategory(item.id, 1));
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: _categorySelected == index
+                            ? Colors.blue
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(10)),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
+                    child: Center(
+                      child: Text(
+                        item.name ?? '',
+                        style: _categorySelected == index
+                            ? CommonStyles.size15W700White(context)
+                            : CommonStyles.size15W400Grey51(context),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            );
-          },
-        ),
-      )),
+                );
+              },
+            ),
+          )),
     );
   }
 
@@ -511,8 +519,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         children: [
                           Expanded(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 5),
                               child: Text(
                                 item.name ?? '',
                                 maxLines: 2,
@@ -568,7 +576,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
-          childAspectRatio: 0.53,
+          childAspectRatio: 0.55,
         ),
       ),
     );

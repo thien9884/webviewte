@@ -102,6 +102,12 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             _listCategories = state.categories
                 .where((element) => element.showOnHomePage == true)
                 .toList();
+            int indexSound = _listCategories
+                .indexWhere((element) => element.seName == 'am-thanh');
+            int indexAccessories = _listCategories
+                .indexWhere((element) => element.seName == 'phu-kien');
+            _listCategories[indexSound].name = 'Âm thanh';
+            _listCategories[indexAccessories].name = 'Phụ kiện';
           } else if (state is CategoriesLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
           } else if (state is SearchProductsLoading) {
@@ -132,6 +138,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
     return Scaffold(
       backgroundColor: const Color(0xffF5F5F7),
       body: SafeArea(
+        bottom: false,
         child: Stack(
           children: [
             Column(
@@ -149,7 +156,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
                 if (widget.showAppBar)
                   AnimatedContainer(
                       duration: const Duration(milliseconds: 500),
-                      height: _isVisible ? 60 : 0,
+                      height: _isVisible ? 65 : 0,
                       child: _isVisible
                           ? SingleChildScrollView(
                               child: _buildBottomBar(),
@@ -340,40 +347,43 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
           ),
         ),
       ),
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: _listCategories.length,
-          itemBuilder: (context, index) {
-            final item = _listCategories[index];
-            final cIndex = _listCategories
-                .indexWhere((element) => element.seName == 'phu-kien');
+      child: Center(
+        child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _listCategories.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              final item = _listCategories[index];
+              final cIndex = _listCategories
+                  .indexWhere((element) => element.seName == 'phu-kien');
 
-            return GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => CategoryScreen(
-                      title: item.name ?? '',
-                      desc: item.description ?? '',
-                      descAccessories:
-                          _listCategories[cIndex].description ?? '',
-                      seName: item.seName ?? '',
-                      groupId: item.id,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CategoryScreen(
+                        title: item.name ?? '',
+                        desc: item.description ?? '',
+                        descAccessories:
+                            _listCategories[cIndex].description ?? '',
+                        seName: item.seName ?? '',
+                        groupId: item.id,
+                      ),
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Center(
+                    child: Text(
+                      item.name ?? '',
+                      style: CommonStyles.size15W400Black1D(context),
                     ),
                   ),
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Center(
-                  child: Text(
-                    item.name ?? '',
-                    style: CommonStyles.size15W400Black1D(context),
-                  ),
                 ),
-              ),
-            );
-          }),
+              );
+            }),
+      ),
     );
   }
 

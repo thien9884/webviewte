@@ -24,13 +24,14 @@ class NewsScreen extends StatefulWidget {
 
 class _NewsScreenState extends State<NewsScreen> {
   int _indexSelected = 0;
-  List<NewsGroup> _newsGroup = [];
-  List<LatestNews> _latestNews = [];
+  final List<NewsGroup> _newsGroup = [];
+  final List<LatestNews> _latestNews = [];
   List vd = ['fc28Zn8p0wE', 'iLnmTe5Q2Qw', 'KtQKoWrLBLs'];
   late ScrollController _hideButtonController;
   bool _isVisible = false;
   final TextEditingController _emailController = TextEditingController();
   late YoutubePlayerController controller;
+  final ScrollController _scrollController = ScrollController();
 
   // Sync data
   _getNews() async {
@@ -79,8 +80,8 @@ class _NewsScreenState extends State<NewsScreen> {
           if (state is NewsLoading) {
             EasyLoading.show();
           } else if (state is NewsLoaded) {
-            _newsGroup = state.newsData.newsGroup ?? [];
-            _latestNews = state.newsData.latestNews ?? [];
+            _newsGroup.addAll(state.newsData.newsGroup ?? []);
+            _latestNews.addAll(state.newsData.latestNews ?? []);
             if (_latestNews.length > 4) {
               _latestNews.removeRange(4, _latestNews.length);
             }
@@ -227,44 +228,48 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget _newsScrollBar() {
     return SliverToBoxAdapter(
       child: Scrollbar(
+          controller: _scrollController,
+          thumbVisibility: true,
+          radius: const Radius.circular(8),
           child: SizedBox(
-        height: 80,
-        child: ListView.builder(
-          itemCount: _newsGroup.length,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) {
-            final news = _newsGroup[index];
-            return GestureDetector(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => NewsCategory(
-                        newsGroup: news,
-                        index: 0,
-                      ))),
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10)),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                child: Row(
-                  children: [
-                    Image.asset('assets/icons/ic_tips.webp', scale: 5),
-                    const SizedBox(
-                      width: 8,
+            height: 80,
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: _newsGroup.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                final news = _newsGroup[index];
+                return GestureDetector(
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => NewsCategory(
+                            newsGroup: news,
+                            index: 0,
+                          ))),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 10),
+                    child: Row(
+                      children: [
+                        Image.asset('assets/icons/ic_tips.webp', scale: 5),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          news.name ?? '',
+                          style: CommonStyles.size15W400Grey51(context),
+                        ),
+                      ],
                     ),
-                    Text(
-                      news.name ?? '',
-                      style: CommonStyles.size15W400Grey51(context),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      )),
+                  ),
+                );
+              },
+            ),
+          )),
     );
   }
 

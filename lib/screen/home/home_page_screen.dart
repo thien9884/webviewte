@@ -317,7 +317,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 ),
               );
             }
-            _listTopBannerImg = topBanner;
+            _listTopBannerImg.clear();
+            _listTopBannerImg.addAll(topBanner);
           } else if (state is TopBannerLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
           }
@@ -347,7 +348,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 ),
               );
             }
-            _listHomeBannerImg = homeBanner;
+            _listHomeBannerImg.clear();
+            _listHomeBannerImg.addAll(homeBanner);
           } else if (state is HomeBannerLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
           }
@@ -621,8 +623,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         children: [
                           Expanded(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 5),
                               child: Text(
                                 item.name ?? '',
                                 maxLines: 2,
@@ -678,7 +680,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
-          childAspectRatio: 0.53,
+          childAspectRatio: 0.55,
         ),
       ),
     );
