@@ -31,11 +31,11 @@ void configLoading() {
   EasyLoading.instance
     ..indicatorColor = Colors.black
     ..backgroundColor = Colors.transparent
-    ..userInteractions = true
+    ..userInteractions = false
     ..loadingStyle = EasyLoadingStyle.custom
     ..textColor = Colors.white
     ..maskType = EasyLoadingMaskType.custom
     ..boxShadow = <BoxShadow>[]
     ..maskColor = Colors.transparent
-    ..dismissOnTap = true;
+    ..dismissOnTap = false;
 }

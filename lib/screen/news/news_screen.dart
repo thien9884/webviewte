@@ -227,49 +227,45 @@ class _NewsScreenState extends State<NewsScreen> {
   // news scroll bar
   Widget _newsScrollBar() {
     return SliverToBoxAdapter(
-      child: Scrollbar(
+      child: SizedBox(
+        height: 80,
+        child: ListView.builder(
           controller: _scrollController,
-          thumbVisibility: true,
-          radius: const Radius.circular(8),
-          child: SizedBox(
-            height: 80,
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _newsGroup.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final news = _newsGroup[index];
-                return GestureDetector(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => NewsCategory(
-                            newsGroup: news,
-                            index: 0,
-                          ))),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 10),
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 10),
-                    child: Row(
-                      children: [
-                        Image.asset('assets/icons/ic_tips.webp', scale: 5),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          news.name ?? '',
-                          style: CommonStyles.size15W400Grey51(context),
-                        ),
-                      ],
+          itemCount: _newsGroup.length,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            final news = _newsGroup[index];
+            return GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => NewsCategory(
+                        newsGroup: news,
+                        index: 0,
+                      ))),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10)),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 15, vertical: 10),
+                margin: const EdgeInsets.symmetric(
+                    vertical: 15, horizontal: 2.5),
+                child: Row(
+                  children: [
+                    Image.asset('assets/icons/ic_tips.webp', scale: 5),
+                    const SizedBox(
+                      width: 8,
                     ),
-                  ),
-                );
-              },
-            ),
-          )),
+                    Text(
+                      news.name ?? '',
+                      style: CommonStyles.size15W400Grey51(context),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 

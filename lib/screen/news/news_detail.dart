@@ -194,33 +194,31 @@ class _NewsDetailState extends State<NewsDetail> {
   }
 
   Widget _buildBody() {
-    return SafeArea(
-      child: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: CustomScrollView(
-          controller: _hideButtonController,
-          slivers: [
-            _newsAppBar(),
-            _newsDetail(context),
-            _newsDivider(context),
-            if (_relatedNewsData.productOverviewModels != null &&
-                _relatedNewsData.productOverviewModels!.isNotEmpty)
-              _relatedProductsTittle(context),
-            if (_relatedNewsData.productOverviewModels != null)
-              _relatedProducts(context),
-            _addNewsComment(context),
-            _newsCommentTitle(),
-            _newsComments(),
-            if (_relatedNewsData.newsItemModels != null &&
-                _relatedNewsData.newsItemModels!.isNotEmpty)
-              _relatedNewsTittle(context),
-            if (_relatedNewsData.newsItemModels != null) _relatedNews(context),
-            _receiveInfo(context),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1, (context, index) => const CommonFooter())),
-          ],
-        ),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: CustomScrollView(
+        controller: _hideButtonController,
+        slivers: [
+          _newsAppBar(),
+          _newsDetail(context),
+          _newsDivider(context),
+          if (_relatedNewsData.productOverviewModels != null &&
+              _relatedNewsData.productOverviewModels!.isNotEmpty)
+            _relatedProductsTittle(context),
+          if (_relatedNewsData.productOverviewModels != null)
+            _relatedProducts(context),
+          _addNewsComment(context),
+          _newsCommentTitle(),
+          _newsComments(),
+          if (_relatedNewsData.newsItemModels != null &&
+              _relatedNewsData.newsItemModels!.isNotEmpty)
+            _relatedNewsTittle(context),
+          if (_relatedNewsData.newsItemModels != null) _relatedNews(context),
+          _receiveInfo(context),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  childCount: 1, (context, index) => const CommonFooter())),
+        ],
       ),
     );
   }
