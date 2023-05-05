@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CommonStyles {
+  static TextStyle size11W400Grey86(BuildContext context) {
+    return const TextStyle(
+      fontSize: 11,
+      fontWeight: FontWeight.w400,
+      color: Color(0xff86868B),
+    );
+  }
+
   static TextStyle size12W400Grey51(BuildContext context) {
     return const TextStyle(
       fontSize: 12,
@@ -61,6 +69,14 @@ class CommonStyles {
     return const TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.w400,
+      color: Color(0xff0066CC),
+    );
+  }
+
+  static TextStyle size13W700Blue00(BuildContext context) {
+    return const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w700,
       color: Color(0xff0066CC),
     );
   }

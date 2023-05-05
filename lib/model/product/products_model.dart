@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class ProductsModel {
   int? id;
   String? name;
@@ -19,6 +21,7 @@ class ProductsModel {
   String? productType;
   bool? markAsNew;
   DefaultPictureModel? defaultPictureModel;
+  List<ProductTags>? productTags;
   ProductPrice? productPrice;
   dynamic products;
 
@@ -43,6 +46,7 @@ class ProductsModel {
       this.productType,
       this.markAsNew,
       this.defaultPictureModel,
+      this.productTags,
       this.productPrice,
       this.products});
 
@@ -69,6 +73,12 @@ class ProductsModel {
     defaultPictureModel = json['DefaultPictureModel'] != null
         ? DefaultPictureModel.fromJson(json['DefaultPictureModel'])
         : null;
+    if (json['ProductTags'] != null) {
+      productTags = <ProductTags>[];
+      json['ProductTags'].forEach((v) {
+        productTags!.add(ProductTags.fromJson(v));
+      });
+    }
     productPrice = json['ProductPrice'] != null
         ? ProductPrice.fromJson(json['ProductPrice'])
         : null;
@@ -98,12 +108,50 @@ class ProductsModel {
     if (defaultPictureModel != null) {
       data['DefaultPictureModel'] = defaultPictureModel!.toJson();
     }
+    if (productTags != null) {
+      data['ProductTags'] = productTags!.map((v) => v.toJson()).toList();
+    }
     if (productPrice != null) {
       data['ProductPrice'] = productPrice!.toJson();
     }
     if (products != null) {
       data['Products'] = products!.map((v) => v.toJson()).toList();
     }
+    return data;
+  }
+
+  static List<ProductsModel> decode(String productsModel) =>
+      (json.decode(productsModel) as List<dynamic>)
+          .map<ProductsModel>((item) => ProductsModel.fromJson(item))
+          .toList();
+}
+
+class ProductTags {
+  String? name;
+  String? seName;
+  int? productCount;
+  int? id;
+
+  ProductTags({
+    this.name,
+    this.seName,
+    this.productCount,
+    this.id,
+  });
+
+  ProductTags.fromJson(Map<String, dynamic> json) {
+    name = json['Name'];
+    seName = json['SeName'];
+    productCount = json['ProductCount'];
+    id = json['Id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['Name'] = name;
+    data['SeName'] = seName;
+    data['ProductCount'] = productCount;
+    data['Id'] = id;
     return data;
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
@@ -20,6 +19,7 @@ import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/search_products/search_products.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
+import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class NavigationScreen extends StatefulWidget {
   final int isSelected;
@@ -68,22 +68,17 @@ class _NavigationScreenState extends State<NavigationScreen>
     )
   ];
 
-  // Sync data
-  _getCategories() async {
-    EasyLoading.show();
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetCategories());
-  }
+  _getListNavigationBar() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
 
-  // Sync data
-  _getNews() async {
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetNews());
+    _listCategories = Categories.decode(sPref.listCategories);
+    setState(() {});
   }
 
   @override
   void initState() {
     _isSelected = widget.isSelected;
-    _getCategories();
-    _getNews();
+    _getListNavigationBar();
     super.initState();
   }
 
@@ -92,20 +87,7 @@ class _NavigationScreenState extends State<NavigationScreen>
     return BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => _buildNavigationUI(),
         listener: (context, state) {
-          if (state is CategoriesLoading) {
-          } else if (state is CategoriesLoaded) {
-            _listCategories = state.categories
-                .where((element) => element.showOnHomePage == true)
-                .toList();
-            int indexSound = _listCategories
-                .indexWhere((element) => element.seName == 'am-thanh');
-            int indexAccessories = _listCategories
-                .indexWhere((element) => element.seName == 'phu-kien');
-            _listCategories[indexSound].name = 'Âm thanh';
-            _listCategories[indexAccessories].name = 'Phụ kiện';
-          } else if (state is CategoriesLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          } else if (state is SearchProductsLoading) {
+          if (state is SearchProductsLoading) {
           } else if (state is SearchProductsLoaded) {
             setState(() {
               _listAllProduct = state.catalogProductsModel.products ?? [];
@@ -116,18 +98,18 @@ class _NavigationScreenState extends State<NavigationScreen>
             _isVisible = state.isHide;
           }
 
-          if (state is NewsLoading) {
-            EasyLoading.show();
-          } else if (state is NewsLoaded) {
-            _newsGroup = state.newsData.newsGroup!
-                .lastWhere((element) => element.id == 1);
-
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          } else if (state is NewsLoadError) {
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
+          // if (state is NewsLoading) {
+          //   EasyLoading.show();
+          // } else if (state is NewsLoaded) {
+          //   _newsGroup = state.newsData.newsGroup!
+          //       .lastWhere((element) => element.id == 1);
+          //
+          //   if (EasyLoading.isShow) EasyLoading.dismiss();
+          // } else if (state is NewsLoadError) {
+          //   if (EasyLoading.isShow) EasyLoading.dismiss();
+          //
+          //   AlertUtils.displayErrorAlert(context, state.message);
+          // }
         });
   }
 
@@ -375,8 +357,7 @@ class _NavigationScreenState extends State<NavigationScreen>
                   builder: (context) => CategoryScreen(
                     title: item.name ?? '',
                     desc: item.description ?? '',
-                    descAccessories:
-                        _listCategories[cIndex].description ?? '',
+                    descAccessories: _listCategories[cIndex].description ?? '',
                     seName: item.seName ?? '',
                     groupId: item.id,
                   ),

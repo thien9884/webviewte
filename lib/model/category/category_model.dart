@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:webviewtest/model/product/products_model.dart';
 
 class CategoryModel {
@@ -156,6 +158,11 @@ class Categories {
     data['id'] = id;
     return data;
   }
+
+  static List<Categories> decode(String categories) =>
+      (json.decode(categories) as List<dynamic>)
+          .map<Categories>((item) => Categories.fromJson(item))
+          .toList();
 }
 
 class ImageProduct {

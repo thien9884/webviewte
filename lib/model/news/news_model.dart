@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class NewsModel {
   int? httpStatusCode;
   bool? success;
@@ -171,12 +173,20 @@ class LatestNews {
     if (pictureModel != null) {
       data['PictureModel'] = pictureModel!.toJson();
     }
+    if (newsComments != null) {
+      data['Comments'] = newsComments!.map((v) => v.toJson()).toList();
+    }
     if (addNewComment != null) {
       data['AddNewComment'] = addNewComment!.toJson();
     }
     data['Id'] = id;
     return data;
   }
+
+  static List<LatestNews> decode(String latestNews) =>
+      (json.decode(latestNews) as List<dynamic>)
+          .map<LatestNews>((item) => LatestNews.fromJson(item))
+          .toList();
 }
 
 class PictureModel {
@@ -255,6 +265,11 @@ class NewsComments {
     data['Id'] = id;
     return data;
   }
+
+  static List<NewsComments> decode(String newsComments) =>
+      (json.decode(newsComments) as List<dynamic>)
+          .map<NewsComments>((item) => NewsComments.fromJson(item))
+          .toList();
 }
 
 class AddNewComment {
@@ -329,6 +344,11 @@ class NewsGroup {
     data['Id'] = id;
     return data;
   }
+
+  static List<NewsGroup> decode(String newsGroup) =>
+      (json.decode(newsGroup) as List<dynamic>)
+          .map<NewsGroup>((item) => NewsGroup.fromJson(item))
+          .toList();
 }
 
 class NewsItems {
@@ -419,4 +439,9 @@ class NewsItems {
     data['Id'] = id;
     return data;
   }
+
+  static List<NewsItems> decode(String newsItem) =>
+      (json.decode(newsItem) as List<dynamic>)
+          .map<NewsItems>((item) => NewsItems.fromJson(item))
+          .toList();
 }

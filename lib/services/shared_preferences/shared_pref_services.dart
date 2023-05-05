@@ -8,6 +8,17 @@ class SharedPrefKeys {
   static const String password = 'password';
   static const String rememberMe = 'rememberMe';
   static const String isLogin = 'isLogin';
+  static const String listCategories = 'listCategory';
+  static const String listIphone= 'listIphone';
+  static const String listIpad = 'listIpad';
+  static const String listMac = 'listMac';
+  static const String listAppleWatch= 'listAppleWatch';
+  static const String listSound = 'listSound';
+  static const String listAccessories = 'listAccessories';
+  static const String listNewsGroup = 'listNewsGroup';
+  static const String listLatestNews = 'listLatestNews';
+  static const String listTopBanner = 'listTopBanner';
+  static const String listHomeBanner = 'listHomeBanner';
 }
 
 class SharedPreferencesService {
@@ -45,6 +56,83 @@ class SharedPreferencesService {
 
   // Get user name
   String get userName => _preferences.getString(SharedPrefKeys.userName) ?? '';
+
+  // Set list categories
+  Future<void> setListCategories(String listCategories) async =>
+      await _preferences.setString(SharedPrefKeys.listCategories, listCategories);
+
+  // Get list categories
+  String get listCategories => _preferences.getString(SharedPrefKeys.listCategories) ?? '';
+
+  // Set list iphone
+  Future<void> setListIphone(String listIphone) async =>
+      await _preferences.setString(SharedPrefKeys.listIphone, listIphone);
+
+  // Get list iphone
+  String get listIphone => _preferences.getString(SharedPrefKeys.listIphone) ?? '';
+
+  // Set list ipad
+  Future<void> setListIpad(String listIpad) async =>
+      await _preferences.setString(SharedPrefKeys.listIpad, listIpad);
+
+  // Get list ipad
+  String get listIpad => _preferences.getString(SharedPrefKeys.listIpad) ?? '';
+
+  // Set list mac
+  Future<void> setListMac(String listMac) async =>
+      await _preferences.setString(SharedPrefKeys.listMac, listMac);
+
+  // Get list mac
+  String get listMac => _preferences.getString(SharedPrefKeys.listMac) ?? '';
+
+  // Set list apple watch
+  Future<void> setListAppleWatch(String listAppleWatch) async =>
+      await _preferences.setString(SharedPrefKeys.listAppleWatch, listAppleWatch);
+
+  // Get list apple watch
+  String get listAppleWatch => _preferences.getString(SharedPrefKeys.listAppleWatch) ?? '';
+
+  // Set list sound
+  Future<void> setListSound(String listSound) async =>
+      await _preferences.setString(SharedPrefKeys.listSound, listSound);
+
+  // Get list sound
+  String get listSound => _preferences.getString(SharedPrefKeys.listSound) ?? '';
+
+  // Set list accessories
+  Future<void> setListAccessories(String listAccessories) async =>
+      await _preferences.setString(SharedPrefKeys.listAccessories, listAccessories);
+
+  // Get list accessories
+  String get listAccessories => _preferences.getString(SharedPrefKeys.listAccessories) ?? '';
+
+  // Set list news group
+  Future<void> setListNewsGroup(String listNewsGroup) async =>
+      await _preferences.setString(SharedPrefKeys.listNewsGroup, listNewsGroup);
+
+  // Get list news group
+  String get listNewsGroup => _preferences.getString(SharedPrefKeys.listNewsGroup) ?? '';
+
+  // Set list latest news
+  Future<void> setListLatestNews(String listLatestNews) async =>
+      await _preferences.setString(SharedPrefKeys.listLatestNews, listLatestNews);
+
+  // Get list latest news
+  String get listLatestNews => _preferences.getString(SharedPrefKeys.listLatestNews) ?? '';
+
+  // Set list top banner
+  Future<void> setListTopBanner(String listTopBanner) async =>
+      await _preferences.setString(SharedPrefKeys.listTopBanner, listTopBanner);
+
+  // Get list top banner
+  String get listTopBanner => _preferences.getString(SharedPrefKeys.listTopBanner) ?? '';
+
+  // Set list home banner
+  Future<void> setListHomeBanner(String listHomeBanner) async =>
+      await _preferences.setString(SharedPrefKeys.listHomeBanner, listHomeBanner);
+
+  // Get list home banner
+  String get listHomeBanner => _preferences.getString(SharedPrefKeys.listHomeBanner) ?? '';
 
   // Set password
   Future<void> setPassword(String password) async =>

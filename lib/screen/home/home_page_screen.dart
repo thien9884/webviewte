@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
@@ -11,7 +10,6 @@ import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
-import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category/category_model.dart';
@@ -20,8 +18,7 @@ import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart' as dom;
+import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 TopBanner payloadFromJson(String str) => TopBanner.fromJson(json.decode(str));
 
@@ -45,6 +42,11 @@ class TopBanner {
         "link": link,
         "img": img,
       };
+
+  static List<TopBanner> decode(String banner) =>
+      (json.decode(banner) as List<dynamic>)
+          .map<TopBanner>((item) => TopBanner.fromJson(item))
+          .toList();
 }
 
 class HomePageScreen extends StatefulWidget {
@@ -62,99 +64,26 @@ class _HomePageScreenState extends State<HomePageScreen> {
   int _currentIndex = 0;
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
   List<LatestNews> _latestNews = [];
-  String _topBanner = '';
   List<TopBanner> _listTopBannerImg = [];
 
-  String _homeBanner = '';
   List<TopBanner> _listHomeBannerImg = [];
 
   // Categories
   List<Categories> _listCategories = [];
 
-  // Sync data
-  _getCategories() async {
-    EasyLoading.show();
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetCategories());
-  }
-
-  _getNews() async {
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetNews());
-  }
-
-  _getListIpad() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'ipad');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetIpad(idIpad: _listCategories[index].id));
-  }
-
-  _getListIphone() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'iphone');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetIphone(idIphone: _listCategories[index].id));
-  }
-
-  _getListMac() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'mac');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetMac(idMac: _listCategories[index].id));
-  }
-
-  _getListWatch() async {
-    int index = _listCategories
-        .indexWhere((element) => element.seName == 'apple-watch');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetAppleWatch(idWatch: _listCategories[index].id));
-  }
-
-  _getListSound() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'am-thanh');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetSound(idSound: _listCategories[index].id));
-  }
-
-  _getListAccessories() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'phu-kien');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetAccessories(idAccessories: _listCategories[index].id));
-  }
-
-  _getTopBanner() async {
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetTopBanner(156));
-  }
-
-  _getHomeBanner() async {
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetHomeBanner(6));
-  }
-
-  _getListProduct() async {
-    await _getListIpad();
-    await _getListIphone();
-    await _getListMac();
-    await _getListWatch();
-    await _getListSound();
-    await _getListAccessories();
-    await _getNews();
-    await _getTopBanner();
-    await _getHomeBanner();
-    if (EasyLoading.isShow) EasyLoading.dismiss();
-  }
-
   _autoSlidePage() {
-    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-      if (_currentIndex < ListCustom.listIcon.length + 1) {
-        _currentIndex++;
-      } else {
-        _currentIndex = 0;
-      }
+    if (_listTopBannerImg.isNotEmpty) {
+      _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+        if (_currentIndex < ListCustom.listIcon.length + 1) {
+          _currentIndex++;
+        } else {
+          _currentIndex = 0;
+        }
 
-      _pageController.nextPage(
-          duration: const Duration(seconds: 1), curve: Curves.linear);
-    });
+        _pageController.nextPage(
+            duration: const Duration(seconds: 1), curve: Curves.linear);
+      });
+    }
   }
 
   late ScrollController _hideButtonController;
@@ -188,9 +117,53 @@ class _HomePageScreenState extends State<HomePageScreen> {
     });
   }
 
+  _getListHomeScreen() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    List<ProductsModel> listIpad = [];
+    List<ProductsModel> listIphone = [];
+    List<ProductsModel> listMac = [];
+    List<ProductsModel> listAppleWatch = [];
+    List<ProductsModel> listSound = [];
+    List<ProductsModel> listAccessories = [];
+
+    listIpad = ProductsModel.decode(sPref.listIpad);
+    listIphone = ProductsModel.decode(sPref.listIphone);
+    listMac = ProductsModel.decode(sPref.listMac);
+    listAppleWatch = ProductsModel.decode(sPref.listAppleWatch);
+    listSound = ProductsModel.decode(sPref.listSound);
+    listAccessories = ProductsModel.decode(sPref.listAccessories);
+    _listCategories = Categories.decode(sPref.listCategories);
+    _latestNews = LatestNews.decode(sPref.listLatestNews);
+    _listTopBannerImg = TopBanner.decode(sPref.listTopBanner);
+    _listHomeBannerImg = TopBanner.decode(sPref.listHomeBanner);
+
+    if (_listCategories.isNotEmpty) {
+      int indexIpad =
+          _listCategories.indexWhere((element) => element.seName == 'ipad');
+      int indexIphone =
+          _listCategories.indexWhere((element) => element.seName == 'iphone');
+      int indexMac =
+          _listCategories.indexWhere((element) => element.seName == 'mac');
+      int indexAppleWatch = _listCategories
+          .indexWhere((element) => element.seName == 'apple-watch');
+      int indexSound =
+          _listCategories.indexWhere((element) => element.seName == 'am-thanh');
+      int indexAccessories =
+          _listCategories.indexWhere((element) => element.seName == 'phu-kien');
+
+      _listCategories[indexIpad].listProduct = listIpad;
+      _listCategories[indexIphone].listProduct = listIphone;
+      _listCategories[indexMac].listProduct = listMac;
+      _listCategories[indexAppleWatch].listProduct = listAppleWatch;
+      _listCategories[indexSound].listProduct = listSound;
+      _listCategories[indexAccessories].listProduct = listAccessories;
+    }
+    setState(() {});
+  }
+
   @override
   void initState() {
-    _getCategories();
+    _getListHomeScreen();
     _autoSlidePage();
     _getHideBottomValue();
     super.initState();
@@ -206,154 +179,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => _buildHomeUI(context),
-        listener: (context, state) {
-          if (state is CategoriesLoading) {
-          } else if (state is CategoriesLoaded) {
-            _listCategories = state.categories
-                .where((element) => element.showOnHomePage == true)
-                .toList();
-            int indexSound = _listCategories
-                .indexWhere((element) => element.seName == 'am-thanh');
-            int indexAccessories = _listCategories
-                .indexWhere((element) => element.seName == 'phu-kien');
-            _listCategories[indexSound].name = 'Âm thanh';
-            _listCategories[indexAccessories].name = 'Phụ kiện';
-            _getListProduct();
-          } else if (state is CategoriesLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-
-          if (state is IpadLoading) {
-          } else if (state is IpadLoaded) {
-            int index = _listCategories
-                .indexWhere((element) => element.seName == 'ipad');
-
-            _listCategories[index].listProduct = state.ipad;
-          } else if (state is IpadLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-
-          if (state is IphoneLoading) {
-          } else if (state is IphoneLoaded) {
-            int index = _listCategories
-                .indexWhere((element) => element.seName == 'iphone');
-
-            _listCategories[index].listProduct = state.iphone;
-          } else if (state is IphoneLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-
-          if (state is MacLoading) {
-          } else if (state is MacLoaded) {
-            int index = _listCategories
-                .indexWhere((element) => element.seName == 'mac');
-
-            _listCategories[index].listProduct = state.mac;
-          } else if (state is MacLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-
-          if (state is AppleWatchLoading) {
-          } else if (state is AppleWatchLoaded) {
-            int index = _listCategories
-                .indexWhere((element) => element.seName == 'apple-watch');
-
-            _listCategories[index].listProduct = state.watch;
-          } else if (state is AppleWatchLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-
-          if (state is SoundLoading) {
-          } else if (state is SoundLoaded) {
-            int index = _listCategories
-                .indexWhere((element) => element.seName == 'am-thanh');
-
-            _listCategories[index].listProduct = state.sound;
-          } else if (state is SoundLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-
-          if (state is AccessoriesLoading) {
-          } else if (state is AccessoriesLoaded) {
-            int index = _listCategories
-                .indexWhere((element) => element.seName == 'phu-kien');
-
-            _listCategories[index].listProduct = state.accessories;
-          } else if (state is AccessoriesLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-
-          if (state is NewsLoading) {
-          } else if (state is NewsLoaded) {
-            _latestNews = state.newsData.latestNews ?? [];
-            _latestNews.removeRange(
-                2, _latestNews.lastIndexOf(_latestNews.last));
-          } else if (state is NewsLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-
-          if (state is TopBannerLoading) {
-          } else if (state is TopBannerLoaded) {
-            _topBanner = state.listTopics.topics?.first.body ?? '';
-            var document = parse(
-              _topBanner.replaceAll('src="', 'src="http://shopdunk.com'),
-            );
-            var imgList = document.querySelectorAll("img");
-            var linkList = document.querySelectorAll("a");
-            List<String> imageList = [];
-            List<String> getLinkList = [];
-            List<TopBanner> topBanner = [];
-            for (dom.Element img in imgList) {
-              imageList.add(img.attributes['src']!);
-            }
-            for (dom.Element img in linkList) {
-              getLinkList.add(img.attributes['href']!);
-            }
-            for (int i = 0; i < imageList.length; i++) {
-              topBanner.add(
-                TopBanner(
-                  img: imageList[i].toString(),
-                  link: getLinkList[i].toString(),
-                ),
-              );
-            }
-            _listTopBannerImg.clear();
-            _listTopBannerImg.addAll(topBanner);
-          } else if (state is TopBannerLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-
-          if (state is HomeBannerLoading) {
-          } else if (state is HomeBannerLoaded) {
-            _homeBanner = state.listTopics.topics?.first.body ?? '';
-            var document = parse(
-              _homeBanner.replaceAll('src="', 'src="http://shopdunk.com'),
-            );
-            var imgList = document.querySelectorAll("img");
-            var linkList = document.querySelectorAll("a");
-            List<String> imageList = [];
-            List<String> getLinkList = [];
-            List<TopBanner> homeBanner = [];
-            for (dom.Element img in imgList) {
-              imageList.add(img.attributes['src']!);
-            }
-            for (dom.Element img in linkList) {
-              getLinkList.add(img.attributes['href']!);
-            }
-            for (int i = 0; i < imageList.length; i++) {
-              homeBanner.add(
-                TopBanner(
-                  img: imageList[i].toString(),
-                  link: getLinkList[i].toString(),
-                ),
-              );
-            }
-            _listHomeBannerImg.clear();
-            _listHomeBannerImg.addAll(homeBanner);
-          } else if (state is HomeBannerLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-        });
+        listener: (context, state) {});
   }
 
   // home UI
@@ -369,7 +195,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 CustomScrollView(
                   controller: _hideButtonController,
                   slivers: <Widget>[
-                    if (_topBanner.isNotEmpty) _topPageView(),
+                    if (_listTopBannerImg.isNotEmpty) _topPageView(),
                     _topListDeal(),
                     _buildCategoriesUI(),
                     SliverToBoxAdapter(
@@ -602,13 +428,14 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       margin: EdgeInsets.only(
                           top: Responsive.isMobile(context) ? 5 : 10,
                           right: Responsive.isMobile(context) ? 5 : 10),
-                      child: item.defaultPictureModel?.thumbImageUrl != null
+                      child: item.productTags!.isNotEmpty
                           ? Image.network(
-                              item.defaultPictureModel?.thumbImageUrl,
-                              scale: Responsive.isMobile(context) ? 10 : 6,
+                              "https://api.shopdunk.com/images/uploaded/icon/${item.productTags?.first.seName}.png",
+                              height: 25,
+                              fit: BoxFit.cover,
                             )
-                          : SizedBox(
-                              height: Responsive.isMobile(context) ? 10 : 6,
+                          : const SizedBox(
+                              height: 25,
                             ),
                     ),
                     Padding(
@@ -629,44 +456,36 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                 item.name ?? '',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: CommonStyles.size14W700Black1D(context),
+                                style: CommonStyles.size14W700Black1D(context)
+                                    .copyWith(
+                                  wordSpacing: 1.5,
+                                  height: 1.5,
+                                ),
                               ),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      priceFormat.format(
-                                          item.productPrice?.priceValue ?? 0),
-                                      style: CommonStyles.size16W700Blue00(
-                                          context),
-                                    ),
-                                    Text(
-                                      '₫',
-                                      style: CommonStyles.size12W400Blue00(
-                                          context),
-                                    ),
-                                  ],
+                                Text(
+                                  '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
+                                  style: CommonStyles.size13W700Blue00(context),
                                 ),
                                 const SizedBox(
-                                  height: 5,
+                                  width: 5,
                                 ),
                                 Text(
                                   '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                  style: CommonStyles.size12W400Grey66(context)
+                                  style: CommonStyles.size11W400Grey86(context)
                                       .copyWith(
                                           decoration:
                                               TextDecoration.lineThrough),
                                 ),
                               ],
                             ),
-                          )
+                          ),
                         ],
                       ),
                     )
@@ -680,7 +499,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
-          childAspectRatio: 0.55,
+          childAspectRatio: 0.53,
         ),
       ),
     );
@@ -756,57 +575,60 @@ class _HomePageScreenState extends State<HomePageScreen> {
         final timeUpload = DateTime.parse(item.createdOn ?? '');
         final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
 
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(8)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                item.pictureModel?.fullSizeImageUrl != null
-                    ? Image.network(
-                        item.pictureModel?.fullSizeImageUrl ?? '',
-                        height: 200,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      )
-                    : const SizedBox(
-                        height: 80,
-                      ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 30,
-                    horizontal: 20,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          item.title ?? '',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: CommonStyles.size16W700Grey33(context),
+        return GestureDetector(
+          onTap: () {},
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  item.pictureModel?.fullSizeImageUrl != null
+                      ? Image.network(
+                          item.pictureModel?.fullSizeImageUrl ?? '',
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        )
+                      : const SizedBox(
+                          height: 80,
                         ),
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 30,
+                      horizontal: 20,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item.title ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: CommonStyles.size16W700Grey33(context),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20, left: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        timeFormat,
-                        style: CommonStyles.size13W400Grey86(context),
-                      ),
-                    ],
-                  ),
-                )
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20, left: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          timeFormat,
+                          style: CommonStyles.size13W400Grey86(context),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         );

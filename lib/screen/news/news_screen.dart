@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
-import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/news/news_detail.dart';
+import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class NewsScreen extends StatefulWidget {
@@ -24,19 +23,14 @@ class NewsScreen extends StatefulWidget {
 
 class _NewsScreenState extends State<NewsScreen> {
   int _indexSelected = 0;
-  final List<NewsGroup> _newsGroup = [];
-  final List<LatestNews> _latestNews = [];
+  List<NewsGroup> _newsGroup = [];
+  List<LatestNews> _latestNews = [];
   List vd = ['fc28Zn8p0wE', 'iLnmTe5Q2Qw', 'KtQKoWrLBLs'];
   late ScrollController _hideButtonController;
   bool _isVisible = false;
   final TextEditingController _emailController = TextEditingController();
   late YoutubePlayerController controller;
   final ScrollController _scrollController = ScrollController();
-
-  // Sync data
-  _getNews() async {
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetNews());
-  }
 
   _getHideBottomValue() {
     _isVisible = true;
@@ -65,6 +59,14 @@ class _NewsScreenState extends State<NewsScreen> {
     });
   }
 
+  _getNews() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+
+    _newsGroup = NewsGroup.decode(sPref.listNewsGroup);
+    _latestNews = LatestNews.decode(sPref.listLatestNews);
+    setState(() {});
+  }
+
   @override
   void initState() {
     _getNews();
@@ -76,23 +78,7 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget build(BuildContext context) =>
       BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => _buildNewsUI(),
-        listener: (context, state) {
-          if (state is NewsLoading) {
-            EasyLoading.show();
-          } else if (state is NewsLoaded) {
-            _newsGroup.addAll(state.newsData.newsGroup ?? []);
-            _latestNews.addAll(state.newsData.latestNews ?? []);
-            if (_latestNews.length > 4) {
-              _latestNews.removeRange(4, _latestNews.length);
-            }
-
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          } else if (state is NewsLoadError) {
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-
-            AlertUtils.displayErrorAlert(context, state.message);
-          }
-        },
+        listener: (context, state) {},
       );
 
   // build UI
@@ -140,7 +126,10 @@ class _NewsScreenState extends State<NewsScreen> {
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) => NewsDetail(
-                        newsGroup: _newsGroup[index],
+                        newsGroup: _newsGroup
+                            .where((element) => element.newsItems!
+                                .any((element) => element.id == item.id))
+                            .first,
                         latestNews: item,
                       ),
                     ),
@@ -245,10 +234,10 @@ class _NewsScreenState extends State<NewsScreen> {
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10)),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 15, vertical: 10),
-                margin: const EdgeInsets.symmetric(
-                    vertical: 15, horizontal: 2.5),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 2.5),
                 child: Row(
                   children: [
                     Image.asset('assets/icons/ic_tips.webp', scale: 5),

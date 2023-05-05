@@ -350,14 +350,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color: _categorySelected == index
-                        ? Colors.blue
-                        : Colors.white,
+                    color:
+                        _categorySelected == index ? Colors.blue : Colors.white,
                     borderRadius: BorderRadius.circular(10)),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                margin: const EdgeInsets.symmetric(
-                    vertical: 15, horizontal: 10),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
                 child: Center(
                   child: Text(
                     item.name ?? '',
@@ -495,13 +494,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       margin: EdgeInsets.only(
                           top: Responsive.isMobile(context) ? 5 : 10,
                           right: Responsive.isMobile(context) ? 5 : 10),
-                      child: item.defaultPictureModel?.thumbImageUrl != null
+                      child: item.productTags!.isNotEmpty
                           ? Image.network(
-                              item.defaultPictureModel?.thumbImageUrl,
-                              scale: Responsive.isMobile(context) ? 10 : 6,
+                              "https://api.shopdunk.com/images/uploaded/icon/${item.productTags?.first.seName}.png",
+                              height: 25,
+                              fit: BoxFit.cover,
                             )
-                          : SizedBox(
-                              height: Responsive.isMobile(context) ? 10 : 6,
+                          : const SizedBox(
+                              height: 25,
                             ),
                     ),
                     Padding(
@@ -522,44 +522,36 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                 item.name ?? '',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: CommonStyles.size14W700Black1D(context),
+                                style: CommonStyles.size14W700Black1D(context)
+                                    .copyWith(
+                                  wordSpacing: 1.5,
+                                  height: 1.5,
+                                ),
                               ),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      priceFormat.format(
-                                          item.productPrice?.priceValue ?? 0),
-                                      style: CommonStyles.size16W700Blue00(
-                                          context),
-                                    ),
-                                    Text(
-                                      '₫',
-                                      style: CommonStyles.size12W400Blue00(
-                                          context),
-                                    ),
-                                  ],
+                                Text(
+                                  '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
+                                  style: CommonStyles.size13W700Blue00(context),
                                 ),
                                 const SizedBox(
-                                  height: 5,
+                                  width: 5,
                                 ),
                                 Text(
                                   '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                  style: CommonStyles.size12W400Grey66(context)
+                                  style: CommonStyles.size11W400Grey86(context)
                                       .copyWith(
                                           decoration:
                                               TextDecoration.lineThrough),
                                 ),
                               ],
                             ),
-                          )
+                          ),
                         ],
                       ),
                     )
@@ -573,7 +565,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
-          childAspectRatio: 0.55,
+          childAspectRatio: 0.53,
         ),
       ),
     );
