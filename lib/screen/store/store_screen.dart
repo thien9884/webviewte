@@ -5,7 +5,6 @@ import 'package:webviewtest/blocs/news/news_bloc.dart';
 import 'package:webviewtest/blocs/news/news_state.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
-import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 
@@ -17,7 +16,6 @@ class StoreScreen extends StatefulWidget {
 }
 
 class _StoreScreenState extends State<StoreScreen> {
-  final TextEditingController _emailController = TextEditingController();
   String _city = '0';
   String _district = '0';
   String _store = '0';
@@ -49,7 +47,6 @@ class _StoreScreenState extends State<StoreScreen> {
         slivers: [
           _tittleStore(),
           _findStore(),
-          _receiveInfo(),
           SliverList(
               delegate: SliverChildBuilderDelegate(
                   childCount: 1, (context, index) => const CommonFooter())),
@@ -242,62 +239,6 @@ class _StoreScreenState extends State<StoreScreen> {
       padding: const EdgeInsets.only(top: 40, bottom: 10),
       child: SizedBox(
           width: 200, child: CommonButton(title: 'Xem chi tiết', onTap: () {})),
-    );
-  }
-
-  // receive info
-  Widget _receiveInfo() {
-    return SliverToBoxAdapter(
-      child: Container(
-        color: const Color(0xffF2F2F2),
-        padding: const EdgeInsets.symmetric(vertical: 40),
-        margin: EdgeInsets.only(
-          top: 20,
-          left: Responsive.isMobile(context) ? 0 : 150,
-          right: Responsive.isMobile(context) ? 0 : 150,
-        ),
-        child: Column(
-          children: [
-            Text(
-              'Đăng ký nhận tin từ ShopDunk',
-              style: CommonStyles.size24W700Black1D(context),
-            ),
-            Text(
-              'Thông tin sản phẩm mới nhất và chương trình khuyến mãi',
-              style: CommonStyles.size13W400Grey86(context),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    hintText: 'Email của bạn',
-                    contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    suffixIcon: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      decoration: BoxDecoration(
-                          color: const Color(0xff0066CC),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Đăng ký',
-                            style: CommonStyles.size12W400White(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(30))),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

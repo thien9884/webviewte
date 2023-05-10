@@ -4,11 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
+import 'package:webviewtest/blocs/login/login_bloc.dart';
+import 'package:webviewtest/blocs/login/login_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/model/category/category_model.dart';
+import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
@@ -111,8 +114,25 @@ class _LoadingScreenState extends State<LoadingScreen> {
     await _getHomeBanner();
   }
 
+  _clearData() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+
+    sPref.remove(SharedPrefKeys.listCategories);
+    sPref.remove(SharedPrefKeys.listIpad);
+    sPref.remove(SharedPrefKeys.listIphone);
+    sPref.remove(SharedPrefKeys.listMac);
+    sPref.remove(SharedPrefKeys.listAppleWatch);
+    sPref.remove(SharedPrefKeys.listSound);
+    sPref.remove(SharedPrefKeys.listAccessories);
+    sPref.remove(SharedPrefKeys.listNewsGroup);
+    sPref.remove(SharedPrefKeys.listLatestNews);
+    sPref.remove(SharedPrefKeys.listTopBanner);
+    sPref.remove(SharedPrefKeys.listHomeBanner);
+  }
+
   _saveData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    await _clearData();
 
     if (_listCategories.isNotEmpty &&
         _listIpad.isNotEmpty &&
@@ -158,8 +178,34 @@ class _LoadingScreenState extends State<LoadingScreen> {
     }
   }
 
+  _getToken() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    bool rememberMe = sPref.rememberMe;
+    String userName = sPref.userName;
+    String password = sPref.password;
+
+    if(context.mounted) {
+      BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
+      loginModel: rememberMe
+          ? LoginModel(
+              rememberMe: true,
+              guest: false,
+              username: userName,
+              password: password,
+            )
+          : LoginModel(
+              rememberMe: false,
+              guest: true,
+              username: 'thien',
+              password: 'a',
+            ),
+    ));
+    }
+  }
+
   @override
   void initState() {
+    _getToken();
     _getCategories();
     super.initState();
   }
@@ -184,6 +230,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
           } else if (state is CategoriesLoadError) {
             if (context.mounted) {
               AlertUtils.displayErrorAlert(context, state.message);
+              if (EasyLoading.isShow) EasyLoading.dismiss();
             }
           }
 
@@ -193,6 +240,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _saveData();
           } else if (state is IpadLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is IphoneLoading) {
@@ -201,6 +250,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _saveData();
           } else if (state is IphoneLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is MacLoading) {
@@ -209,6 +259,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _saveData();
           } else if (state is MacLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is AppleWatchLoading) {
@@ -217,6 +268,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _saveData();
           } else if (state is AppleWatchLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is SoundLoading) {
@@ -225,6 +277,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _saveData();
           } else if (state is SoundLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is AccessoriesLoading) {
@@ -233,6 +286,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _saveData();
           } else if (state is AccessoriesLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is NewsLoading) {
@@ -244,6 +298,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _saveData();
           } else if (state is NewsLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is TopBannerLoading) {
@@ -276,6 +331,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _saveData();
           } else if (state is TopBannerLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is HomeBannerLoading) {
@@ -308,6 +364,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _saveData();
           } else if (state is HomeBannerLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
         });
   }

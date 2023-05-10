@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:webviewtest/common/common_appbar.dart';
+import 'package:webviewtest/blocs/customer_address/customer_address_bloc.dart';
+import 'package:webviewtest/blocs/customer_address/customer_address_event.dart';
+import 'package:webviewtest/blocs/customer_address/customer_address_state.dart';
 import 'package:webviewtest/common/common_button.dart';
+import 'package:webviewtest/common/common_footer.dart';
+import 'package:webviewtest/common/common_navigate_bar.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/customer/customer_model.dart';
+import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class AccountInfo extends StatefulWidget {
   const AccountInfo({Key? key}) : super(key: key);
@@ -14,44 +23,119 @@ class AccountInfo extends StatefulWidget {
 
 class _AccountInfoState extends State<AccountInfo> {
   int _selectGender = -1;
-  late String _day = '1';
+  String _day = '1';
   String _month = '1';
   String _year = '1990';
+  Customers? _customerModel = Customers();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+
+  _getData() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    final customerId = sPref.customerId;
+
+    if (context.mounted) {
+      BlocProvider.of<CustomerAddressBloc>(context)
+          .add(RequestGetCustomerAddress(customerId));
+    }
+  }
+
+  @override
+  void initState() {
+    _getData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    const CommonAppbar(title: 'Thông tin tài khoản'),
-                    _nameField(),
-                    _emailField(),
-                    _genderSelect(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Flexible(child: _listDropDownDay()),
-                        const SizedBox(width: 10),
-                        Flexible(child: _listDropDownMonth()),
-                        const SizedBox(width: 10),
-                        Flexible(child: _listDropDownYear()),
-                      ],
-                    ),
-                  ],
+    return BlocConsumer<CustomerAddressBloc, CustomerAddressState>(
+        builder: (context, state) => _accountInfo(),
+        listener: (context, state) {
+          if (state is CustomerAddressLoading) {
+            EasyLoading.show();
+          } else if (state is CustomerAddressLoaded) {
+            _customerModel = state.customerModel?.customers?.first;
+            if (_customerModel != null) {
+              final dayOfBirth =
+                  DateTime.parse(_customerModel!.dateOfBirth.toString());
+              _nameController.text = _customerModel!.firstName.toString();
+              _emailController.text = _customerModel!.email.toString();
+              if (_customerModel!.gender == 'M') {
+                _selectGender = 0;
+              } else {
+                _selectGender = 1;
+              }
+              _day = dayOfBirth.day.toString();
+              _month = dayOfBirth.month.toString();
+              _year = dayOfBirth.year.toString();
+            }
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is CustomerAddressLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+        });
+  }
+
+  Widget _accountInfo() {
+    return CommonNavigateBar(
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              sliver: SliverToBoxAdapter(
+                child: Center(
+                  child: Text(
+                    'Thông tin tài khoản',
+                    style: CommonStyles.size24W400Black1D(context),
+                  ),
                 ),
-                _buttonBuild(),
-              ],
+              ),
             ),
-          ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverToBoxAdapter(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border:
+                        Border.all(width: 1, color: const Color(0xffEBEBEB)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    children: [
+                      _nameField(),
+                      _emailField(),
+                      _phoneField(),
+                      _genderSelect(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Flexible(child: _listDropDownDay()),
+                          const SizedBox(width: 10),
+                          Flexible(child: _listDropDownMonth()),
+                          const SizedBox(width: 10),
+                          Flexible(child: _listDropDownYear()),
+                        ],
+                      ),
+                      _userNameField(),
+                      _referralField(),
+                      _buttonBuild(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    childCount: 1, (context, index) => const CommonFooter())),
+          ],
         ),
       ),
     );
@@ -64,11 +148,12 @@ class _AccountInfoState extends State<AccountInfo> {
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 5),
           child: Text(
-            'Tên',
+            'Tên:',
             style: CommonStyles.size14W400Black1D(context),
           ),
         ),
         TextFormField(
+          controller: _nameController,
           decoration: InputDecoration(
             enabled: true,
             enabledBorder: OutlineInputBorder(
@@ -85,6 +170,7 @@ class _AccountInfoState extends State<AccountInfo> {
               ),
               borderRadius: BorderRadius.circular(8),
             ),
+            contentPadding: const EdgeInsets.all(16),
           ),
         ),
       ],
@@ -98,11 +184,12 @@ class _AccountInfoState extends State<AccountInfo> {
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 5),
           child: Text(
-            'Email',
+            'Email:',
             style: CommonStyles.size14W400Black1D(context),
           ),
         ),
         TextFormField(
+          controller: _emailController,
           decoration: InputDecoration(
             enabled: true,
             enabledBorder: OutlineInputBorder(
@@ -119,6 +206,43 @@ class _AccountInfoState extends State<AccountInfo> {
               ),
               borderRadius: BorderRadius.circular(8),
             ),
+            contentPadding: const EdgeInsets.all(16),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _phoneField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 20, bottom: 5),
+          child: Text(
+            'Số điện thoại:',
+            style: CommonStyles.size14W400Black1D(context),
+          ),
+        ),
+        TextFormField(
+          controller: _phoneController,
+          decoration: InputDecoration(
+            enabled: true,
+            enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                width: 1,
+                color: Color(0xffEBEBEB),
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(
+                width: 1,
+                color: Color(0xffEBEBEB),
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            contentPadding: const EdgeInsets.all(16),
           ),
         ),
       ],
@@ -321,9 +445,56 @@ class _AccountInfoState extends State<AccountInfo> {
   }
 
   Widget _buttonBuild() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 30),
-      child: CommonButton(title: 'Lưu lại'),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: CommonButton(
+        title: 'Lưu lại',
+        onTap: () {},
+      ),
+    );
+  }
+
+  Widget _userNameField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 15),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            'Username:',
+            style: CommonStyles.size15W400Black1D(context),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            _customerModel?.username ?? '',
+            style: CommonStyles.size14W400Grey77(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _referralField() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            'Mã giới thiệu:',
+            style: CommonStyles.size15W400Black1D(context),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(
+            _customerModel?.username ?? '',
+            style: CommonStyles.size14W400Grey77(context),
+          ),
+        ],
+      ),
     );
   }
 }

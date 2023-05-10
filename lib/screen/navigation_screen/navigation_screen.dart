@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
@@ -15,16 +16,23 @@ import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
+import 'package:webviewtest/screen/login/login_screen.dart';
+import 'package:webviewtest/screen/login/register_screen.dart';
 import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/search_products/search_products.dart';
+import 'package:webviewtest/screen/user/account_address/user_address.dart';
+import 'package:webviewtest/screen/user/account_info/account_info.dart';
+import 'package:webviewtest/screen/user/account_order/account_order.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class NavigationScreen extends StatefulWidget {
+  final bool isLogin;
   final int isSelected;
 
-  const NavigationScreen({this.isSelected = 1, Key? key}) : super(key: key);
+  const NavigationScreen({this.isSelected = 1, this.isLogin = false, Key? key})
+      : super(key: key);
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
@@ -43,6 +51,8 @@ class _NavigationScreenState extends State<NavigationScreen>
   bool _showSearch = false;
   bool _showDrawer = false;
   bool _isVisible = true;
+  bool _isLogin = false;
+  bool _accountExpand = false;
   NewsGroup _newsGroup = NewsGroup();
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 500),
@@ -52,6 +62,18 @@ class _NavigationScreenState extends State<NavigationScreen>
 
   late final Animation<double> _animation = CurvedAnimation(
     parent: _controller,
+    curve: Curves.linear,
+    reverseCurve: Curves.linear,
+  );
+
+  late final AnimationController _accountController = AnimationController(
+    duration: const Duration(milliseconds: 500),
+    reverseDuration: const Duration(milliseconds: 500),
+    vsync: this,
+  );
+
+  late final Animation<double> _accountAnimation = CurvedAnimation(
+    parent: _accountController,
     curve: Curves.linear,
     reverseCurve: Curves.linear,
   );
@@ -70,8 +92,17 @@ class _NavigationScreenState extends State<NavigationScreen>
 
   _getListNavigationBar() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    final rememberMe = sPref.rememberMe;
 
     _listCategories = Categories.decode(sPref.listCategories);
+    _newsGroup = NewsGroup.decode(sPref.listNewsGroup)
+        .lastWhere((element) => element.id == 1);
+    if (rememberMe) {
+      _isLogin = rememberMe;
+    } else {
+      _isLogin = widget.isLogin;
+    }
+    print(_isLogin);
     setState(() {});
   }
 
@@ -92,24 +123,12 @@ class _NavigationScreenState extends State<NavigationScreen>
             setState(() {
               _listAllProduct = state.catalogProductsModel.products ?? [];
             });
+            if(EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is SearchProductsLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
           } else if (state is HideBottomSuccess) {
             _isVisible = state.isHide;
           }
-
-          // if (state is NewsLoading) {
-          //   EasyLoading.show();
-          // } else if (state is NewsLoaded) {
-          //   _newsGroup = state.newsData.newsGroup!
-          //       .lastWhere((element) => element.id == 1);
-          //
-          //   if (EasyLoading.isShow) EasyLoading.dismiss();
-          // } else if (state is NewsLoadError) {
-          //   if (EasyLoading.isShow) EasyLoading.dismiss();
-          //
-          //   AlertUtils.displayErrorAlert(context, state.message);
-          // }
         });
   }
 
@@ -157,7 +176,7 @@ class _NavigationScreenState extends State<NavigationScreen>
       axis: Axis.vertical,
       axisAlignment: -1,
       child: Container(
-        height: 56 * 2,
+        height: (56 * 4) + (56 * (_accountExpand ? 4 : 0)),
         margin: const EdgeInsets.only(bottom: 40),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -172,48 +191,187 @@ class _NavigationScreenState extends State<NavigationScreen>
         child: Padding(
           padding: const EdgeInsets.only(left: 20),
           child: ListView(
+            physics: const NeverScrollableScrollPhysics(),
             children: [
-              // GestureDetector(
-              //   onTap: () {
-              //     Navigator.of(context).push(MaterialPageRoute(
-              //         builder: (context) => const RegisterScreen()));
-              //   },
-              //   child: Container(
-              //     height: 56,
-              //     alignment: Alignment.centerLeft,
-              //     decoration: BoxDecoration(
-              //         border: Border(
-              //             bottom: BorderSide(
-              //                 width: 1, color: Colors.grey.withOpacity(0.5)))),
-              //     child: Text(
-              //       'Tạo tài khoản ngay',
-              //       style: CommonStyles.size15W400Black1D(context),
-              //     ),
-              //   ),
-              // ),
-              // GestureDetector(
-              //   onTap: () {
-              //     Navigator.of(context).push(MaterialPageRoute(
-              //         builder: (context) => const LoginScreen()));
-              //   },
-              //   child: Container(
-              //     height: 56,
-              //     alignment: Alignment.centerLeft,
-              //     decoration: BoxDecoration(
-              //         border: Border(
-              //             bottom: BorderSide(
-              //                 width: 1, color: Colors.grey.withOpacity(0.5)))),
-              //     child: Text(
-              //       'Đăng nhập',
-              //       style: CommonStyles.size15W400Black1D(context),
-              //     ),
-              //   ),
-              // ),
+              if (!_isLogin)
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _showDrawer = false;
+                      _controller.reverse();
+                    });
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const RegisterScreen()));
+                  },
+                  child: Container(
+                    height: 56,
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                width: 1,
+                                color: Colors.grey.withOpacity(0.5)))),
+                    child: Text(
+                      'Tạo tài khoản ngay',
+                      style: CommonStyles.size15W400Black1D(context),
+                    ),
+                  ),
+                ),
+              if (!_isLogin)
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _showDrawer = false;
+                      _controller.reverse();
+                    });
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const LoginScreen()));
+                  },
+                  child: Container(
+                    height: 56,
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                width: 1,
+                                color: Colors.grey.withOpacity(0.5)))),
+                    child: Text(
+                      'Đăng nhập',
+                      style: CommonStyles.size15W400Black1D(context),
+                    ),
+                  ),
+                ),
+              if (_isLogin)
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _accountExpand = !_accountExpand;
+                      if (_accountExpand) {
+                        _accountController.forward();
+                      } else {
+                        _accountController.reverse();
+                      }
+                    });
+                  },
+                  child: Container(
+                    height: 56,
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                width: 1,
+                                color: Colors.grey.withOpacity(0.5)))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Tài khoản của tôi',
+                          style: CommonStyles.size15W400Black1D(context),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(right: 10),
+                          child: Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              if (_accountExpand)
+                SizeTransition(
+                  sizeFactor: _accountAnimation,
+                  axis: Axis.vertical,
+                  axisAlignment: -1,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    height: 56 * 4,
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _showDrawer = false;
+                              _controller.reverse();
+                            });
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const AccountInfo()));
+                          },
+                          child: Container(
+                            height: 56,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Thông tin tài khoản',
+                              style: CommonStyles.size15W400Black1D(context),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _showDrawer = false;
+                              _controller.reverse();
+                            });
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const UserAddress()));
+                          },
+                          child: Container(
+                            height: 56,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Địa chỉ nhận hàng',
+                              style: CommonStyles.size15W400Black1D(context),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _showDrawer = false;
+                              _controller.reverse();
+                            });
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const AccountOrder()));
+                          },
+                          child: Container(
+                            height: 56,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Đơn đặt hàng',
+                              style: CommonStyles.size15W400Black1D(context),
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _showDrawer = false;
+                              _controller.reverse();
+                            });
+                          },
+                          child: Container(
+                            height: 56,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Lịch sử đánh giá sản phẩm',
+                              style: CommonStyles.size15W400Black1D(context),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               GestureDetector(
                 onTap: () {
                   final cIndex = _listCategories
                       .indexWhere((element) => element.seName == 'phu-kien');
 
+                  setState(() {
+                    _showDrawer = false;
+                    _controller.reverse();
+                  });
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => CategoryScreen(
                             title: _listCategories[cIndex].name ?? '',
@@ -228,9 +386,19 @@ class _NavigationScreenState extends State<NavigationScreen>
                   height: 56,
                   alignment: Alignment.centerLeft,
                   decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                              width: 1, color: Colors.grey.withOpacity(0.5)))),
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 1,
+                        color: Colors.grey.withOpacity(0.5),
+                      ),
+                      top: BorderSide(
+                        width: 1,
+                        color: _accountExpand
+                            ? Colors.grey.withOpacity(0.5)
+                            : Colors.transparent,
+                      ),
+                    ),
+                  ),
                   child: Text(
                     'Phụ kiện',
                     style: CommonStyles.size15W400Black1D(context),
@@ -239,6 +407,10 @@ class _NavigationScreenState extends State<NavigationScreen>
               ),
               GestureDetector(
                 onTap: () {
+                  setState(() {
+                    _showDrawer = false;
+                    _controller.reverse();
+                  });
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) =>
                           NewsCategory(newsGroup: _newsGroup)));
@@ -246,12 +418,41 @@ class _NavigationScreenState extends State<NavigationScreen>
                 child: Container(
                   height: 56,
                   alignment: Alignment.centerLeft,
+                  decoration: _isLogin
+                      ? BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                                  width: 1,
+                                  color: Colors.grey.withOpacity(0.5))))
+                      : null,
                   child: Text(
                     'Khuyến mãi',
                     style: CommonStyles.size15W400Black1D(context),
                   ),
                 ),
               ),
+              if (_isLogin)
+                GestureDetector(
+                  onTap: () async {
+                    SharedPreferencesService sPref =
+                        await SharedPreferencesService.instance;
+
+                    setState(() {
+                      sPref.setRememberMe(false);
+                      _isLogin = false;
+                      _showDrawer = false;
+                      _controller.reverse();
+                    });
+                  },
+                  child: Container(
+                    height: 56,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Đăng xuất',
+                      style: CommonStyles.size15W400Black1D(context),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -298,6 +499,7 @@ class _NavigationScreenState extends State<NavigationScreen>
                 } else {
                   _controller.reverse();
                 }
+                _accountExpand = false;
               }),
               child: Icon(
                 _showDrawer ? Icons.close_rounded : Icons.menu,

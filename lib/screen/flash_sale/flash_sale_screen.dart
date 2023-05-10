@@ -24,12 +24,9 @@ class FlashSaleScreen extends StatefulWidget {
 
 class _FlashSaleScreenState extends State<FlashSaleScreen> {
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
-  final TextEditingController _emailController = TextEditingController();
 
   // Categories
   List<Categories> _listCategories = [];
-
-  List<ProductsModel> _listIphone = [];
 
   Timer? countdownTimer;
   Duration _timeCountdown = const Duration(hours: 200);
@@ -101,7 +98,6 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
             if (state is IphoneLoading) {
               // EasyLoading.show();
             } else if (state is IphoneLoaded) {
-              _listIphone = state.iphone;
               startTimer();
             } else if (state is IphoneLoadError) {
               if (EasyLoading.isShow) {
@@ -131,7 +127,6 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
               ),
             ),
           ),
-          _receiveInfo(),
           SliverList(
               delegate: SliverChildBuilderDelegate(
                   childCount: 1, (context, index) => const CommonFooter())),
@@ -294,62 +289,6 @@ class _FlashSaleScreenState extends State<FlashSaleScreen> {
           mainAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
           childAspectRatio: 0.45,
-        ),
-      ),
-    );
-  }
-
-  // receive information
-  Widget _receiveInfo() {
-    return SliverToBoxAdapter(
-      child: Container(
-        color: const Color(0xffF2F2F2),
-        padding: const EdgeInsets.symmetric(vertical: 40),
-        margin: EdgeInsets.only(
-          top: 20,
-          left: Responsive.isMobile(context) ? 0 : 150,
-          right: Responsive.isMobile(context) ? 0 : 150,
-        ),
-        child: Column(
-          children: [
-            Text(
-              'Đăng ký nhận tin từ ShopDunk',
-              style: CommonStyles.size24W700Black1D(context),
-            ),
-            Text(
-              'Thông tin sản phẩm mới nhất và chương trình khuyến mãi',
-              style: CommonStyles.size13W400Grey86(context),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    hintText: 'Email của bạn',
-                    contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    suffixIcon: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      decoration: BoxDecoration(
-                          color: const Color(0xff0066CC),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Đăng ký',
-                            style: CommonStyles.size12W400White(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(30))),
-              ),
-            ),
-          ],
         ),
       ),
     );

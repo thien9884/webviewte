@@ -35,7 +35,6 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
   int _pagesSelected = 0;
   String _keySearch = '';
-  final TextEditingController _emailController = TextEditingController();
   late TextEditingController _searchController;
   final ScrollController _pageScrollController = ScrollController();
   final dataKey = GlobalKey();
@@ -96,26 +95,22 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
         child: CommonNavigateBar(
           child: _listAllProduct.isEmpty
               ? _widget ?? Container()
-              : GestureDetector(
-                  onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-                  child: Container(
-                    color: const Color(0xfff5f5f7),
-                    child: CustomScrollView(
-                      slivers: [
-                        _searchProducts(),
-                        _sortListProduct(),
-                        _listProduct(_listAllProduct),
-                        if (catalogProductsModel.totalPages != null)
-                          _pagesNumber(),
-                        _receiveInfo(),
-                        SliverList(
-                            delegate: SliverChildBuilderDelegate(
-                                childCount: 1,
-                                (context, index) => const CommonFooter())),
-                      ],
-                    ),
-                  ),
+              : Container(
+                color: const Color(0xfff5f5f7),
+                child: CustomScrollView(
+                  slivers: [
+                    _searchProducts(),
+                    _sortListProduct(),
+                    _listProduct(_listAllProduct),
+                    if (catalogProductsModel.totalPages != null)
+                      _pagesNumber(),
+                    SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                            childCount: 1,
+                            (context, index) => const CommonFooter())),
+                  ],
                 ),
+              ),
         ),
       ),
     );
@@ -538,62 +533,6 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  // receive information
-  Widget _receiveInfo() {
-    return SliverToBoxAdapter(
-      child: Container(
-        color: const Color(0xffF2F2F2),
-        padding: const EdgeInsets.symmetric(vertical: 40),
-        margin: EdgeInsets.only(
-          top: 20,
-          left: Responsive.isMobile(context) ? 0 : 150,
-          right: Responsive.isMobile(context) ? 0 : 150,
-        ),
-        child: Column(
-          children: [
-            Text(
-              'Đăng ký nhận tin từ ShopDunk',
-              style: CommonStyles.size24W700Black1D(context),
-            ),
-            Text(
-              'Thông tin sản phẩm mới nhất và chương trình khuyến mãi',
-              style: CommonStyles.size13W400Grey86(context),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    hintText: 'Email của bạn',
-                    contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    suffixIcon: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      decoration: BoxDecoration(
-                          color: const Color(0xff0066CC),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Đăng ký',
-                            style: CommonStyles.size12W400White(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(30))),
-              ),
-            ),
-          ],
         ),
       ),
     );

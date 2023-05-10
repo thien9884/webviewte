@@ -5,6 +5,7 @@ class SharedPrefKeys {
 
   static const String token = 'token';
   static const String userName = 'userName';
+  static const String customerId = 'customerId';
   static const String password = 'password';
   static const String rememberMe = 'rememberMe';
   static const String isLogin = 'isLogin';
@@ -56,6 +57,13 @@ class SharedPreferencesService {
 
   // Get user name
   String get userName => _preferences.getString(SharedPrefKeys.userName) ?? '';
+
+  // Set customer id
+  Future<void> setCustomerId(int customerId) async =>
+      await _preferences.setInt(SharedPrefKeys.userName, customerId);
+
+  // Get customer id
+  int get customerId => _preferences.getInt(SharedPrefKeys.userName) ?? 0;
 
   // Set list categories
   Future<void> setListCategories(String listCategories) async =>

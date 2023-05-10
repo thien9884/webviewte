@@ -5,6 +5,8 @@ import 'package:webviewtest/blocs/login/login_bloc.dart';
 import 'package:webviewtest/blocs/login/login_event.dart';
 import 'package:webviewtest/blocs/login/login_state.dart';
 import 'package:webviewtest/common/common_button.dart';
+import 'package:webviewtest/common/common_footer.dart';
+import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/login/login_model.dart';
@@ -32,7 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
             EasyLoading.show();
           } else if (state is LoginLoaded) {
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const NavigationScreen()));
+                builder: (context) => NavigationScreen(
+                      isLogin: state.isLogin,
+                    )));
             if (EasyLoading.isShow) {
               EasyLoading.dismiss();
             }
@@ -48,40 +52,50 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // login UI
   Widget _buildLoginUI(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return CommonNavigateBar(
+      child: CustomScrollView(
+        slivers: [
+          _titleLogin(),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
                   children: [
-                    _titleLogin(),
                     _emailLogin(),
                     _passwordLogin(),
                     _rememberMe(),
                     _createAccount(),
+                    _buttonLogin(),
                   ],
                 ),
-                _buttonLogin(),
-              ],
+              ),
             ),
           ),
-        ),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  childCount: 1, (context, index) => const CommonFooter())),
+        ],
       ),
     );
   }
 
   // title login
   Widget _titleLogin() {
-    return Center(
-      child: Text(
-        'Đăng nhập',
-        style: CommonStyles.size24W700Black1D(context),
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      sliver: SliverToBoxAdapter(
+        child: Center(
+          child: Text(
+            'Đăng nhập',
+            style: CommonStyles.size24W700Black1D(context),
+          ),
+        ),
       ),
     );
   }
@@ -223,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // login button
   Widget _buttonLogin() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(vertical: 30),
       child: CommonButton(
         onTap: () async {
           FocusScope.of(context).unfocus();

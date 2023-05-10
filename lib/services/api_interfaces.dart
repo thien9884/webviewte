@@ -1,11 +1,16 @@
+import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/category_model/category_group_model.dart';
+import 'package:webviewtest/model/customer/customer_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/news_category/news_category_model.dart';
+import 'package:webviewtest/model/order/order_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
+import 'package:webviewtest/model/register/register_model.dart';
+import 'package:webviewtest/model/register/register_response.dart';
 import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/model/search_products/search_products_model.dart';
@@ -39,6 +44,17 @@ abstract class ApiInterface {
   // get category banner
   Future<BannerModel?> requestGetCategoryBanner(int? id);
 
+  // get order
+  Future<OrderModel?> requestGetOrder(int? id);
+
+  // get customer address
+  Future<CustomerModel?> requestGetCustomerAddress(int? id);
+
+  // get customer address
+  Future<AddAddressModel?> requestPostAddAddress(int? id, AddAddressModel? addAddressModel);
+
+  Future<CustomerModel?> requestPutAddAddress(int? id, CustomerModel? customerModel);
+
   // get category banner
   Future<List<SubCategories>?> requestGetSubCategories(int? id);
 
@@ -59,4 +75,6 @@ abstract class ApiInterface {
 
   // Login
   Future<UserModel?> login(LoginModel? loginModel);
+
+  Future<RegisterResponse?> register(RegisterModel? registerModel);
 }

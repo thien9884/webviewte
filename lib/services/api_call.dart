@@ -1,12 +1,17 @@
 import 'package:webviewtest/constant/api_constant.dart';
+import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/category_model/category_group_model.dart';
+import 'package:webviewtest/model/customer/customer_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/news_category/news_category_model.dart';
+import 'package:webviewtest/model/order/order_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
+import 'package:webviewtest/model/register/register_model.dart';
+import 'package:webviewtest/model/register/register_response.dart';
 import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/model/search_products/search_products_model.dart';
@@ -93,14 +98,6 @@ class ApiCall implements ApiInterface {
 
   @override
   Future<BannerModel?> requestGetFooterBanner() async {
-    await login(
-      LoginModel(
-        rememberMe: true,
-        guest: true,
-        username: 'thien',
-        password: 'a',
-      ),
-    );
     var response = await DioClient().get(ApiConstant.footer);
     if (response == null) return null;
     final data = response;
@@ -109,18 +106,46 @@ class ApiCall implements ApiInterface {
 
   @override
   Future<BannerModel?> requestGetCategoryBanner(int? id) async {
-    await login(
-      LoginModel(
-        rememberMe: true,
-        guest: true,
-        username: 'thien',
-        password: 'a',
-      ),
-    );
     var response = await DioClient().get('${ApiConstant.categoryBanner}$id');
     if (response == null) return null;
     final data = response;
     return BannerModel.fromJson(data);
+  }
+
+  @override
+  Future<OrderModel?> requestGetOrder(int? id) async {
+    var response = await DioClient().get('${ApiConstant.order}$id');
+    if (response == null) return null;
+    final data = response;
+    return OrderModel.fromJson(data);
+  }
+
+  @override
+  Future<CustomerModel?> requestGetCustomerAddress(int? id) async {
+    var response = await DioClient().get('${ApiConstant.customer}$id');
+    if (response == null) return null;
+    final data = response;
+    return CustomerModel.fromJson(data);
+  }
+
+  @override
+  Future<AddAddressModel?> requestPostAddAddress(
+      int? id, AddAddressModel? addAddressModel) async {
+    var response = await DioClient()
+        .post('${ApiConstant.customer}$id/billingaddress', addAddressModel);
+    if (response == null) return null;
+    final data = response;
+    return AddAddressModel.fromJson(data);
+  }
+
+  @override
+  Future<CustomerModel?> requestPutAddAddress(
+      int? id, CustomerModel? customerModel) async {
+    var response =
+        await DioClient().put('${ApiConstant.customer}$id', customerModel);
+    if (response == null) return null;
+    final data = response;
+    return CustomerModel.fromJson(data);
   }
 
   @override
@@ -175,6 +200,14 @@ class ApiCall implements ApiInterface {
     if (response == null) return null;
     final user = UserModel.fromJson(response);
     DioClient.setToken(user.accessToken ?? '');
+    return user;
+  }
+
+  @override
+  Future<RegisterResponse?> register(RegisterModel? registerModel) async {
+    var response = await DioClient().post(ApiConstant.register, registerModel);
+    if (response == null) return null;
+    final user = RegisterResponse.fromJson(response);
     return user;
   }
 }

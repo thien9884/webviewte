@@ -18,7 +18,7 @@ class ProductsModel {
   int? flashSaleQuantity;
   int? flashSaleSelledQuantity;
   dynamic sku;
-  String? productType;
+  dynamic productType;
   bool? markAsNew;
   DefaultPictureModel? defaultPictureModel;
   List<ProductTags>? productTags;

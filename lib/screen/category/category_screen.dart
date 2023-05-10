@@ -48,7 +48,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
   int _indexSelected = 0;
   int _pagesSelected = 0;
   int _categorySelected = 0;
-  final TextEditingController _emailController = TextEditingController();
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
   bool _isExpand = false;
   String _sortBy = ListCustom.listSortProduct[0].name;
@@ -247,7 +246,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         ? _relatedProducts()
                         : const SliverToBoxAdapter(),
                     _description(),
-                    _receiveInfo(),
                     SliverList(
                         delegate: SliverChildBuilderDelegate(
                             childCount: 1,
@@ -535,19 +533,29 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text(
-                                  '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
-                                  style: CommonStyles.size13W700Blue00(context),
+                                Flexible(
+                                  child: FittedBox(
+                                    child: Text(
+                                      '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
+                                      style: CommonStyles.size13W700Blue00(
+                                          context),
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(
                                   width: 5,
                                 ),
-                                Text(
-                                  '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                  style: CommonStyles.size11W400Grey86(context)
-                                      .copyWith(
-                                          decoration:
-                                              TextDecoration.lineThrough),
+                                Flexible(
+                                  child: FittedBox(
+                                    child: Text(
+                                      '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
+                                      style:
+                                          CommonStyles.size11W400Grey86(context)
+                                              .copyWith(
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -853,62 +861,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     ],
                   ),
                 )),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // receive information
-  Widget _receiveInfo() {
-    return SliverToBoxAdapter(
-      child: Container(
-        color: const Color(0xffF2F2F2),
-        padding: const EdgeInsets.symmetric(vertical: 40),
-        margin: EdgeInsets.only(
-          top: 20,
-          left: Responsive.isMobile(context) ? 0 : 150,
-          right: Responsive.isMobile(context) ? 0 : 150,
-        ),
-        child: Column(
-          children: [
-            Text(
-              'Đăng ký nhận tin từ ShopDunk',
-              style: CommonStyles.size24W700Black1D(context),
-            ),
-            Text(
-              'Thông tin sản phẩm mới nhất và chương trình khuyến mãi',
-              style: CommonStyles.size13W400Grey86(context),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                    fillColor: Colors.white,
-                    filled: true,
-                    hintText: 'Email của bạn',
-                    contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    suffixIcon: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 30),
-                      decoration: BoxDecoration(
-                          color: const Color(0xff0066CC),
-                          borderRadius: BorderRadius.circular(30)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Đăng ký',
-                            style: CommonStyles.size12W400White(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(30))),
-              ),
-            ),
           ],
         ),
       ),

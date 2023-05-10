@@ -20,10 +20,11 @@ class LoginBloc extends BaseBloc<LoginEvent, LoginState> {
     emit(const LoginLoading());
     try {
       final user = await ApiCall().login(loginModel);
-      sPref.setToken(user?.accessToken ?? '');
+      // sPref.setToken(user?.accessToken ?? '');
       sPref.setRememberMe(loginModel.rememberMe);
-      sPref.setUserName(loginModel.username ?? '');
+      sPref.setUserName(loginModel.username.toString());
       sPref.setPassword(loginModel.password ?? '');
+      sPref.setCustomerId(user?.customerId ?? 0);
       print(user?.accessToken);
       emit(
         LoginLoaded(userModel: user ?? UserModel(), isLogin: user != null),
