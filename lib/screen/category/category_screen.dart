@@ -160,6 +160,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
             _listAllProduct.addAll(state.categoryGroupModel.productModel ?? []);
             _listSortProduct
                 .addAll(state.categoryGroupModel.productModel ?? []);
+            print(_listSortProduct);
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is ProductsCategoryLoadError) {
@@ -353,8 +354,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     borderRadius: BorderRadius.circular(10)),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 4),
+                margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 4),
                 child: Center(
                   child: Text(
                     item.name ?? '',
@@ -497,6 +497,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                               "https://api.shopdunk.com/images/uploaded/icon/${item.productTags?.first.seName}.png",
                               height: 25,
                               fit: BoxFit.cover,
+                              errorBuilder: (context, obj, trace) =>
+                                  const SizedBox(
+                                height: 25,
+                              ),
                             )
                           : const SizedBox(
                               height: 25,
@@ -529,15 +533,15 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Flexible(
                                   child: FittedBox(
                                     child: Text(
                                       '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
-                                      style: CommonStyles.size13W700Blue00(
+                                      style: CommonStyles.size16W700Blue00(
                                           context),
                                     ),
                                   ),

@@ -97,9 +97,6 @@ class _NavigationScreenState extends State<NavigationScreen>
     final rememberMe = sPref.rememberMe;
 
     _listCategories = Categories.decode(sPref.listCategories);
-    _listCategories.sort(
-      (a, b) => a.displayOrder!.compareTo(b.displayOrder!.toInt()),
-    );
     _newsGroup = NewsGroup.decode(sPref.listNewsGroup)
         .lastWhere((element) => element.id == 1);
     if (rememberMe) {

@@ -43,6 +43,7 @@ class _NewsDetailState extends State<NewsDetail> {
   RelatedNews _relatedNewsData = RelatedNews();
   NewsCommentResponseModel _newsCommentResponseModel =
       NewsCommentResponseModel();
+  List<NewsComments> _listComment = [];
   String _firstContent = '';
   String _videoContent = '';
   String _lastContent = '';
@@ -131,6 +132,7 @@ class _NewsDetailState extends State<NewsDetail> {
     _getRelatedNewsData(widget.newsItems?.id ?? 0);
     _checkVideo();
     _getHideBottomValue();
+    _listComment.addAll(widget.newsItems?.newsComments ?? []);
     _controller = YoutubePlayerController(
       initialVideoId: _videoContent,
       flags: const YoutubePlayerFlags(
@@ -197,28 +199,31 @@ class _NewsDetailState extends State<NewsDetail> {
   Widget _buildBody() {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: CustomScrollView(
-        controller: _hideButtonController,
-        slivers: [
-          _newsAppBar(),
-          _newsDetail(context),
-          _newsDivider(context),
-          if (_relatedNewsData.productOverviewModels != null &&
-              _relatedNewsData.productOverviewModels!.isNotEmpty)
-            _relatedProductsTittle(context),
-          if (_relatedNewsData.productOverviewModels != null)
-            _relatedProducts(context),
-          _addNewsComment(context),
-          _newsCommentTitle(),
-          _newsComments(),
-          if (_relatedNewsData.newsItemModels != null &&
-              _relatedNewsData.newsItemModels!.isNotEmpty)
-            _relatedNewsTittle(context),
-          if (_relatedNewsData.newsItemModels != null) _relatedNews(context),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  childCount: 1, (context, index) => const CommonFooter())),
-        ],
+      child: Container(
+        color: Colors.white,
+        child: CustomScrollView(
+          controller: _hideButtonController,
+          slivers: [
+            _newsAppBar(),
+            _newsDetail(context),
+            _newsDivider(context),
+            if (_relatedNewsData.productOverviewModels != null &&
+                _relatedNewsData.productOverviewModels!.isNotEmpty)
+              _relatedProductsTittle(context),
+            if (_relatedNewsData.productOverviewModels != null)
+              _relatedProducts(context),
+            _addNewsComment(context),
+            _newsCommentTitle(),
+            if (_listComment.isNotEmpty) _newsComments(),
+            if (_relatedNewsData.newsItemModels != null &&
+                _relatedNewsData.newsItemModels!.isNotEmpty)
+              _relatedNewsTittle(context),
+            if (_relatedNewsData.newsItemModels != null) _relatedNews(context),
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    childCount: 1, (context, index) => const CommonFooter())),
+          ],
+        ),
       ),
     );
   }
@@ -281,12 +286,15 @@ class _NewsDetailState extends State<NewsDetail> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.network(
-                (widget.latestNews != null
-                        ? widget.latestNews?.pictureModel?.fullSizeImageUrl
-                        : widget.newsItems?.pictureModel?.fullSizeImageUrl) ??
-                    '',
-                fit: BoxFit.fill,
+              SizedBox(
+                width: double.infinity,
+                child: Image.network(
+                  (widget.latestNews != null
+                          ? widget.latestNews?.pictureModel?.fullSizeImageUrl
+                          : widget.newsItems?.pictureModel?.fullSizeImageUrl) ??
+                      '',
+                  fit: BoxFit.cover,
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(20),
@@ -582,87 +590,80 @@ class _NewsDetailState extends State<NewsDetail> {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       sliver: SliverToBoxAdapter(
-        child: Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Text(
-                  'Để lại bình luận của bạn',
-                  style: CommonStyles.size18W700Black1D(context),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Text(
+                'Để lại bình luận của bạn',
+                style: CommonStyles.size18W700Black1D(context),
+              ),
+            ),
+            TextField(
+              controller: newsComment,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
+                labelText: 'Tiêu đề nhận xét',
               ),
-              TextField(
-                controller: newsComment,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  labelText: 'Tiêu đề nhận xét',
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Stack(
-                children: [
-                  TextField(
-                    controller: newsDescription,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      labelText: 'Để lại bình luận của bạn',
-                      alignLabelWithHint: true,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Stack(
+              children: [
+                TextField(
+                  controller: newsDescription,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    maxLines: 3,
+                    labelText: 'Để lại bình luận của bạn',
+                    alignLabelWithHint: true,
                   ),
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          BlocProvider.of<ShopdunkBloc>(context).add(
-                            RequestPostNewsComment(
-                              widget.newsItems?.id,
-                              NewsCommentModel(
-                                id: 1,
-                                customerId: 0,
-                                customerName: 'thien@gmail.com',
-                                customerAvatarUrl: '',
-                                allowViewingProfiles: true,
-                                createOn: DateTime.now().toString(),
-                                commentTitle: 'thien',
-                                commentText: 'hi anh',
-                              ),
+                  maxLines: 3,
+                ),
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        BlocProvider.of<ShopdunkBloc>(context).add(
+                          RequestPostNewsComment(
+                            widget.newsItems?.id,
+                            NewsCommentModel(
+                              id: 1,
+                              customerId: 0,
+                              customerName: 'thien@gmail.com',
+                              customerAvatarUrl: '',
+                              allowViewingProfiles: true,
+                              createOn: DateTime.now().toString(),
+                              commentTitle: 'thien',
+                              commentText: 'hi anh',
                             ),
-                          );
-                        });
-                      },
-                      child: Container(
-                        width: 45,
-                        height: 30,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            color: Colors.blueAccent,
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Text(
-                          'Gửi',
-                          style: CommonStyles.size12W400White(context),
-                        ),
+                          ),
+                        );
+                      });
+                    },
+                    child: Container(
+                      width: 45,
+                      height: 30,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Text(
+                        'Gửi',
+                        style: CommonStyles.size12W400White(context),
                       ),
                     ),
-                  )
-                ],
-              ),
-            ],
-          ),
+                  ),
+                )
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -695,10 +696,13 @@ class _NewsDetailState extends State<NewsDetail> {
   // news comments
   Widget _newsComments() {
     return SliverList(
-        delegate: SliverChildBuilderDelegate(
-            childCount: widget.newsItems?.newsComments?.length,
+        delegate: SliverChildBuilderDelegate(childCount: _listComment.length,
             (context, index) {
-      final item = widget.newsItems?.newsComments![index];
+      final item = _listComment[index];
+      var dateValue = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+          .parseUTC(item.createdOn ?? '')
+          .toLocal();
+      String formattedDate = DateFormat("dd/MM/yyyy HH:mm").format(dateValue);
 
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -706,7 +710,7 @@ class _NewsDetailState extends State<NewsDetail> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(item?.customerAvatarUrl ??
+              backgroundImage: NetworkImage(item.customerAvatarUrl ??
                   'https://api.shopdunk.com/images/thumbs/default-avatar_120.jpg'),
               radius: 20,
               backgroundColor: Colors.transparent,
@@ -729,7 +733,7 @@ class _NewsDetailState extends State<NewsDetail> {
             Expanded(
               child: Container(
                 margin: const EdgeInsets.only(left: 10, bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: const Color(0xffF5F5F7),
                   borderRadius: BorderRadius.circular(8),
@@ -738,17 +742,18 @@ class _NewsDetailState extends State<NewsDetail> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          'Dat Nguyen',
-                          style: CommonStyles.size15W700Black44(context),
+                          item.customerName ?? '',
+                          style: CommonStyles.size16W700Blue00(context),
                         ),
                         const SizedBox(
-                          width: 10,
+                          width: 8,
                         ),
                         Text(
-                          '17/04/2023',
-                          style: CommonStyles.size13W400Black44(context),
+                          formattedDate,
+                          style: CommonStyles.size13W400Grey86(context),
                         ),
                       ],
                     ),
@@ -756,8 +761,8 @@ class _NewsDetailState extends State<NewsDetail> {
                       height: 15,
                     ),
                     Text(
-                      'aaaaa',
-                      style: CommonStyles.size15W400Grey51(context),
+                      item.commentText ?? '',
+                      style: CommonStyles.size14W400Black1D(context),
                     ),
                   ],
                 ),

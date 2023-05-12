@@ -96,21 +96,21 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
           child: _listAllProduct.isEmpty
               ? _widget ?? Container()
               : Container(
-                color: const Color(0xfff5f5f7),
-                child: CustomScrollView(
-                  slivers: [
-                    _searchProducts(),
-                    _sortListProduct(),
-                    _listProduct(_listAllProduct),
-                    if (catalogProductsModel.totalPages != null)
-                      _pagesNumber(),
-                    SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                            childCount: 1,
-                            (context, index) => const CommonFooter())),
-                  ],
+                  color: const Color(0xfff5f5f7),
+                  child: CustomScrollView(
+                    slivers: [
+                      _searchProducts(),
+                      _sortListProduct(),
+                      _listProduct(_listAllProduct),
+                      if (catalogProductsModel.totalPages != null)
+                        _pagesNumber(),
+                      SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                              childCount: 1,
+                              (context, index) => const CommonFooter())),
+                    ],
+                  ),
                 ),
-              ),
         ),
       ),
     );
@@ -303,6 +303,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
           childCount: listProduct.length,
           (context, index) {
             var item = listProduct[index];
+
             return GestureDetector(
               onTap: () => Navigator.of(context).push(
                 CustomMaterialPageRoute(
@@ -313,8 +314,9 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
               ),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -323,21 +325,21 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                       margin: EdgeInsets.only(
                           top: Responsive.isMobile(context) ? 5 : 10,
                           right: Responsive.isMobile(context) ? 5 : 10),
-                      child: item.defaultPictureModel?.thumbImageUrl != null
+                      child: item.productTags!.isNotEmpty
                           ? Image.network(
-                              item.defaultPictureModel?.thumbImageUrl,
-                              scale: Responsive.isMobile(context) ? 10 : 6,
-                            )
-                          : SizedBox(
-                              height: Responsive.isMobile(context) ? 10 : 6,
-                            ),
+                        "https://api.shopdunk.com/images/uploaded/icon/${item.productTags?.first.seName}.png",
+                        height: 25,
+                        fit: BoxFit.cover,
+                      )
+                          : const SizedBox(
+                        height: 25,
+                      ),
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(
                           vertical: Responsive.isMobile(context) ? 10 : 20),
                       child: Image.network(
-                        item.defaultPictureModel?.imageUrl ?? '',
-                      ),
+                          item.defaultPictureModel?.imageUrl ?? ''),
                     ),
                     Expanded(
                       child: Column(
@@ -345,50 +347,52 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                         children: [
                           Expanded(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 5),
                               child: Text(
                                 item.name ?? '',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: CommonStyles.size14W700Black1D(context),
+                                style: CommonStyles.size14W700Black1D(context)
+                                    .copyWith(
+                                  wordSpacing: 1.5,
+                                  height: 1.5,
+                                ),
                               ),
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      priceFormat.format(
-                                          item.productPrice?.priceValue ?? 0),
+                                Flexible(
+                                  child: FittedBox(
+                                    child: Text(
+                                      '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
                                       style: CommonStyles.size16W700Blue00(
                                           context),
                                     ),
-                                    Text(
-                                      '₫',
-                                      style: CommonStyles.size12W400Blue00(
-                                          context),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                                 const SizedBox(
-                                  height: 5,
+                                  width: 5,
                                 ),
-                                Text(
-                                  '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                  style: CommonStyles.size12W400Grey66(context)
-                                      .copyWith(
-                                          decoration:
-                                              TextDecoration.lineThrough),
+                                Flexible(
+                                  child: FittedBox(
+                                    child: Text(
+                                      '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
+                                      style:
+                                      CommonStyles.size11W400Grey86(context)
+                                          .copyWith(
+                                          decoration: TextDecoration
+                                              .lineThrough),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
-                          )
+                          ),
                         ],
                       ),
                     )

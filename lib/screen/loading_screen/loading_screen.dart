@@ -220,6 +220,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listCategories = state.categories
                 .where((element) => element.showOnHomePage == true)
                 .toList();
+            _listCategories.sort(
+                  (a, b) => a.displayOrder!.compareTo(b.displayOrder!.toInt()),
+            );
             int indexSound = _listCategories
                 .indexWhere((element) => element.seName == 'am-thanh');
             int indexAccessories = _listCategories

@@ -137,9 +137,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
     _listHomeBannerImg = TopBanner.decode(sPref.listHomeBanner);
 
     if (_listCategories.isNotEmpty) {
-      _listCategories.sort(
-        (a, b) => a.displayOrder!.compareTo(b.displayOrder!.toInt()),
-      );
       int indexIpad =
           _listCategories.indexWhere((element) => element.seName == 'ipad');
       int indexIphone =
@@ -408,6 +405,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           childCount: listProduct.length,
           (context, index) {
             var item = listProduct[index];
+
             return GestureDetector(
               onTap: () => Navigator.of(context).push(
                 CustomMaterialPageRoute(
@@ -441,7 +439,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(
-                          vertical: Responsive.isMobile(context) ? 10 : 20),
+                          vertical: Responsive.isMobile(context) ? 4 : 8),
                       child: Image.network(
                           item.defaultPictureModel?.imageUrl ?? ''),
                     ),
@@ -468,13 +466,13 @@ class _HomePageScreenState extends State<HomePageScreen> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Flexible(
                                   child: FittedBox(
                                     child: Text(
                                       '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
-                                      style: CommonStyles.size14W700Blue00(
+                                      style: CommonStyles.size16W700Blue00(
                                           context),
                                     ),
                                   ),
