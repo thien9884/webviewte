@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/order/order_bloc.dart';
 import 'package:webviewtest/blocs/order/order_event.dart';
 import 'package:webviewtest/blocs/order/order_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
@@ -23,6 +26,36 @@ class AccountOrder extends StatefulWidget {
 class _AccountOrderState extends State<AccountOrder> {
   List<Orders>? _listOrders = [];
   int _customerId = 0;
+  late ScrollController _hideButtonController;
+
+  bool _isVisible = false;
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
+  }
 
   _getOrderData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
@@ -37,6 +70,7 @@ class _AccountOrderState extends State<AccountOrder> {
   @override
   void initState() {
     _getOrderData();
+    _getHideBottomValue();
     super.initState();
   }
 
@@ -62,6 +96,7 @@ class _AccountOrderState extends State<AccountOrder> {
   Widget _orderUI() {
     return CommonNavigateBar(
         child: CustomScrollView(
+      controller: _hideButtonController,
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -74,11 +109,22 @@ class _AccountOrderState extends State<AccountOrder> {
             ),
           ),
         ),
-        _orderInfo(),
+        _listOrders!.isNotEmpty
+            ? _orderInfo()
+            : SliverToBoxAdapter(
+                child: SizedBox(
+                  height: 300,
+                  child: Center(
+                    child: Text(
+                      'Bạn chưa có đơn hàng nào',
+                      style: CommonStyles.size14W400Black1D(context),
+                    ),
+                  ),
+                ),
+              ),
         SliverList(
             delegate: SliverChildBuilderDelegate(
-                childCount: 1,
-                    (context, index) => const CommonFooter())),
+                childCount: 1, (context, index) => const CommonFooter())),
       ],
     ));
   }
@@ -91,6 +137,11 @@ class _AccountOrderState extends State<AccountOrder> {
               (context, index) {
         final item = _listOrders![index];
         var priceFormat = NumberFormat.decimalPattern('vi_VN');
+        var dateValue = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+            .parseUTC(item.createdOnUtc ?? '')
+            .toLocal();
+        String formattedDate =
+            DateFormat("dd/MM/yyyy").add_jms().format(dateValue);
 
         return GestureDetector(
           onTap: () {
@@ -113,7 +164,10 @@ class _AccountOrderState extends State<AccountOrder> {
                 children: [
                   _itemStatus(item.orderStatus ?? ''),
                   _infoValue(title: 'Mã đơn hàng', id: item.id ?? 0),
-                  _infoValue(title: 'Ngày đặt hàng', value: item.createdOnUtc),
+                  _infoValue(
+                    title: 'Ngày đặt hàng',
+                    value: formattedDate,
+                  ),
                   _infoValue(
                       title: 'Tổng tiền',
                       value: '${priceFormat.format(item.orderTotal ?? 0)}₫'),

@@ -175,7 +175,7 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
   _handleGetListIpad(Emitter<ShopdunkState> emit, int? id) async {
     emit(const IpadLoading());
     try {
-      final productsResponse = await ApiCall().requestGetProduct(id);
+      final productsResponse = await ApiCall().requestGetListProduct(id);
       emit(IpadLoaded(ipad: productsResponse));
     } catch (e) {
       emit(IpadLoadError(message: handleError(e)));
@@ -185,7 +185,7 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
   _handleGetListIphone(Emitter<ShopdunkState> emit, int? id) async {
     emit(const IphoneLoading());
     try {
-      final productsResponse = await ApiCall().requestGetProduct(id);
+      final productsResponse = await ApiCall().requestGetListProduct(id);
       emit(IphoneLoaded(iphone: productsResponse));
     } catch (e) {
       emit(IphoneLoadError(message: handleError(e)));
@@ -195,7 +195,7 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
   _handleGetListMac(Emitter<ShopdunkState> emit, int? id) async {
     emit(const MacLoading());
     try {
-      final productsResponse = await ApiCall().requestGetProduct(id);
+      final productsResponse = await ApiCall().requestGetListProduct(id);
       emit(MacLoaded(mac: productsResponse));
     } catch (e) {
       emit(MacLoadError(message: handleError(e)));
@@ -205,7 +205,7 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
   _handleGetListAppleWatch(Emitter<ShopdunkState> emit, int? id) async {
     emit(const AppleWatchLoading());
     try {
-      final productsResponse = await ApiCall().requestGetProduct(id);
+      final productsResponse = await ApiCall().requestGetListProduct(id);
       emit(AppleWatchLoaded(watch: productsResponse));
     } catch (e) {
       emit(AppleWatchLoadError(message: handleError(e)));
@@ -215,7 +215,7 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
   _handleGetListSound(Emitter<ShopdunkState> emit, int? id) async {
     emit(const SoundLoading());
     try {
-      final productsResponse = await ApiCall().requestGetProduct(id);
+      final productsResponse = await ApiCall().requestGetListProduct(id);
       emit(SoundLoaded(sound: productsResponse));
     } catch (e) {
       emit(SoundLoadError(message: handleError(e)));
@@ -225,7 +225,7 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
   _handleGetListAccessories(Emitter<ShopdunkState> emit, int? id) async {
     emit(const AccessoriesLoading());
     try {
-      final productsResponse = await ApiCall().requestGetProduct(id);
+      final productsResponse = await ApiCall().requestGetListProduct(id);
       emit(AccessoriesLoaded(accessories: productsResponse));
     } catch (e) {
       emit(AccessoriesLoadError(message: handleError(e)));

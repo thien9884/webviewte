@@ -4,6 +4,9 @@ import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/category_model/category_group_model.dart';
 import 'package:webviewtest/model/customer/customer_model.dart';
+import 'package:webviewtest/model/customer/info_model.dart';
+import 'package:webviewtest/model/customer/product_rating_model.dart';
+import 'package:webviewtest/model/customer/rating_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
@@ -66,14 +69,6 @@ class ApiCall implements ApiInterface {
 
   @override
   Future<BannerModel?> requestGetTopBanner() async {
-    await login(
-      LoginModel(
-        rememberMe: true,
-        guest: true,
-        username: 'thien',
-        password: 'a',
-      ),
-    );
     var response = await DioClient().get(ApiConstant.topBanner);
     if (response == null) return null;
     final data = response;
@@ -82,14 +77,6 @@ class ApiCall implements ApiInterface {
 
   @override
   Future<BannerModel?> requestGetHomeBanner() async {
-    await login(
-      LoginModel(
-        rememberMe: true,
-        guest: true,
-        username: 'thien',
-        password: 'a',
-      ),
-    );
     var response = await DioClient().get(ApiConstant.homeBanner);
     if (response == null) return null;
     final data = response;
@@ -129,6 +116,22 @@ class ApiCall implements ApiInterface {
   }
 
   @override
+  Future<List<ProductHistory>> requestGetProduct(int? id) async {
+    var response = await DioClient().get('${ApiConstant.productRating}$id');
+    if (response == null) return [];
+    Iterable list = response['products'];
+    return list.map((e) => ProductHistory.fromJson(e)).toList();
+  }
+
+  @override
+  Future<List<RatingModel>?> requestGetRatingHistory(int? id) async {
+    var response = await DioClient().get('${ApiConstant.rating}$id');
+    if (response == null) return [];
+    Iterable list = response;
+    return list.map((e) => RatingModel.fromJson(e)).toList();
+  }
+
+  @override
   Future<AddAddressModel?> requestPostAddAddress(
       int? id, AddAddressModel? addAddressModel) async {
     var response = await DioClient()
@@ -149,7 +152,15 @@ class ApiCall implements ApiInterface {
   }
 
   @override
-  Future<List<ProductsModel>> requestGetProduct(int? id) async {
+  Future<InfoModel?> requestGetInfo() async {
+    var response = await DioClient().get(ApiConstant.info);
+    if (response == null) return null;
+    final data = response;
+    return InfoModel.fromJson(data);
+  }
+
+  @override
+  Future<List<ProductsModel>> requestGetListProduct(int? id) async {
     var response = await DioClient().get(ApiConstant.products + id.toString());
     if (response == null) return [];
     Iterable list = response;

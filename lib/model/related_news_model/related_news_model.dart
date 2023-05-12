@@ -117,7 +117,7 @@ class ProductOverviewModels {
   dynamic sku;
   String? productType;
   bool? markAsNew;
-  dynamic defaultPictureModel;
+  DefaultPictureModel? defaultPictureModel;
   ProductPrice? productPrice;
   List<dynamic>? products;
 
@@ -166,7 +166,9 @@ class ProductOverviewModels {
     sku = json['Sku'];
     productType = json['ProductType'];
     markAsNew = json['MarkAsNew'];
-    defaultPictureModel = json['DefaultPictureModel'];
+    defaultPictureModel = json['DefaultPictureModel'] != null
+        ? DefaultPictureModel.fromJson(json['DefaultPictureModel'])
+        : null;
     productPrice = json['ProductPrice'] != null
         ? ProductPrice.fromJson(json['ProductPrice'])
         : null;
@@ -199,13 +201,49 @@ class ProductOverviewModels {
     data['Sku'] = sku;
     data['ProductType'] = productType;
     data['MarkAsNew'] = markAsNew;
-    data['DefaultPictureModel'] = defaultPictureModel;
+    if (defaultPictureModel != null) {
+      data['DefaultPictureModel'] = defaultPictureModel!.toJson();
+    }
     if (productPrice != null) {
       data['ProductPrice'] = productPrice!.toJson();
     }
     // if (products != null) {
     //   data['Products'] = products!.map((v) => v.toJson()).toList();
     // }
+    return data;
+  }
+}
+
+class DefaultPictureModel {
+  String? imageUrl;
+  dynamic thumbImageUrl;
+  String? fullSizeImageUrl;
+  String? title;
+  String? alternateText;
+
+  DefaultPictureModel({
+    this.imageUrl,
+    this.thumbImageUrl,
+    this.fullSizeImageUrl,
+    this.title,
+    this.alternateText,
+  });
+
+  DefaultPictureModel.fromJson(Map<String, dynamic> json) {
+    imageUrl = json['ImageUrl'];
+    thumbImageUrl = json['ThumbImageUrl'];
+    fullSizeImageUrl = json['FullSizeImageUrl'];
+    title = json['Title'];
+    alternateText = json['AlternateText'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['ImageUrl'] = imageUrl;
+    data['ThumbImageUrl'] = thumbImageUrl;
+    data['FullSizeImageUrl'] = fullSizeImageUrl;
+    data['Title'] = title;
+    data['AlternateText'] = alternateText;
     return data;
   }
 }

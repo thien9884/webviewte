@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:webviewtest/blocs/login/login_bloc.dart';
 import 'package:webviewtest/blocs/login/login_event.dart';
 import 'package:webviewtest/blocs/login/login_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -24,6 +27,42 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _savePassword = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  late ScrollController _hideButtonController;
+
+  bool _isVisible = false;
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    _getHideBottomValue();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,18 +92,15 @@ class _LoginScreenState extends State<LoginScreen> {
   // login UI
   Widget _buildLoginUI(BuildContext context) {
     return CommonNavigateBar(
-      child: CustomScrollView(
-        slivers: [
-          _titleLogin(),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            sliver: SliverToBoxAdapter(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
+      child: Container(
+        color: Colors.white,
+        child: CustomScrollView(
+          controller: _hideButtonController,
+          slivers: [
+            _titleLogin(),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverToBoxAdapter(
                 child: Column(
                   children: [
                     _emailLogin(),
@@ -76,11 +112,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  childCount: 1, (context, index) => const CommonFooter())),
-        ],
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    childCount: 1, (context, index) => const CommonFooter())),
+          ],
+        ),
       ),
     );
   }
@@ -115,7 +151,6 @@ class _LoginScreenState extends State<LoginScreen> {
         TextFormField(
           controller: _emailController,
           decoration: InputDecoration(
-            hintText: 'email',
             hintStyle: CommonStyles.size14W400Grey86(context),
             enabled: true,
             enabledBorder: OutlineInputBorder(
@@ -153,7 +188,6 @@ class _LoginScreenState extends State<LoginScreen> {
         TextFormField(
           controller: _passwordController,
           decoration: InputDecoration(
-            hintText: 'password',
             hintStyle: CommonStyles.size14W400Grey86(context),
             suffixIcon: GestureDetector(
               onTap: () => setState(() => _showPassword = !_showPassword),
@@ -187,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // remember me
   Widget _rememberMe() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

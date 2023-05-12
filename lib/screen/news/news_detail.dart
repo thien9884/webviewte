@@ -151,6 +151,7 @@ class _NewsDetailState extends State<NewsDetail> {
               EasyLoading.show();
             } else if (state is RelatedNewsLoaded) {
               _relatedNewsData = state.newsData;
+              print(_relatedNewsData);
               if (EasyLoading.isShow) EasyLoading.dismiss();
             } else if (state is RelatedNewsLoadError) {
               AlertUtils.displayErrorAlert(context, state.message);
@@ -315,8 +316,10 @@ class _NewsDetailState extends State<NewsDetail> {
                 ? Column(
                     children: [
                       Html(
-                        data: _firstContent.replaceAll(
-                            'src="', 'src="http://shopdunk.com'),
+                        data: _firstContent
+                            .replaceAll('shopdunk.com', 'api.shopdunk.com')
+                            .replaceAll(
+                                'src="', 'src="http://api.shopdunk.com'),
                         onLinkTap: (str, contextRender, list, element) =>
                             Navigator.of(context).push(CustomMaterialPageRoute(
                                 builder: (context) => ShopDunkWebView(
@@ -354,8 +357,10 @@ class _NewsDetailState extends State<NewsDetail> {
                       ),
                       _youtubePlayer(),
                       Html(
-                        data: _lastContent.replaceAll(
-                            'src="', 'src="http://shopdunk.com'),
+                        data: _lastContent
+                            .replaceAll('shopdunk.com', 'api.shopdunk.com')
+                            .replaceAll(
+                                'src="', 'src="http://api.shopdunk.com'),
                         onLinkTap: (str, contextRender, list, element) =>
                             Navigator.of(context).push(CustomMaterialPageRoute(
                                 builder: (context) => ShopDunkWebView(
@@ -391,9 +396,12 @@ class _NewsDetailState extends State<NewsDetail> {
                 : Html(
                     data: widget.latestNews != null
                         ? widget.latestNews?.full
-                            ?.replaceAll('src="', 'src="http://shopdunk.com')
+                            ?.replaceAll('shopdunk.com', 'api.shopdunk.com')
+                            .replaceAll('src="', 'src="http://api.shopdunk.com')
                         : widget.newsItems?.full
-                            ?.replaceAll('src="', 'src="http://shopdunk.com'),
+                            ?.replaceAll('shopdunk.com', 'api.shopdunk.com')
+                            .replaceAll(
+                                'src="', 'src="http://api.shopdunk.com'),
                     onLinkTap: (str, contextRender, list, element) =>
                         Navigator.of(context).push(CustomMaterialPageRoute(
                             builder: (context) => ShopDunkWebView(
@@ -487,10 +495,11 @@ class _NewsDetailState extends State<NewsDetail> {
               ),
               child: Material(
                 child: InkWell(
-                  onTap: () => Navigator.of(context).push(CustomMaterialPageRoute(
-                      builder: (context) => ShopDunkWebView(
-                            url: item?.seName,
-                          ))),
+                  onTap: () =>
+                      Navigator.of(context).push(CustomMaterialPageRoute(
+                          builder: (context) => ShopDunkWebView(
+                                url: item?.seName,
+                              ))),
                   borderRadius: BorderRadius.circular(4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -499,7 +508,7 @@ class _NewsDetailState extends State<NewsDetail> {
                         padding: EdgeInsets.symmetric(
                             vertical: Responsive.isMobile(context) ? 10 : 20),
                         child: Image.network(
-                            'https://shopdunk.com/images/thumbs/0008913_apple-watch-ultra-lte-49mm-alpine-loop-size-s_420.png'),
+                            item?.defaultPictureModel?.fullSizeImageUrl ?? ''),
                       ),
                       Expanded(
                         child: Column(
@@ -711,7 +720,7 @@ class _NewsDetailState extends State<NewsDetail> {
             //     shape: BoxShape.circle,
             //   ),
             //   child: Image.network(
-            //     'https://api.shopdunk.com/images/thumbs/default-avatar_120.jpg',
+            //     'https://api.api.shopdunk.com/images/thumbs/default-avatar_120.jpg',
             //     height: 30,
             //     width: 30,
             //     fit: BoxFit.cover,

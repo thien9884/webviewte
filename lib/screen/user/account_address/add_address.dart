@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:webviewtest/blocs/customer_address/customer_address_bloc.dart';
-import 'package:webviewtest/blocs/customer_address/customer_address_event.dart';
-import 'package:webviewtest/blocs/customer_address/customer_address_state.dart';
+import 'package:webviewtest/blocs/customer/customer_bloc.dart';
+import 'package:webviewtest/blocs/customer/customer_event.dart';
+import 'package:webviewtest/blocs/customer/customer_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -29,6 +32,36 @@ class _AddAddressState extends State<AddAddress> {
   final TextEditingController _districtController = TextEditingController();
   final TextEditingController _wardController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  late ScrollController _hideButtonController;
+
+  bool _isVisible = false;
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
+  }
 
   _getData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
@@ -39,12 +72,13 @@ class _AddAddressState extends State<AddAddress> {
   @override
   void initState() {
     _getData();
+    _getHideBottomValue();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CustomerAddressBloc, CustomerAddressState>(
+    return BlocConsumer<CustomerBloc, CustomerState>(
         builder: (context, state) => _addAddressUI(),
         listener: (context, state) {
           if (state is AddAddressLoading) {
@@ -62,63 +96,61 @@ class _AddAddressState extends State<AddAddress> {
 
   Widget _addAddressUI() {
     return CommonNavigateBar(
-        child: GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            sliver: SliverFillRemaining(
-              hasScrollBody: false,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Center(
-                          child: Text(
-                            'Thêm địa chỉ',
-                            style: CommonStyles.size24W400Black1D(context),
+        child: CustomScrollView(
+          controller: _hideButtonController,
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                            child: Text(
+                              'Thêm địa chỉ',
+                              style: CommonStyles.size24W400Black1D(context),
+                            ),
                           ),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        margin: const EdgeInsets.only(bottom: 20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                              width: 1, color: const Color(0xffEBEBEB)),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          children: [
-                            _nameField(),
-                            _phoneField(),
-                            _emailField(),
-                            _listDropDownCity(),
-                            _listDropDownDistrict(),
-                            _districtField(),
-                            _wardField(),
-                            _addressField(),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                  _saveButton(),
-                ],
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                                width: 1, color: const Color(0xffEBEBEB)),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            children: [
+                              _nameField(),
+                              _phoneField(),
+                              _emailField(),
+                              _listDropDownCity(),
+                              _listDropDownDistrict(),
+                              _districtField(),
+                              _wardField(),
+                              _addressField(),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    _saveButton(),
+                  ],
+                ),
               ),
             ),
-          ),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  childCount: 1, (context, index) => const CommonFooter())),
-        ],
-      ),
-    ));
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    childCount: 1, (context, index) => const CommonFooter())),
+          ],
+        ));
   }
 
   // input name
@@ -475,7 +507,7 @@ class _AddAddressState extends State<AddAddress> {
               id: 0,
             );
 
-            BlocProvider.of<CustomerAddressBloc>(context)
+            BlocProvider.of<CustomerBloc>(context)
                 .add(RequestPostAddAddress(_customerId, addressModel));
           }),
     );

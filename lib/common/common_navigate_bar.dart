@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
@@ -25,6 +24,7 @@ import 'package:webviewtest/screen/store/store_screen.dart';
 import 'package:webviewtest/screen/user/account_address/user_address.dart';
 import 'package:webviewtest/screen/user/account_info/account_info.dart';
 import 'package:webviewtest/screen/user/account_order/account_order.dart';
+import 'package:webviewtest/screen/user/rating_history/rating_history.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
@@ -51,6 +51,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
   bool _showSearch = false;
   final TextEditingController _searchController = TextEditingController();
   List<ProductsModel> _listAllProduct = [];
+  final FocusNode _focusNode = FocusNode();
 
   // Categories
   List<Categories> _listCategories = [];
@@ -110,12 +111,19 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
   @override
   void initState() {
     _getListNavigationBar();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -125,7 +133,6 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
         builder: (context, state) => _commonNavigatorUI(),
         listener: (context, state) {
           if (state is SearchProductsLoading) {
-            EasyLoading.show();
           } else if (state is SearchProductsLoaded) {
             _listAllProduct = state.catalogProductsModel.products ?? [];
           } else if (state is SearchProductsLoadError) {
@@ -358,6 +365,8 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
                               _showDrawer = false;
                               _controller.reverse();
                             });
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const RatingHistory()));
                           },
                           child: Container(
                             height: 56,
@@ -578,6 +587,8 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
       onTap: () {
         setState(() {
           _showSearch = false;
+          BlocProvider.of<ShopdunkBloc>(context)
+              .add(const RequestGetHideBottom(true));
           _searchController.clear();
           _listAllProduct.clear();
         });
@@ -599,13 +610,15 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
     return GestureDetector(
       onTap: () => setState(() {
         _showSearch = false;
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(true));
         _searchController.clear();
         _listAllProduct.clear();
       }),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         color: const Color(0xff515154),
-        child: TextField(
+        child: TextFormField(
           controller: _searchController,
           decoration: InputDecoration(
             fillColor: Colors.white,
@@ -622,6 +635,8 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
               onTap: () {
                 setState(() {
                   _showSearch = false;
+                  BlocProvider.of<ShopdunkBloc>(context)
+                      .add(const RequestGetHideBottom(true));
                   _searchController.clear();
                   _listAllProduct.clear();
                 });
@@ -640,8 +655,10 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
               }
             });
           },
-          onSubmitted: (value) {
+          onFieldSubmitted: (value) {
             _showSearch = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(const RequestGetHideBottom(true));
             _searchController.clear();
             if (value.length >= 3) {
               Navigator.of(context)
@@ -659,6 +676,8 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
               });
             }
           },
+          focusNode: _focusNode,
+          autofocus: true,
         ),
       ),
     );
@@ -669,6 +688,8 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
     return GestureDetector(
       onTap: () => setState(() {
         _showSearch = false;
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(true));
         _searchController.clear();
         _listAllProduct.clear();
       }),
@@ -683,6 +704,8 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
               onTap: () {
                 if (index == 7) {
                   _showSearch = false;
+                  BlocProvider.of<ShopdunkBloc>(context)
+                      .add(const RequestGetHideBottom(true));
                   _searchController.clear();
                   Navigator.of(context).push(
                     MaterialPageRoute(

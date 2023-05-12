@@ -1,17 +1,22 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:webviewtest/blocs/customer_address/customer_address_bloc.dart';
-import 'package:webviewtest/blocs/customer_address/customer_address_event.dart';
-import 'package:webviewtest/blocs/customer_address/customer_address_state.dart';
+import 'package:webviewtest/blocs/customer/customer_bloc.dart';
+import 'package:webviewtest/blocs/customer/customer_event.dart';
+import 'package:webviewtest/blocs/customer/customer_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
-import 'package:webviewtest/model/customer/customer_model.dart';
+import 'package:webviewtest/model/customer/info_model.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class AccountInfo extends StatefulWidget {
@@ -26,53 +31,96 @@ class _AccountInfoState extends State<AccountInfo> {
   String _day = '1';
   String _month = '1';
   String _year = '1990';
-  Customers? _customerModel = Customers();
+  InfoModel? _infoModel = InfoModel();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  late ScrollController _hideButtonController;
+
+  bool _isVisible = false;
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
+  }
 
   _getData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    final customerId = sPref.customerId;
+    final infoCustomer = sPref.infoCustomer;
 
-    if (context.mounted) {
-      BlocProvider.of<CustomerAddressBloc>(context)
-          .add(RequestGetCustomerAddress(customerId));
+    if (infoCustomer.isNotEmpty) {
+      _infoModel = InfoModel.fromJson(jsonDecode(infoCustomer));
+      _handleData();
+    } else {
+      if (context.mounted) {
+        BlocProvider.of<CustomerBloc>(context).add(const RequestGetInfo());
+      }
+    }
+  }
+
+  _handleData() {
+    if (_infoModel != null) {
+      _nameController.text = _infoModel!.firstName ?? '';
+      _emailController.text = _infoModel!.email ?? '';
+      _phoneController.text = _infoModel!.phone ?? '';
+
+      if (_infoModel!.gender == 'M') {
+        _selectGender = 0;
+      } else {
+        _selectGender = 1;
+      }
+      if (_infoModel!.dateOfBirthDay != null &&
+          _infoModel!.dateOfBirthMonth != null &&
+          _infoModel!.dateOfBirthYear != null) {
+        _day = _infoModel!.dateOfBirthDay.toString();
+        _month = _infoModel!.dateOfBirthMonth.toString();
+        _year = _infoModel!.dateOfBirthYear.toString();
+      }
     }
   }
 
   @override
   void initState() {
     _getData();
+    _getHideBottomValue();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CustomerAddressBloc, CustomerAddressState>(
+    return BlocConsumer<CustomerBloc, CustomerState>(
         builder: (context, state) => _accountInfo(),
         listener: (context, state) {
-          if (state is CustomerAddressLoading) {
+          if (state is GetInfoLoading) {
             EasyLoading.show();
-          } else if (state is CustomerAddressLoaded) {
-            _customerModel = state.customerModel?.customers?.first;
-            if (_customerModel != null) {
-              final dayOfBirth =
-                  DateTime.parse(_customerModel!.dateOfBirth.toString());
-              _nameController.text = _customerModel!.firstName.toString();
-              _emailController.text = _customerModel!.email.toString();
-              if (_customerModel!.gender == 'M') {
-                _selectGender = 0;
-              } else {
-                _selectGender = 1;
-              }
-              _day = dayOfBirth.day.toString();
-              _month = dayOfBirth.month.toString();
-              _year = dayOfBirth.year.toString();
-            }
+          } else if (state is GetInfoLoaded) {
+            _infoModel = state.infoModel;
+            _handleData();
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
-          } else if (state is CustomerAddressLoadError) {
+          } else if (state is GetInfoLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
@@ -81,62 +129,59 @@ class _AccountInfoState extends State<AccountInfo> {
 
   Widget _accountInfo() {
     return CommonNavigateBar(
-      child: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: CustomScrollView(
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-              sliver: SliverToBoxAdapter(
-                child: Center(
-                  child: Text(
-                    'Thông tin tài khoản',
-                    style: CommonStyles.size24W400Black1D(context),
-                  ),
+      child: CustomScrollView(
+        controller: _hideButtonController,
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+            sliver: SliverToBoxAdapter(
+              child: Center(
+                child: Text(
+                  'Thông tin tài khoản',
+                  style: CommonStyles.size24W400Black1D(context),
                 ),
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverToBoxAdapter(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border:
-                        Border.all(width: 1, color: const Color(0xffEBEBEB)),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    children: [
-                      _nameField(),
-                      _emailField(),
-                      _phoneField(),
-                      _genderSelect(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Flexible(child: _listDropDownDay()),
-                          const SizedBox(width: 10),
-                          Flexible(child: _listDropDownMonth()),
-                          const SizedBox(width: 10),
-                          Flexible(child: _listDropDownYear()),
-                        ],
-                      ),
-                      _userNameField(),
-                      _referralField(),
-                      _buttonBuild(),
-                    ],
-                  ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(width: 1, color: const Color(0xffEBEBEB)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: [
+                    _nameField(),
+                    _emailField(),
+                    _phoneField(),
+                    _genderSelect(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Flexible(child: _listDropDownDay()),
+                        const SizedBox(width: 10),
+                        Flexible(child: _listDropDownMonth()),
+                        const SizedBox(width: 10),
+                        Flexible(child: _listDropDownYear()),
+                      ],
+                    ),
+                    _userNameField(),
+                    _referralField(),
+                    _buttonBuild(),
+                  ],
                 ),
               ),
             ),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1, (context, index) => const CommonFooter())),
-          ],
-        ),
+          ),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  childCount: 1, (context, index) => const CommonFooter())),
+        ],
       ),
     );
   }
@@ -468,7 +513,7 @@ class _AccountInfoState extends State<AccountInfo> {
             width: 10,
           ),
           Text(
-            _customerModel?.username ?? '',
+            _infoModel?.username ?? '',
             style: CommonStyles.size14W400Grey77(context),
           ),
         ],
@@ -490,7 +535,7 @@ class _AccountInfoState extends State<AccountInfo> {
             width: 10,
           ),
           Text(
-            _customerModel?.username ?? '',
+            _infoModel?.referralCode ?? '',
             style: CommonStyles.size14W400Grey77(context),
           ),
         ],

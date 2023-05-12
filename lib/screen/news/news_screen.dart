@@ -235,7 +235,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 margin:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 2.5),
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 4),
                 child: Row(
                   children: [
                     Image.asset('assets/icons/ic_tips.webp', scale: 5),
@@ -359,32 +359,46 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget _allNews({required String content, required NewsGroup newsGroup}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
-      child: GestureDetector(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => NewsCategory(
-              newsGroup: newsGroup,
-              index: 0,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => NewsCategory(
+                  newsGroup: newsGroup,
+                  index: 0,
+                ),
+              ),
+            ),
+            child: Container(
+              padding:
+              const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xff0066CC), width: 1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Xem tất cả $content',
+                    style: CommonStyles.size14W400Blue00(context),
+                  ),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 16,
+                    color: Color(0xff0066CC),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Xem tất cả $content',
-              style: CommonStyles.size14W400Blue00(context),
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            const Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: Color(0xff0066CC),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

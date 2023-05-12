@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:webviewtest/blocs/customer_address/customer_address_bloc.dart';
-import 'package:webviewtest/blocs/customer_address/customer_address_event.dart';
-import 'package:webviewtest/blocs/customer_address/customer_address_state.dart';
+import 'package:webviewtest/blocs/customer/customer_bloc.dart';
+import 'package:webviewtest/blocs/customer/customer_event.dart';
+import 'package:webviewtest/blocs/customer/customer_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -23,13 +26,43 @@ class UserAddress extends StatefulWidget {
 
 class _UserAddressState extends State<UserAddress> {
   List<Addresses> _listAddress = [];
+  late ScrollController _hideButtonController;
+
+  bool _isVisible = false;
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
+  }
 
   _getData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
     final customerId = sPref.customerId;
 
     if (context.mounted) {
-      BlocProvider.of<CustomerAddressBloc>(context)
+      BlocProvider.of<CustomerBloc>(context)
           .add(RequestGetCustomerAddress(customerId));
     }
   }
@@ -37,12 +70,13 @@ class _UserAddressState extends State<UserAddress> {
   @override
   void initState() {
     _getData();
+    _getHideBottomValue();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CustomerAddressBloc, CustomerAddressState>(
+    return BlocConsumer<CustomerBloc, CustomerState>(
         builder: (context, state) => _userAddressUI(),
         listener: (context, state) {
           if (state is CustomerAddressLoading) {
@@ -63,6 +97,7 @@ class _UserAddressState extends State<UserAddress> {
   Widget _userAddressUI() {
     return CommonNavigateBar(
         child: CustomScrollView(
+          controller: _hideButtonController,
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.symmetric(vertical: 20),

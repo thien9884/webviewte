@@ -24,6 +24,7 @@ import 'package:webviewtest/screen/search_products/search_products.dart';
 import 'package:webviewtest/screen/user/account_address/user_address.dart';
 import 'package:webviewtest/screen/user/account_info/account_info.dart';
 import 'package:webviewtest/screen/user/account_order/account_order.dart';
+import 'package:webviewtest/screen/user/rating_history/rating_history.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
@@ -44,6 +45,7 @@ class _NavigationScreenState extends State<NavigationScreen>
   String url = '';
   final TextEditingController _searchController = TextEditingController();
   List<ProductsModel> _listAllProduct = [];
+  FocusNode _focusNode = FocusNode();
 
   // Categories
   List<Categories> _listCategories = [];
@@ -95,6 +97,9 @@ class _NavigationScreenState extends State<NavigationScreen>
     final rememberMe = sPref.rememberMe;
 
     _listCategories = Categories.decode(sPref.listCategories);
+    _listCategories.sort(
+      (a, b) => a.displayOrder!.compareTo(b.displayOrder!.toInt()),
+    );
     _newsGroup = NewsGroup.decode(sPref.listNewsGroup)
         .lastWhere((element) => element.id == 1);
     if (rememberMe) {
@@ -106,10 +111,25 @@ class _NavigationScreenState extends State<NavigationScreen>
     setState(() {});
   }
 
+  _clearData() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+
+    sPref.setRememberMe(false);
+    sPref.remove(SharedPrefKeys.userName);
+    sPref.remove(SharedPrefKeys.password);
+    sPref.remove(SharedPrefKeys.infoCustomer);
+  }
+
   @override
   void initState() {
     _isSelected = widget.isSelected;
     _getListNavigationBar();
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
     super.initState();
   }
 
@@ -123,7 +143,7 @@ class _NavigationScreenState extends State<NavigationScreen>
             setState(() {
               _listAllProduct = state.catalogProductsModel.products ?? [];
             });
-            if(EasyLoading.isShow) EasyLoading.dismiss();
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is SearchProductsLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
           } else if (state is HideBottomSuccess) {
@@ -349,6 +369,8 @@ class _NavigationScreenState extends State<NavigationScreen>
                               _showDrawer = false;
                               _controller.reverse();
                             });
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const RatingHistory()));
                           },
                           child: Container(
                             height: 56,
@@ -434,11 +456,8 @@ class _NavigationScreenState extends State<NavigationScreen>
               if (_isLogin)
                 GestureDetector(
                   onTap: () async {
-                    SharedPreferencesService sPref =
-                        await SharedPreferencesService.instance;
-
                     setState(() {
-                      sPref.setRememberMe(false);
+                      _clearData();
                       _isLogin = false;
                       _showDrawer = false;
                       _controller.reverse();
@@ -466,6 +485,8 @@ class _NavigationScreenState extends State<NavigationScreen>
       onTap: () {
         setState(() {
           _showSearch = false;
+          BlocProvider.of<ShopdunkBloc>(context)
+              .add(const RequestGetHideBottom(true));
           _searchController.clear();
           _listAllProduct.clear();
         });
@@ -585,13 +606,15 @@ class _NavigationScreenState extends State<NavigationScreen>
     return GestureDetector(
       onTap: () => setState(() {
         _showSearch = false;
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(true));
         _searchController.clear();
         _listAllProduct.clear();
       }),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         color: const Color(0xff515154),
-        child: TextField(
+        child: TextFormField(
           controller: _searchController,
           decoration: InputDecoration(
             fillColor: Colors.white,
@@ -608,6 +631,8 @@ class _NavigationScreenState extends State<NavigationScreen>
               onTap: () {
                 setState(() {
                   _showSearch = false;
+                  BlocProvider.of<ShopdunkBloc>(context)
+                      .add(const RequestGetHideBottom(true));
                   _searchController.clear();
                   _listAllProduct.clear();
                 });
@@ -626,8 +651,10 @@ class _NavigationScreenState extends State<NavigationScreen>
               }
             });
           },
-          onSubmitted: (value) {
+          onFieldSubmitted: (value) {
             _showSearch = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(const RequestGetHideBottom(true));
             _searchController.clear();
             if (value.length >= 3) {
               Navigator.of(context)
@@ -645,6 +672,8 @@ class _NavigationScreenState extends State<NavigationScreen>
               });
             }
           },
+          focusNode: _focusNode,
+          autofocus: true,
         ),
       ),
     );
@@ -655,6 +684,8 @@ class _NavigationScreenState extends State<NavigationScreen>
     return GestureDetector(
       onTap: () => setState(() {
         _showSearch = false;
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(true));
         _searchController.clear();
         _listAllProduct.clear();
       }),

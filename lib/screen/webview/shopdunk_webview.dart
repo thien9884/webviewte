@@ -4,6 +4,7 @@
 
 // ignore_for_file: public_member_api_docs
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 // #docregion platform_imports
@@ -119,9 +120,11 @@ class _ShopDunkWebViewState extends State<ShopDunkWebView> {
             debugPrint('WebView is loading (progress : $progress%)');
           },
           onPageStarted: (String url) {
+            EasyLoading.show();
             debugPrint('Page started loading: $url');
           },
           onPageFinished: (String url) async {
+            if(EasyLoading.isShow) EasyLoading.dismiss();
             _controller.clearCache();
             debugPrint('Page finished loading: $url');
           },

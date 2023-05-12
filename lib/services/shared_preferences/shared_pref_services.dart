@@ -20,6 +20,7 @@ class SharedPrefKeys {
   static const String listLatestNews = 'listLatestNews';
   static const String listTopBanner = 'listTopBanner';
   static const String listHomeBanner = 'listHomeBanner';
+  static const String infoCustomer = 'infoCustomer';
 }
 
 class SharedPreferencesService {
@@ -60,10 +61,10 @@ class SharedPreferencesService {
 
   // Set customer id
   Future<void> setCustomerId(int customerId) async =>
-      await _preferences.setInt(SharedPrefKeys.userName, customerId);
+      await _preferences.setInt(SharedPrefKeys.customerId, customerId);
 
   // Get customer id
-  int get customerId => _preferences.getInt(SharedPrefKeys.userName) ?? 0;
+  int get customerId => _preferences.getInt(SharedPrefKeys.customerId) ?? 0;
 
   // Set list categories
   Future<void> setListCategories(String listCategories) async =>
@@ -141,6 +142,13 @@ class SharedPreferencesService {
 
   // Get list home banner
   String get listHomeBanner => _preferences.getString(SharedPrefKeys.listHomeBanner) ?? '';
+
+  // Set list home banner
+  Future<void> setInfoCustomer(String infoCustomer) async =>
+      await _preferences.setString(SharedPrefKeys.infoCustomer, infoCustomer);
+
+  // Get list home banner
+  String get infoCustomer => _preferences.getString(SharedPrefKeys.infoCustomer) ?? '';
 
   // Set password
   Future<void> setPassword(String password) async =>

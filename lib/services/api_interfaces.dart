@@ -3,6 +3,9 @@ import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/category_model/category_group_model.dart';
 import 'package:webviewtest/model/customer/customer_model.dart';
+import 'package:webviewtest/model/customer/info_model.dart';
+import 'package:webviewtest/model/customer/product_rating_model.dart';
+import 'package:webviewtest/model/customer/rating_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
@@ -51,15 +54,25 @@ abstract class ApiInterface {
   Future<CustomerModel?> requestGetCustomerAddress(int? id);
 
   // get customer address
+  Future<List<RatingModel>?> requestGetRatingHistory(int? id);
+
+  // post customer address
   Future<AddAddressModel?> requestPostAddAddress(int? id, AddAddressModel? addAddressModel);
 
+  // put address
   Future<CustomerModel?> requestPutAddAddress(int? id, CustomerModel? customerModel);
+
+  // get info
+  Future<InfoModel?> requestGetInfo();
 
   // get category banner
   Future<List<SubCategories>?> requestGetSubCategories(int? id);
 
   // Get list product
-  Future<List<ProductsModel>> requestGetProduct(int? id);
+  Future<List<ProductsModel>> requestGetListProduct(int? id);
+
+  // Get product
+  Future<List<ProductHistory>> requestGetProduct(int? id);
 
   // Get list product
   Future<CatalogProductsModel?> requestGetSearchProduct(
@@ -76,5 +89,6 @@ abstract class ApiInterface {
   // Login
   Future<UserModel?> login(LoginModel? loginModel);
 
+  // register
   Future<RegisterResponse?> register(RegisterModel? registerModel);
 }

@@ -354,7 +354,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                 margin:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 4),
                 child: Center(
                   child: Text(
                     item.name ?? '',

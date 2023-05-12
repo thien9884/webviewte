@@ -137,6 +137,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
     _listHomeBannerImg = TopBanner.decode(sPref.listHomeBanner);
 
     if (_listCategories.isNotEmpty) {
+      _listCategories.sort(
+        (a, b) => a.displayOrder!.compareTo(b.displayOrder!.toInt()),
+      );
       int indexIpad =
           _listCategories.indexWhere((element) => element.seName == 'ipad');
       int indexIphone =
@@ -463,7 +466,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
@@ -471,7 +474,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                   child: FittedBox(
                                     child: Text(
                                       '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
-                                      style: CommonStyles.size13W700Blue00(
+                                      style: CommonStyles.size14W700Blue00(
                                           context),
                                     ),
                                   ),
@@ -649,31 +652,45 @@ class _HomePageScreenState extends State<HomePageScreen> {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       sliver: SliverToBoxAdapter(
-        child: GestureDetector(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const NavigationScreen(
-                isSelected: 0,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const NavigationScreen(
+                    isSelected: 0,
+                  ),
+                ),
+              ),
+              child: Container(
+                padding:
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xff0066CC), width: 1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Xem tất cả Tin Tức',
+                      style: CommonStyles.size14W400Blue00(context),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 16,
+                      color: Color(0xff0066CC),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Xem tất cả Tin Tức',
-                style: CommonStyles.size14W400Blue00(context),
-              ),
-              const SizedBox(
-                width: 5,
-              ),
-              const Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: Color(0xff0066CC),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );

@@ -1,19 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/order/order_model.dart';
+import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
-class OrderInfo extends StatelessWidget {
+class OrderInfo extends StatefulWidget {
   final Orders orders;
 
   const OrderInfo({required this.orders, Key? key}) : super(key: key);
 
   @override
+  State<OrderInfo> createState() => _OrderInfoState();
+}
+
+class _OrderInfoState extends State<OrderInfo> {
+  late ScrollController _hideButtonController;
+
+  bool _isVisible = false;
+
+  _getHideBottomValue() {
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    _getHideBottomValue();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CommonNavigateBar(
       child: CustomScrollView(
+        controller: _hideButtonController,
         slivers: [
           SliverToBoxAdapter(
             child: GestureDetector(
@@ -67,7 +115,7 @@ class OrderInfo extends StatelessWidget {
   }
 
   Widget _orderStatus(BuildContext context) {
-    switch (orders.orderStatus) {
+    switch (widget.orders.orderStatus) {
       case 'Complete':
         return Text(
           'Hoàn thành',
@@ -144,11 +192,11 @@ class OrderInfo extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _infoValue(context, title: 'Mã đơn hàng', id: orders.id),
+              _infoValue(context, title: 'Mã đơn hàng', id: widget.orders.id),
               _infoValue(context,
                   title: 'Ngày đặt hàng',
-                  value: DateFormat('dd/MM/yyyy')
-                      .format(DateTime.parse(orders.createdOnUtc ?? ''))),
+                  value: DateFormat('dd/MM/yyyy').format(
+                      DateTime.parse(widget.orders.createdOnUtc ?? ''))),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Row(
@@ -197,17 +245,17 @@ class OrderInfo extends StatelessWidget {
               _infoCustomer(
                 context,
                 title: 'Tên khách hàng',
-                value: orders.billingAddress?.firstName ?? '',
+                value: widget.orders.billingAddress?.firstName ?? '',
               ),
               _infoCustomer(
                 context,
                 title: 'Số điện thoại',
-                value: orders.billingAddress?.phoneNumber ?? '',
+                value: widget.orders.billingAddress?.phoneNumber ?? '',
               ),
               _infoCustomer(
                 context,
                 title: 'Email',
-                value: orders.billingAddress?.email ?? '',
+                value: widget.orders.billingAddress?.email ?? '',
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 15),
@@ -221,7 +269,7 @@ class OrderInfo extends StatelessWidget {
                 context,
                 title: 'Địa chỉ nhận hàng',
                 value:
-                    '${orders.billingAddress?.address1 ?? ''}, ${orders.billingAddress?.city ?? ''}',
+                    '${widget.orders.billingAddress?.address1 ?? ''}, ${widget.orders.billingAddress?.city ?? ''}',
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 15),
@@ -272,7 +320,7 @@ class OrderInfo extends StatelessWidget {
                     child: Container(
                       alignment: Alignment.topRight,
                       child: Text(
-                        '${priceFormat.format(orders.orderTotal ?? 0)}₫',
+                        '${priceFormat.format(widget.orders.orderTotal ?? 0)}₫',
                         style: CommonStyles.size24W700Blue00(context),
                         maxLines: 2,
                       ),
@@ -320,9 +368,9 @@ class OrderInfo extends StatelessWidget {
   }
 
   _getPaymentMethod() {
-    if (orders.paymentMethodSystemName!.isNotEmpty &&
-        orders.paymentMethodSystemName!.contains('Payments.')) {
-      return 'Thanh toán ${orders.paymentMethodSystemName!.replaceAll('Payments.', '')}';
+    if (widget.orders.paymentMethodSystemName!.isNotEmpty &&
+        widget.orders.paymentMethodSystemName!.contains('Payments.')) {
+      return 'Thanh toán ${widget.orders.paymentMethodSystemName!.replaceAll('Payments.', '')}';
     } else {
       return 'Chuyển khoản ngân hàng';
     }
@@ -331,47 +379,58 @@ class OrderInfo extends StatelessWidget {
   Widget _listProduct(BuildContext context) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
-        childCount: orders.orderItems?.length,
+        childCount: widget.orders.orderItems?.length,
         (context, index) {
-          final item = orders.orderItems?[index];
+          final item = widget.orders.orderItems?[index];
           final itemIndex = item?.attributeDescription?.lastIndexOf(':');
-          print(itemIndex);
 
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-            margin: const EdgeInsets.only(bottom: 20),
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 1,
-                color: const Color(0xffEBEBEB),
+          return GestureDetector(
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ShopDunkWebView(
+                      url: item.product?.seName,
+                    ))),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1,
+                  color: const Color(0xffEBEBEB),
+                ),
+                borderRadius: BorderRadius.circular(8),
               ),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      item?.product?.name ?? '',
-                      style: CommonStyles.size15W700Black1D(context),
-                    ),
-                    Text(
-                      'SL: ${item?.quantity}',
-                      style: CommonStyles.size14W400Grey44(context),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                if (item!.attributeDescription!.isNotEmpty)
-                  Text(
-                    ('Màu sắc${item.attributeDescription?.replaceRange(0, itemIndex, '')}'),
-                    style: CommonStyles.size13W400Grey86(context),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item?.product?.name ?? '',
+                          style: CommonStyles.size15W700Black1D(context),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Text(
+                        'SL: ${item?.quantity}',
+                        style: CommonStyles.size14W400Grey44(context),
+                      )
+                    ],
                   ),
-              ],
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  if (item!.attributeDescription!.isNotEmpty)
+                    Text(
+                      ('Màu sắc${item.attributeDescription?.replaceRange(0, itemIndex, '')}'),
+                      style: CommonStyles.size13W400Grey86(context),
+                    ),
+                ],
+              ),
             ),
           );
         },

@@ -99,9 +99,12 @@ class _CommonFooterState extends State<CommonFooter> {
                     'Đăng ký nhận tin từ ShopDunk',
                     style: CommonStyles.size24W700Black1D(context),
                   ),
-                  Text(
-                    'Thông tin sản phẩm mới nhất và chương trình khuyến mãi',
-                    style: CommonStyles.size13W400Grey86(context),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Text(
+                      'Thông tin sản phẩm mới nhất và chương trình khuyến mãi',
+                      style: CommonStyles.size13W400Grey86(context),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
