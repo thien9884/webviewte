@@ -9,11 +9,12 @@ import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
-import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/login/login_model.dart';
+import 'package:webviewtest/screen/login/register_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
+import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -58,6 +59,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  _setLogin() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+
+    sPref.setIsLogin(true);
+  }
+
   @override
   void initState() {
     _getHideBottomValue();
@@ -73,9 +80,10 @@ class _LoginScreenState extends State<LoginScreen> {
             EasyLoading.show();
           } else if (state is LoginLoaded) {
             Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => NavigationScreen(
-                      isLogin: state.isLogin,
+                builder: (context) => const NavigationScreen(
+                      isSelected: 2,
                     )));
+            _setLogin();
             if (EasyLoading.isShow) {
               EasyLoading.dismiss();
             }
@@ -91,32 +99,30 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // login UI
   Widget _buildLoginUI(BuildContext context) {
-    return CommonNavigateBar(
-      child: Container(
-        color: Colors.white,
-        child: CustomScrollView(
-          controller: _hideButtonController,
-          slivers: [
-            _titleLogin(),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    _emailLogin(),
-                    _passwordLogin(),
-                    _rememberMe(),
-                    _createAccount(),
-                    _buttonLogin(),
-                  ],
-                ),
+    return Container(
+      color: Colors.white,
+      child: CustomScrollView(
+        controller: _hideButtonController,
+        slivers: [
+          _titleLogin(),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  _emailLogin(),
+                  _passwordLogin(),
+                  _rememberMe(),
+                  _createAccount(),
+                  _buttonLogin(),
+                ],
               ),
             ),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1, (context, index) => const CommonFooter())),
-          ],
-        ),
+          ),
+          SliverList(
+              delegate: SliverChildBuilderDelegate(
+                  childCount: 1, (context, index) => const CommonFooter())),
+        ],
       ),
     );
   }
@@ -258,7 +264,8 @@ class _LoginScreenState extends State<LoginScreen> {
           style: CommonStyles.size14W400Black1D(context),
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const RegisterScreen())),
           child: Text(
             'Tạo tài khoản ngay',
             style: CommonStyles.size14W400Blue00(context),

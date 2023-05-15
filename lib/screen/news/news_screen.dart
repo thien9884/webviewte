@@ -234,16 +234,19 @@ class _NewsScreenState extends State<NewsScreen> {
                     borderRadius: BorderRadius.circular(10)),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 4),
+                margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 4),
                 child: Row(
                   children: [
-                    Image.asset('assets/icons/ic_tips.webp', scale: 5),
+                    Image.asset(
+                      news.icon ?? '',
+                      scale: 5,
+                      color: const Color(0xff515154),
+                    ),
                     const SizedBox(
                       width: 8,
                     ),
                     Text(
-                      news.name ?? '',
+                      news.name.toString(),
                       style: CommonStyles.size15W400Grey51(context),
                     ),
                   ],
@@ -373,8 +376,7 @@ class _NewsScreenState extends State<NewsScreen> {
               ),
             ),
             child: Container(
-              padding:
-              const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               decoration: BoxDecoration(
                 border: Border.all(color: const Color(0xff0066CC), width: 1),
                 borderRadius: BorderRadius.circular(8),

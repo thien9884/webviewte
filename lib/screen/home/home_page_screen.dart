@@ -464,7 +464,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
@@ -508,7 +508,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
-          childAspectRatio: 0.53,
+          mainAxisExtent: 300,
         ),
       ),
     );

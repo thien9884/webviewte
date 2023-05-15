@@ -3,6 +3,7 @@ import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/user/account_info/account_info.dart';
 import 'package:webviewtest/screen/user/account_order/account_order.dart';
 import 'package:webviewtest/screen/user/account_address/user_address.dart';
+import 'package:webviewtest/screen/user/rating_history/rating_history.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class Resource {
@@ -72,13 +73,13 @@ class ListCustom {
         name: 'Trang chủ',
         img: 'assets/icons/ic_home_sel.png',
         imgUnselect: 'assets/icons/ic_home_uns.png'),
-    // Resource(
-    //     id: 3,
-    //     name: 'Account',
-    //     img: 'assets/icons/ic_user_sel.png',
-    //     imgUnselect: 'assets/icons/ic_user_uns.png'),
     Resource(
         id: 2,
+        name: 'Tài khoản',
+        img: 'assets/icons/ic_user_sel.png',
+        imgUnselect: 'assets/icons/ic_user_uns.png'),
+    Resource(
+        id: 3,
         name: 'Cửa hàng',
         img: 'assets/icons/ic_shop_sel.png',
         imgUnselect: 'assets/icons/ic_shop_uns.png'),
@@ -148,23 +149,23 @@ class ListCustom {
       name: 'Đơn đặt hàng',
       screen: const AccountOrder(),
     ),
+    // Resource(
+    //   id: 3,
+    //   img: 'assets/icons/ic_refund.svg',
+    //   name: 'Hoàn trả hàng',
+    //   screen: const AccountInfo(),
+    // ),
+    // Resource(
+    //   id: 4,
+    //   img: 'assets/icons/ic_change_password.svg',
+    //   name: 'Đổi mật khẩu',
+    //   screen: const AccountInfo(),
+    // ),
     Resource(
       id: 3,
-      img: 'assets/icons/ic_refund.svg',
-      name: 'Hoàn trả hàng',
-      screen: const AccountInfo(),
-    ),
-    Resource(
-      id: 4,
-      img: 'assets/icons/ic_change_password.svg',
-      name: 'Đổi mật khẩu',
-      screen: const AccountInfo(),
-    ),
-    Resource(
-      id: 5,
       img: 'assets/icons/ic_history.svg',
       name: 'Lịch sử đánh giá sản phẩm',
-      screen: const AccountInfo(),
+      screen: const RatingHistory(),
     ),
   ];
 

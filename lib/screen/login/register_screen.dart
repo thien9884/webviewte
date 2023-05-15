@@ -17,6 +17,7 @@ import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/register/register_model.dart';
 import 'package:webviewtest/model/register/register_response.dart';
 import 'package:webviewtest/screen/login/login_screen.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -40,7 +41,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   final TextEditingController _referralController = TextEditingController();
-  RegisterResponse? _registerResponse = RegisterResponse();late ScrollController _hideButtonController;
+  RegisterResponse? _registerResponse = RegisterResponse();
+  late ScrollController _hideButtonController;
 
   bool _isVisible = false;
 
@@ -139,6 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _registerUI() {
     return CommonNavigateBar(
+      index: 2,
       child: Container(
         color: Colors.white,
         child: CustomScrollView(
@@ -605,7 +608,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: CommonStyles.size14W400Black1D(context),
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const NavigationScreen(
+                              isSelected: 2,
+                            ))),
                     child: Text(
                       'Đăng nhập ngay',
                       style: CommonStyles.size14W400Blue00(context),

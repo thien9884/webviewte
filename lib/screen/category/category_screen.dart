@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,6 +52,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   String _sortBy = ListCustom.listSortProduct[0].name;
   final List<ProductsModel> _listAllProduct = [];
   final List<ProductsModel> _listSortProduct = [];
+  List<String> _listImage = [];
   CategoryGroupModel _categoryGroupModel = CategoryGroupModel();
   final dataKey = GlobalKey();
   final ScrollController _pageScrollController = ScrollController();
@@ -106,6 +106,35 @@ class _CategoryScreenState extends State<CategoryScreen> {
     }
   }
 
+  _getImage() {
+    switch (widget.seName) {
+      case 'iphone':
+        _listImage = [
+          'https://shopdunk.com/images/uploaded/trang danh muc/iphone/Image-Standard-1.png',
+          'https://shopdunk.com/images/uploaded/trang danh muc/iphone/Image-Standard.png'
+        ];
+        break;
+      case 'ipad':
+        _listImage = [
+          'https://shopdunk.com/images/uploaded/trang danh muc/ipad/Image-Standard-3.png',
+          'https://shopdunk.com/images/uploaded/trang danh muc/ipad/Image-Standard-2.png'
+        ];
+        break;
+      case 'mac':
+        _listImage = [
+          'https://shopdunk.com/images/uploaded/trang danh muc/mac/Image-Standard-5.png',
+          'https://shopdunk.com/images/uploaded/trang danh muc/mac/Image-Standard-4.png'
+        ];
+        break;
+      case 'apple-watch':
+        _listImage = [
+          'https://shopdunk.com/images/uploaded/trang danh muc/watch/Image-Standard-7.png',
+          'https://shopdunk.com/images/uploaded/trang danh muc/watch/Image-Standard-6.png'
+        ];
+        break;
+    }
+  }
+
   _getHideBottomValue() {
     _isVisible = true;
     _hideButtonController = ScrollController();
@@ -143,6 +172,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     _getListSubCategories();
     _getListBanner();
     _getHideBottomValue();
+    _getImage();
     super.initState();
   }
 
@@ -243,7 +273,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     if (_categoryGroupModel.total != null &&
                         _categoryGroupModel.total! > 8)
                       _pagesNumber(),
-                    widget.title != 'Sounds' && widget.title != 'Accessories'
+                    widget.title.toLowerCase() != 'âm thanh' &&
+                            widget.title.toLowerCase() != 'phụ kiện'
                         ? _relatedProducts()
                         : const SliverToBoxAdapter(),
                     _description(),
@@ -475,15 +506,20 @@ class _CategoryScreenState extends State<CategoryScreen> {
           childCount: _listAllProduct.length,
           (context, index) {
             var item = _listAllProduct[index];
+
             return GestureDetector(
-              onTap: () => Navigator.of(context).push(CustomMaterialPageRoute(
+              onTap: () => Navigator.of(context).push(
+                CustomMaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
-                        url: item.seName,
-                      ))),
+                    url: item.seName,
+                  ),
+                ),
+              ),
               child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -508,7 +544,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(
-                          vertical: Responsive.isMobile(context) ? 10 : 20),
+                          vertical: Responsive.isMobile(context) ? 4 : 8),
                       child: Image.network(
                           item.defaultPictureModel?.imageUrl ?? ''),
                     ),
@@ -533,7 +569,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
@@ -556,8 +592,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                       style:
                                           CommonStyles.size11W400Grey86(context)
                                               .copyWith(
-                                        decoration: TextDecoration.lineThrough,
-                                      ),
+                                                  decoration: TextDecoration
+                                                      .lineThrough),
                                     ),
                                   ),
                                 ),
@@ -575,9 +611,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
         ),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
-          mainAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
-          crossAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
-          childAspectRatio: 0.53,
+          mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
+          crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
+          mainAxisExtent: 300,
         ),
       ),
     );
@@ -758,7 +794,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: Row(
           children: [
             Image.network(
-              'https://shopdunk.com/images/uploaded/trang%20danh%20muc/iphone/Image-Standard-1.png',
+              _listImage[index],
               width: 139,
               height: 121,
             ),

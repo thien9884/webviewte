@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/customer/customer_model.dart';
+import 'package:webviewtest/model/customer/info_model.dart';
 
 abstract class CustomerEvent extends Equatable {
   const CustomerEvent();
@@ -20,7 +21,7 @@ class RequestGetCustomerAddress extends CustomerEvent {
 
 class RequestPostAddAddress extends CustomerEvent {
   final int? customerId;
-  final AddAddressModel? addAddressModel;
+  final Addresses? addAddressModel;
 
   const RequestPostAddAddress(this.customerId, this.addAddressModel);
 
@@ -29,10 +30,9 @@ class RequestPostAddAddress extends CustomerEvent {
 }
 
 class RequestPutAddress extends CustomerEvent {
-  final int? customerId;
-  final CustomerModel? customerModel;
+  final PutAddress? putAddress;
 
-  const RequestPutAddress(this.customerId, this.customerModel);
+  const RequestPutAddress(this.putAddress);
 
   @override
   List<Object?> get props => [];
@@ -50,6 +50,21 @@ class RequestDeleteAddress extends CustomerEvent {
 
 class RequestGetInfo extends CustomerEvent {
   const RequestGetInfo();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class RequestGetState extends CustomerEvent {
+  const RequestGetState();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class RequestPutInfo extends CustomerEvent {
+  final InfoModel? infoModel;
+  const RequestPutInfo({required this.infoModel});
 
   @override
   List<Object?> get props => [];

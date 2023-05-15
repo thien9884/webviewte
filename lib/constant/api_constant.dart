@@ -19,5 +19,8 @@ class ApiConstant {
   static const String customer = '/api/customers/';
   static const String info = '/api/customers/info';
   static const String rating = '/api/customers/ratings/';
+  static const String address = '/api/customers/address';
+  static const String updateInfo = '/api/customers/update-info';
   static const String productRating = '/api/products/';
+  static const String state = '/api/customers/states';
 }

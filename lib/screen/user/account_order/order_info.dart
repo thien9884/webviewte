@@ -60,6 +60,7 @@ class _OrderInfoState extends State<OrderInfo> {
   @override
   Widget build(BuildContext context) {
     return CommonNavigateBar(
+      index: 2,
       child: CustomScrollView(
         controller: _hideButtonController,
         slivers: [

@@ -25,15 +25,14 @@ import 'package:webviewtest/screen/user/account_address/user_address.dart';
 import 'package:webviewtest/screen/user/account_info/account_info.dart';
 import 'package:webviewtest/screen/user/account_order/account_order.dart';
 import 'package:webviewtest/screen/user/rating_history/rating_history.dart';
+import 'package:webviewtest/screen/user/user_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class NavigationScreen extends StatefulWidget {
-  final bool isLogin;
   final int isSelected;
 
-  const NavigationScreen({this.isSelected = 1, this.isLogin = false, Key? key})
-      : super(key: key);
+  const NavigationScreen({this.isSelected = 1, Key? key}) : super(key: key);
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
@@ -85,6 +84,7 @@ class _NavigationScreenState extends State<NavigationScreen>
     const NewsScreen(),
     const HomePageScreen(),
     // const LoginScreen(),
+    const LoginScreen(),
     // const StoreScreen(),
     const ShopDunkWebView(
       url: '/find-store',
@@ -94,15 +94,15 @@ class _NavigationScreenState extends State<NavigationScreen>
 
   _getListNavigationBar() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    final rememberMe = sPref.rememberMe;
+    final isLogin = sPref.isLogin;
 
     _listCategories = Categories.decode(sPref.listCategories);
     _newsGroup = NewsGroup.decode(sPref.listNewsGroup)
         .lastWhere((element) => element.id == 1);
-    if (rememberMe) {
-      _isLogin = rememberMe;
+    if (isLogin) {
+      pages[2] = const UserScreen();
     } else {
-      _isLogin = widget.isLogin;
+      pages[2] = const LoginScreen();
     }
     print(_isLogin);
     setState(() {});
@@ -154,33 +154,36 @@ class _NavigationScreenState extends State<NavigationScreen>
     return Scaffold(
       body: WillPopScope(
         onWillPop: () async => false,
-        child: SafeArea(
-          bottom: false,
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  _buildAppbar(),
-                  _buildCategoryBar(),
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        pages[_isSelected],
-                        _buildDrawerUI(),
-                      ],
+        child: GestureDetector(
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: SafeArea(
+            bottom: false,
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    _buildAppbar(),
+                    _buildCategoryBar(),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          pages[_isSelected],
+                          _buildDrawerUI(),
+                        ],
+                      ),
                     ),
-                  ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 500),
-                    height: _isVisible ? 65 : 0,
-                    child: _isVisible
-                        ? SingleChildScrollView(child: _buildBottomBar())
-                        : Container(),
-                  ),
-                ],
-              ),
-              if (_showSearch) _buildSearchUI(),
-            ],
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 500),
+                      height: _isVisible ? 65 : 0,
+                      child: _isVisible
+                          ? SingleChildScrollView(child: _buildBottomBar())
+                          : Container(),
+                    ),
+                  ],
+                ),
+                if (_showSearch) _buildSearchUI(),
+              ],
+            ),
           ),
         ),
       ),
@@ -792,7 +795,19 @@ class _NavigationScreenState extends State<NavigationScreen>
 
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () => setState(() => _isSelected = item.id),
+            onTap: () async {
+              SharedPreferencesService sPref =
+                  await SharedPreferencesService.instance;
+              final isLogin = sPref.isLogin;
+              setState(() {
+                _isSelected = item.id;
+                if (isLogin) {
+                  pages[2] = const UserScreen();
+                } else {
+                  pages[2] = const LoginScreen();
+                }
+              });
+            },
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.15,
               child: Column(

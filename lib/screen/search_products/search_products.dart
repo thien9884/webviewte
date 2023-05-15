@@ -301,7 +301,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
       sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate(
           childCount: listProduct.length,
-          (context, index) {
+              (context, index) {
             var item = listProduct[index];
 
             return GestureDetector(
@@ -337,7 +337,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(
-                          vertical: Responsive.isMobile(context) ? 10 : 20),
+                          vertical: Responsive.isMobile(context) ? 4 : 8),
                       child: Image.network(
                           item.defaultPictureModel?.imageUrl ?? ''),
                     ),
@@ -362,7 +362,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 30),
+                            padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
@@ -404,9 +404,9 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
         ),
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
-          mainAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
-          crossAxisSpacing: Responsive.isMobile(context) ? 5 : 20,
-          childAspectRatio: 0.53,
+          mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
+          crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
+          mainAxisExtent: 300,
         ),
       ),
     );

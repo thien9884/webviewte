@@ -183,6 +183,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     bool rememberMe = sPref.rememberMe;
     String? userName = sPref.userName;
     String? password = sPref.password;
+    sPref.setIsLogin(rememberMe ? true : false);
 
     if (context.mounted) {
       BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
@@ -221,7 +222,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 .where((element) => element.showOnHomePage == true)
                 .toList();
             _listCategories.sort(
-                  (a, b) => a.displayOrder!.compareTo(b.displayOrder!.toInt()),
+              (a, b) => a.displayOrder!.compareTo(b.displayOrder!.toInt()),
             );
             int indexSound = _listCategories
                 .indexWhere((element) => element.seName == 'am-thanh');
@@ -295,6 +296,23 @@ class _LoadingScreenState extends State<LoadingScreen> {
           if (state is NewsLoading) {
           } else if (state is NewsLoaded) {
             _newsGroup = state.newsData.newsGroup ?? [];
+            _newsGroup.forEach((element) {
+              if (element.name!.toLowerCase().contains('apple')) {
+                element.icon = 'assets/icons/ic_apple_news.png';
+              } else if (element.name!.toLowerCase().contains('review')) {
+                element.icon = 'assets/icons/ic_review_news.png';
+              } else if (element.name!.toLowerCase().contains('khám phá')) {
+                element.icon = 'assets/icons/ic_discover_news.png';
+              } else if (element.name!.toLowerCase().contains('thủ thuật')) {
+                element.icon = 'assets/icons/ic_tip_news.png';
+              } else if (element.name!.toLowerCase().contains('khuyến mại')) {
+                element.icon = 'assets/icons/ic_sale_news.png';
+              } else if (element.name!.toLowerCase().contains('tin khác')) {
+                element.icon = 'assets/icons/ic_other_news.png';
+              } else if (element.name!.toLowerCase().contains('ivideo')) {
+                element.icon = 'assets/icons/ic_ivideo_news.png';
+              }
+            });
             _latestNews = state.newsData.latestNews ?? [];
             _latestNews.removeRange(
                 2, _latestNews.lastIndexOf(_latestNews.last));

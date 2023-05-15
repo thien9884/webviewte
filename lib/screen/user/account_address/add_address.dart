@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,19 +14,25 @@ import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/address/address.dart';
+import 'package:webviewtest/model/customer/customer_model.dart';
+import 'package:webviewtest/model/state/state_model.dart';
+import 'package:webviewtest/screen/user/account_address/user_address.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class AddAddress extends StatefulWidget {
-  const AddAddress({Key? key}) : super(key: key);
+  final Addresses? addressModel;
+
+  const AddAddress({required this.addressModel, Key? key}) : super(key: key);
 
   @override
   State<AddAddress> createState() => _AddAddressState();
 }
 
 class _AddAddressState extends State<AddAddress> {
-  String _city = '1';
-  String _district = '1';
+  String _country = 'Việt Nam';
+  String _city = '';
   int _customerId = 0;
+  List<StateModel> _listState = [];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -67,6 +74,17 @@ class _AddAddressState extends State<AddAddress> {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
 
     _customerId = sPref.customerId;
+    if (widget.addressModel != null) {
+      final address = widget.addressModel;
+      _nameController.text = address!.firstName ?? '';
+      _emailController.text = address.email ?? '';
+      _phoneController.text = address.phoneNumber ?? '';
+      _addressController.text = address.address1 ?? '';
+    }
+
+    if (context.mounted) {
+      BlocProvider.of<CustomerBloc>(context).add(const RequestGetState());
+    }
   }
 
   @override
@@ -84,11 +102,67 @@ class _AddAddressState extends State<AddAddress> {
           if (state is AddAddressLoading) {
             EasyLoading.show();
           } else if (state is AddAddressLoaded) {
-            print('success');
+            showCupertinoDialog(
+                context: context,
+                builder: (context) => CupertinoAlertDialog(
+                      content: Text(
+                        'Thêm tài khoản thành công',
+                        style: CommonStyles.size14W400Grey86(context),
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const UserAddress()));
+                            },
+                            child: Text(
+                              'Ok',
+                              style: CommonStyles.size14W700Blue00(context),
+                            ))
+                      ],
+                    ));
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is AddAddressLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is PutAddressLoading) {
+            EasyLoading.show();
+          } else if (state is PutAddressLoaded) {
+            showCupertinoDialog(
+                context: context,
+                builder: (context) => CupertinoAlertDialog(
+                      content: Text(
+                        state.message ?? '',
+                        style: CommonStyles.size14W400Grey86(context),
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const UserAddress()));
+                            },
+                            child: Text(
+                              'Ok',
+                              style: CommonStyles.size14W700Blue00(context),
+                            ))
+                      ],
+                    ));
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is PutAddressLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is GetStateLoading) {
+            EasyLoading.show();
+          } else if (state is GetStateLoaded) {
+            _listState = state.stateModel ?? [];
+            _city = _listState[0].text.toString();
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is GetStateLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
         });
@@ -96,6 +170,7 @@ class _AddAddressState extends State<AddAddress> {
 
   Widget _addAddressUI() {
     return CommonNavigateBar(
+        index: 2,
         child: CustomScrollView(
           controller: _hideButtonController,
           slivers: [
@@ -289,7 +364,7 @@ class _AddAddressState extends State<AddAddress> {
             child: ButtonTheme(
               alignedDropdown: true,
               child: DropdownButton<String>(
-                value: _city,
+                value: _country,
                 menuMaxHeight: 300,
                 icon: const Icon(Icons.keyboard_arrow_down_rounded),
                 elevation: 16,
@@ -298,14 +373,14 @@ class _AddAddressState extends State<AddAddress> {
                 onChanged: (String? value) {
                   // This is called when the user selects an item.
                   setState(() {
-                    _city = value!;
+                    _country = value!;
                   });
                 },
                 items: List.generate(
-                    31,
-                    (index) => DropdownMenuItem<String>(
-                          value: (index + 1).toString(),
-                          child: Text((index + 1).toString()),
+                    1,
+                    (index) => const DropdownMenuItem<String>(
+                          value: 'Việt Nam',
+                          child: Text('Việt Nam'),
                         )).toList(),
               ),
             ),
@@ -337,7 +412,7 @@ class _AddAddressState extends State<AddAddress> {
             child: ButtonTheme(
               alignedDropdown: true,
               child: DropdownButton<String>(
-                value: _district,
+                value: _city,
                 menuMaxHeight: 300,
                 icon: const Icon(Icons.keyboard_arrow_down_rounded),
                 elevation: 16,
@@ -346,15 +421,17 @@ class _AddAddressState extends State<AddAddress> {
                 onChanged: (String? value) {
                   // This is called when the user selects an item.
                   setState(() {
-                    _district = value!;
+                    _city = value!;
                   });
                 },
-                items: List.generate(
-                    31,
-                    (index) => DropdownMenuItem<String>(
-                          value: (index + 1).toString(),
-                          child: Text((index + 1).toString()),
-                        )).toList(),
+                items: List.generate(_listState.length, (index) {
+                  final item = _listState[index];
+
+                  return DropdownMenuItem<String>(
+                    value: item.text,
+                    child: Text(item.text ?? ''),
+                  );
+                }).toList(),
               ),
             ),
           ),
@@ -487,28 +564,51 @@ class _AddAddressState extends State<AddAddress> {
       child: CommonButton(
           title: 'Lưu lại',
           onTap: () {
-            var addressModel = AddAddressModel(
-              firstName: _nameController.text,
-              lastName: 'string',
-              email: _emailController.text,
-              company: 'string',
-              countryId: 242,
-              country: 'VN',
-              stateProvinceId: 0,
-              city: 'HN',
-              address1: _addressController.text,
-              address2: 'string',
-              zipPostalCode: 'string',
-              phoneNumber: _phoneController.text,
-              faxNumber: 'string',
-              customerAttributes: 'string',
-              createdOnUtc: '2023-05-08T17:43:35.207Z',
-              province: 'string',
-              id: 0,
-            );
-
-            BlocProvider.of<CustomerBloc>(context)
-                .add(RequestPostAddAddress(_customerId, addressModel));
+            if (widget.addressModel != null) {
+              var putAddressModel = PutAddress(
+                firstName: _nameController.text,
+                lastName: 'string',
+                email: _emailController.text,
+                company: 'string',
+                countryId: 242,
+                stateProvinceId: 0,
+                county: 'VN',
+                city: _city,
+                address1: _addressController.text,
+                address2: 'string',
+                zipPostalCode: 'string',
+                phoneNumber: _phoneController.text,
+                faxNumber: 'string',
+                customAttributes: '',
+                createdOnUtc: DateTime.now().toUtc().toString(),
+                countyId: 0,
+                id: widget.addressModel?.id,
+              );
+              BlocProvider.of<CustomerBloc>(context)
+                  .add(RequestPutAddress(putAddressModel));
+            } else {
+              var addressModel = Addresses(
+                firstName: _nameController.text,
+                lastName: 'string',
+                email: _emailController.text,
+                company: 'string',
+                countryId: 242,
+                country: 'VN',
+                stateProvinceId: 0,
+                city: _city,
+                address1: _addressController.text,
+                address2: 'string',
+                zipPostalCode: 'string',
+                phoneNumber: _phoneController.text,
+                faxNumber: 'string',
+                customerAttributes: 'string',
+                createdOnUtc: '2023-05-08T17:43:35.207Z',
+                province: 'string',
+                id: 0,
+              );
+              BlocProvider.of<CustomerBloc>(context)
+                  .add(RequestPostAddAddress(_customerId, addressModel));
+            }
           }),
     );
   }

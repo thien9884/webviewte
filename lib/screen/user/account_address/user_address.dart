@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,6 +28,7 @@ class UserAddress extends StatefulWidget {
 class _UserAddressState extends State<UserAddress> {
   List<Addresses> _listAddress = [];
   late ScrollController _hideButtonController;
+  int? customerId;
 
   bool _isVisible = false;
 
@@ -59,7 +61,7 @@ class _UserAddressState extends State<UserAddress> {
 
   _getData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    final customerId = sPref.customerId;
+    customerId = sPref.customerId;
 
     if (context.mounted) {
       BlocProvider.of<CustomerBloc>(context)
@@ -90,39 +92,68 @@ class _UserAddressState extends State<UserAddress> {
           } else if (state is CustomerAddressLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
             if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is DeleteAddressLoading) {
+            EasyLoading.show();
+          } else if (state is DeleteAddressLoaded) {
+            showCupertinoDialog(
+                context: context,
+                builder: (context) => CupertinoAlertDialog(
+                      content: Text(
+                        state.message ?? '',
+                        style: CommonStyles.size14W400Grey86(context),
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                            onPressed: () {
+                              BlocProvider.of<CustomerBloc>(context)
+                                  .add(RequestGetCustomerAddress(customerId));
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              'Ok',
+                              style: CommonStyles.size14W700Blue00(context),
+                            ))
+                      ],
+                    ));
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is DeleteAddressLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
         });
   }
 
   Widget _userAddressUI() {
     return CommonNavigateBar(
+        index: 2,
         child: CustomScrollView(
           controller: _hideButtonController,
-      slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          sliver: SliverToBoxAdapter(
-            child: Center(
-              child: Text(
-                'Địa chỉ nhận hàng',
-                style: CommonStyles.size24W400Black1D(context),
-              ),
-            ),
-          ),
-        ),
-        _listAddress.isNotEmpty
-            ? _buildListAddress()
-            : const SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 300,
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              sliver: SliverToBoxAdapter(
+                child: Center(
+                  child: Text(
+                    'Địa chỉ nhận hàng',
+                    style: CommonStyles.size24W400Black1D(context),
+                  ),
                 ),
               ),
-        _addButton(),
-        SliverList(
-            delegate: SliverChildBuilderDelegate(
-                childCount: 1, (context, index) => const CommonFooter())),
-      ],
-    ));
+            ),
+            _listAddress.isNotEmpty
+                ? _buildListAddress()
+                : const SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 300,
+                    ),
+                  ),
+            _addButton(),
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    childCount: 1, (context, index) => const CommonFooter())),
+          ],
+        ));
   }
 
   // list address
@@ -162,12 +193,20 @@ class _UserAddressState extends State<UserAddress> {
                     ),
                     Row(
                       children: [
-                        _editButton(true, () {}),
+                        _editButton(true, () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => AddAddress(
+                                    addressModel: item,
+                                  )));
+                        }),
                         const SizedBox(
                           width: 10,
                         ),
-                        _editButton(false, () {
-
+                        _editButton(false, () async {
+                          if (context.mounted) {
+                            BlocProvider.of<CustomerBloc>(context)
+                                .add(RequestDeleteAddress(customerId, item.id));
+                          }
                         }),
                       ],
                     ),
@@ -273,8 +312,10 @@ class _UserAddressState extends State<UserAddress> {
       sliver: SliverToBoxAdapter(
         child: CommonButton(
           title: 'Thêm mới',
-          onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const AddAddress())),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const AddAddress(
+                    addressModel: null,
+                  ))),
         ),
       ),
     );

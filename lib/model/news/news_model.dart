@@ -304,6 +304,7 @@ class NewsGroup {
   int? displayOrder;
   bool? showOnTopMenu;
   String? seName;
+  String? icon;
   List<NewsItems>? newsItems;
   int? id;
 
@@ -313,6 +314,7 @@ class NewsGroup {
       this.displayOrder,
       this.showOnTopMenu,
       this.seName,
+      this.icon,
       this.newsItems,
       this.id});
 
@@ -322,6 +324,7 @@ class NewsGroup {
     displayOrder = json['DisplayOrder'];
     showOnTopMenu = json['ShowOnTopMenu'];
     seName = json['SeName'];
+    icon = json['Icon'];
     if (json['NewsItems'] != null) {
       newsItems = <NewsItems>[];
       json['NewsItems'].forEach((v) {
@@ -338,6 +341,7 @@ class NewsGroup {
     data['DisplayOrder'] = displayOrder;
     data['ShowOnTopMenu'] = showOnTopMenu;
     data['SeName'] = seName;
+    data['Icon'] = icon;
     if (newsItems != null) {
       data['NewsItems'] = newsItems!.map((v) => v.toJson()).toList();
     }

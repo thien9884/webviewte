@@ -18,6 +18,7 @@ import 'package:webviewtest/model/register/register_response.dart';
 import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/model/search_products/search_products_model.dart';
+import 'package:webviewtest/model/state/state_model.dart';
 import 'package:webviewtest/model/subcategory/subcategory_model.dart';
 import 'package:webviewtest/services/api_interfaces.dart';
 import 'package:webviewtest/services/dio_client.dart';
@@ -116,6 +117,23 @@ class ApiCall implements ApiInterface {
   }
 
   @override
+  Future<String> requestDeleteAddress(int? customerId, int? addressId) async {
+    var response = await DioClient()
+        .delete('${ApiConstant.address}$customerId/$addressId');
+    if (response == null) return '';
+    final data = response;
+    return data;
+  }
+
+  @override
+  Future<String> requestUpdateInfo(InfoModel? infoModel) async {
+    var response = await DioClient().put(ApiConstant.updateInfo, infoModel);
+    if (response == null) return '';
+    final data = response;
+    return data;
+  }
+
+  @override
   Future<List<ProductHistory>> requestGetProduct(int? id) async {
     var response = await DioClient().get('${ApiConstant.productRating}$id');
     if (response == null) return [];
@@ -132,23 +150,21 @@ class ApiCall implements ApiInterface {
   }
 
   @override
-  Future<AddAddressModel?> requestPostAddAddress(
-      int? id, AddAddressModel? addAddressModel) async {
+  Future<Addresses?> requestPostAddAddress(
+      int? id, Addresses? addAddressModel) async {
     var response = await DioClient()
         .post('${ApiConstant.customer}$id/billingaddress', addAddressModel);
     if (response == null) return null;
     final data = response;
-    return AddAddressModel.fromJson(data);
+    return Addresses.fromJson(data);
   }
 
   @override
-  Future<CustomerModel?> requestPutAddAddress(
-      int? id, CustomerModel? customerModel) async {
-    var response =
-        await DioClient().put('${ApiConstant.customer}$id', customerModel);
+  Future<String?> requestPutAddress(PutAddress? putAddress) async {
+    var response = await DioClient().put(ApiConstant.address, putAddress);
     if (response == null) return null;
     final data = response;
-    return CustomerModel.fromJson(data);
+    return data;
   }
 
   @override
@@ -157,6 +173,14 @@ class ApiCall implements ApiInterface {
     if (response == null) return null;
     final data = response;
     return InfoModel.fromJson(data);
+  }
+
+  @override
+  Future<List<StateModel>?> requestGetState() async {
+    var response = await DioClient().get(ApiConstant.state);
+    if (response == null) return [];
+    Iterable list = response;
+    return list.map((e) => StateModel.fromJson(e)).toList();
   }
 
   @override

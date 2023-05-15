@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
-import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/customer/customer_model.dart';
 import 'package:webviewtest/model/customer/info_model.dart';
 import 'package:webviewtest/model/customer/product_rating_model.dart';
 import 'package:webviewtest/model/customer/rating_model.dart';
+import 'package:webviewtest/model/state/state_model.dart';
 
 abstract class CustomerState extends Equatable {
   const CustomerState();
@@ -48,7 +48,7 @@ class AddAddressLoading extends CustomerState {
 }
 
 class AddAddressLoaded extends CustomerState {
-  final AddAddressModel? addAddressModel;
+  final Addresses? addAddressModel;
 
   const AddAddressLoaded({required this.addAddressModel});
 
@@ -70,18 +70,40 @@ class PutAddressLoading extends CustomerState {
 }
 
 class PutAddressLoaded extends CustomerState {
-  final CustomerModel? customerModel;
+  final String? message;
 
-  const PutAddressLoaded({required this.customerModel});
+  const PutAddressLoaded({required this.message});
 
   @override
-  List<Object?> get props => [customerModel];
+  List<Object?> get props => [message];
 }
 
 class PutAddressLoadError extends CustomerState {
   final String message;
 
   const PutAddressLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class DeleteAddressLoading extends CustomerState {
+  const DeleteAddressLoading();
+}
+
+class DeleteAddressLoaded extends CustomerState {
+  final String? message;
+
+  const DeleteAddressLoaded({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class DeleteAddressLoadError extends CustomerState {
+  final String message;
+
+  const DeleteAddressLoadError({required this.message});
 
   @override
   List<Object?> get props => [message];
@@ -104,6 +126,50 @@ class GetInfoLoadError extends CustomerState {
   final String message;
 
   const GetInfoLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class GetStateLoading extends CustomerState {
+  const GetStateLoading();
+}
+
+class GetStateLoaded extends CustomerState {
+  final List<StateModel>? stateModel;
+
+  const GetStateLoaded({required this.stateModel});
+
+  @override
+  List<Object?> get props => [stateModel];
+}
+
+class GetStateLoadError extends CustomerState {
+  final String message;
+
+  const GetStateLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class PutInfoLoading extends CustomerState {
+  const PutInfoLoading();
+}
+
+class PutInfoLoaded extends CustomerState {
+  final String? message;
+
+  const PutInfoLoaded({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class PutInfoLoadError extends CustomerState {
+  final String message;
+
+  const PutInfoLoadError({required this.message});
 
   @override
   List<Object?> get props => [message];

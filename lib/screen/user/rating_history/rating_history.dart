@@ -116,38 +116,39 @@ class _RatingHistoryState extends State<RatingHistory> {
 
   Widget _orderUI() {
     return CommonNavigateBar(
+        index: 2,
         child: CustomScrollView(
-      controller: _hideButtonController,
-      slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          sliver: SliverToBoxAdapter(
-            child: Center(
-              child: Text(
-                'Lịch sử đánh giá sản phẩm',
-                style: CommonStyles.size24W400Black1D(context),
-              ),
-            ),
-          ),
-        ),
-        _listRatingHistory.isNotEmpty
-            ? _orderInfo()
-            : SliverToBoxAdapter(
-                child: SizedBox(
-                  height: 300,
-                  child: Center(
-                    child: Text(
-                      'Bạn chưa có bài đánh giá nào',
-                      style: CommonStyles.size14W400Black1D(context),
-                    ),
+          controller: _hideButtonController,
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              sliver: SliverToBoxAdapter(
+                child: Center(
+                  child: Text(
+                    'Lịch sử đánh giá sản phẩm',
+                    style: CommonStyles.size24W400Black1D(context),
                   ),
                 ),
               ),
-        SliverList(
-            delegate: SliverChildBuilderDelegate(
-                childCount: 1, (context, index) => const CommonFooter())),
-      ],
-    ));
+            ),
+            _listRatingHistory.isNotEmpty
+                ? _orderInfo()
+                : SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: 300,
+                      child: Center(
+                        child: Text(
+                          'Bạn chưa có bài đánh giá nào',
+                          style: CommonStyles.size14W400Black1D(context),
+                        ),
+                      ),
+                    ),
+                  ),
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    childCount: 1, (context, index) => const CommonFooter())),
+          ],
+        ));
   }
 
   Widget _orderInfo() {

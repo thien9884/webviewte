@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,14 +70,8 @@ class _AccountInfoState extends State<AccountInfo> {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
     final infoCustomer = sPref.infoCustomer;
 
-    if (infoCustomer.isNotEmpty) {
-      _infoModel = InfoModel.fromJson(jsonDecode(infoCustomer));
-      _handleData();
-    } else {
-      if (context.mounted) {
-        BlocProvider.of<CustomerBloc>(context).add(const RequestGetInfo());
-      }
-    }
+    _infoModel = InfoModel.fromJson(jsonDecode(infoCustomer));
+    _handleData();
   }
 
   _handleData() {
@@ -117,10 +111,37 @@ class _AccountInfoState extends State<AccountInfo> {
             EasyLoading.show();
           } else if (state is GetInfoLoaded) {
             _infoModel = state.infoModel;
-            _handleData();
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is GetInfoLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is PutInfoLoading) {
+            EasyLoading.show();
+          } else if (state is PutInfoLoaded) {
+            showCupertinoDialog(
+                context: context,
+                builder: (context) => CupertinoAlertDialog(
+                      content: Text(
+                        state.message ?? '',
+                        style: CommonStyles.size14W400Grey86(context),
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                            onPressed: () {
+                              BlocProvider.of<CustomerBloc>(context)
+                                  .add(const RequestGetInfo());
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              'Ok',
+                              style: CommonStyles.size14W700Blue00(context),
+                            ))
+                      ],
+                    ));
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is PutInfoLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
@@ -129,6 +150,7 @@ class _AccountInfoState extends State<AccountInfo> {
 
   Widget _accountInfo() {
     return CommonNavigateBar(
+      index: 2,
       child: CustomScrollView(
         controller: _hideButtonController,
         slivers: [
@@ -494,7 +516,19 @@ class _AccountInfoState extends State<AccountInfo> {
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: CommonButton(
         title: 'Lưu lại',
-        onTap: () {},
+        onTap: () {
+          setState(() {
+            _infoModel?.firstName = _nameController.text;
+            _infoModel?.email = _emailController.text;
+            _infoModel?.phone = _phoneController.text;
+            _infoModel?.dateOfBirthDay = int.parse(_day);
+            _infoModel?.dateOfBirthMonth = int.parse(_month);
+            _infoModel?.dateOfBirthYear = int.parse(_year);
+            _infoModel?.gender = _selectGender == 0 ? 'M' : 'F';
+            BlocProvider.of<CustomerBloc>(context)
+                .add(RequestPutInfo(infoModel: _infoModel));
+          });
+        },
       ),
     );
   }

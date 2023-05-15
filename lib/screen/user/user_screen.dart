@@ -1,10 +1,17 @@
+import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:webviewtest/common/common_button.dart';
+import 'package:webviewtest/blocs/customer/customer_bloc.dart';
+import 'package:webviewtest/blocs/customer/customer_event.dart';
+import 'package:webviewtest/blocs/customer/customer_state.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
-import 'package:webviewtest/screen/login/login_screen.dart';
+import 'package:webviewtest/model/customer/info_model.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class UserScreen extends StatefulWidget {
@@ -15,49 +22,60 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
-  bool _rememberMe = false;
-  bool _isLogin = false;
+  InfoModel? _infoModel = InfoModel();
 
-  _keepLogin() async {
+  _getData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    _rememberMe = sPref.rememberMe;
-    return _rememberMe;
+    final infoCustomer = sPref.infoCustomer;
+
+    if (infoCustomer.isNotEmpty) {
+      setState(() {
+        _infoModel = InfoModel.fromJson(jsonDecode(infoCustomer));
+      });
+    } else {
+      if (context.mounted) {
+        BlocProvider.of<CustomerBloc>(context).add(const RequestGetInfo());
+      }
+    }
   }
 
-  _checkLogin() async {
+  _clearData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    _isLogin = sPref.isLogin;
-    return _isLogin;
+
+    sPref.setRememberMe(false);
+    sPref.setIsLogin(false);
+    sPref.remove(SharedPrefKeys.userName);
+    sPref.remove(SharedPrefKeys.password);
+    sPref.remove(SharedPrefKeys.infoCustomer);
+
+    if (context.mounted) {
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const NavigationScreen(
+                isSelected: 2,
+              )));
+    }
   }
 
   @override
   void initState() {
+    _getData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _keepLogin(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-            return _rememberMe
-                ? _basicInfo()
-                : FutureBuilder(
-                    future: _checkLogin(),
-                    builder: (context, snap) {
-                      if (snap.hasData) {
-                        if (EasyLoading.isShow) EasyLoading.dismiss();
-                        return _isLogin ? _basicInfo() : _loginButton();
-                      } else {
-                        EasyLoading.show();
-                        return const SizedBox();
-                      }
-                    });
-          } else {
+    return BlocConsumer<CustomerBloc, CustomerState>(
+        builder: (context, state) => _basicInfo(),
+        listener: (context, state) {
+          if (state is GetInfoLoading) {
             EasyLoading.show();
-            return const SizedBox();
+          } else if (state is GetInfoLoaded) {
+            _infoModel = state.infoModel;
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is GetInfoLoadError) {
+            AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
         });
   }
@@ -124,10 +142,33 @@ class _UserScreenState extends State<UserScreen> {
             padding: const EdgeInsets.only(top: 40),
             child: GestureDetector(
               onTap: () async {
-                SharedPreferencesService sPref =
-                    await SharedPreferencesService.instance;
                 setState(() {
-                  sPref.clear();
+                  showCupertinoDialog(
+                      context: context,
+                      builder: (context) => CupertinoAlertDialog(
+                            content: Text(
+                              'bạn có chắc muốn đăng xuất chứ',
+                              style: CommonStyles.size14W400Grey33(context),
+                            ),
+                            actions: [
+                              CupertinoDialogAction(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: Text(
+                                    'Trở lại',
+                                    style:
+                                        CommonStyles.size14W400Grey86(context),
+                                  )),
+                              CupertinoDialogAction(
+                                  onPressed: () => setState(() {
+                                        _clearData();
+                                      }),
+                                  child: Text(
+                                    'Đồng ý',
+                                    style:
+                                        CommonStyles.size14W700Blue00(context),
+                                  )),
+                            ],
+                          ));
                 });
               },
               child: Row(
@@ -149,47 +190,17 @@ class _UserScreenState extends State<UserScreen> {
     );
   }
 
-  // login button
-  Widget _loginButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          SvgPicture.asset(
-            'assets/icons/ic_logo_home_page.svg',
-            width: MediaQuery.of(context).size.width * 0.5,
-          ),
-          CommonButton(
-              onTap: () => Navigator.of(context)
-                      .push(MaterialPageRoute(
-                          builder: (context) => const LoginScreen()))
-                      .then((value) async {
-                    SharedPreferencesService sPref =
-                        await SharedPreferencesService.instance;
-                    setState(() {
-                      sPref.setIsLogin(value);
-                    });
-                  }),
-              title: 'Đăng nhập'),
-          const SizedBox(),
-        ],
-      ),
-    );
-  }
-
   // user name
   Widget _nameUser() {
     return Text(
-      'Tú Nguyễn',
+      _infoModel?.firstName ?? '',
       style: CommonStyles.size18W700Black1D(context),
     );
   }
 
   Widget _emailUser() {
     return Text(
-      'Nguyentu198@gmail.com',
+      _infoModel?.email ?? '',
       style: CommonStyles.size13W400Grey51(context),
     );
   }
@@ -198,6 +209,7 @@ class _UserScreenState extends State<UserScreen> {
     return Column(
       children: List.generate(ListCustom.listAccountSettings.length, (index) {
         var item = ListCustom.listAccountSettings[index];
+
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: GestureDetector(

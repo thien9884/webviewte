@@ -17,6 +17,7 @@ import 'package:webviewtest/model/register/register_response.dart';
 import 'package:webviewtest/model/related_news_model/comment_model.dart';
 import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/model/search_products/search_products_model.dart';
+import 'package:webviewtest/model/state/state_model.dart';
 import 'package:webviewtest/model/subcategory/subcategory_model.dart';
 
 abstract class ApiInterface {
@@ -57,19 +58,32 @@ abstract class ApiInterface {
   Future<List<RatingModel>?> requestGetRatingHistory(int? id);
 
   // post customer address
-  Future<AddAddressModel?> requestPostAddAddress(int? id, AddAddressModel? addAddressModel);
+  Future<Addresses?> requestPostAddAddress(
+      int? id, Addresses? addAddressModel);
 
   // put address
-  Future<CustomerModel?> requestPutAddAddress(int? id, CustomerModel? customerModel);
+  Future<String?> requestPutAddress(PutAddress? putAddress);
 
   // get info
   Future<InfoModel?> requestGetInfo();
+
+  // get state
+  Future<List<StateModel>?> requestGetState();
 
   // get category banner
   Future<List<SubCategories>?> requestGetSubCategories(int? id);
 
   // Get list product
   Future<List<ProductsModel>> requestGetListProduct(int? id);
+
+  // Delete list product
+  Future<String> requestDeleteAddress(
+    int? customerId,
+    int? addressId,
+  );
+
+  // update info
+  Future<String> requestUpdateInfo(InfoModel? infoModel);
 
   // Get product
   Future<List<ProductHistory>> requestGetProduct(int? id);

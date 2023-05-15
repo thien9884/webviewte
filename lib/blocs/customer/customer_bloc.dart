@@ -18,16 +18,27 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     });
     on<RequestPostAddAddress>((event, emit) {
       int? customerId = event.customerId;
-      AddAddressModel? addAddressModel = event.addAddressModel;
+      Addresses? addAddressModel = event.addAddressModel;
       return _handlePostAddAddress(emit, customerId, addAddressModel);
     });
     on<RequestPutAddress>((event, emit) {
+      PutAddress? putAddress = event.putAddress;
+      return _handlePutAddress(emit, putAddress);
+    });
+    on<RequestDeleteAddress>((event, emit) {
       int? customerId = event.customerId;
-      CustomerModel? customerModel = event.customerModel;
-      return _handlePutAddress(emit, customerId, customerModel);
+      int? addressId = event.addressId;
+      return _handleDeleteAddress(emit, customerId, addressId);
+    });
+    on<RequestPutInfo>((event, emit) {
+      InfoModel? infoModel = event.infoModel;
+      return _handlePutInfo(emit, infoModel);
     });
     on<RequestGetInfo>((event, emit) {
       return _handleGetInfo(event, emit);
+    });
+    on<RequestGetState>((event, emit) {
+      return _handleGetState(event, emit);
     });
     on<RequestGetRatingHistory>((event, emit) {
       int? customerId = event.customerId;
@@ -57,13 +68,13 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
   }
 
   _handlePostAddAddress(Emitter<CustomerState> emit, int? customerId,
-      AddAddressModel? addAddressModel) async {
+      Addresses? addAddressModel) async {
     emit(const AddAddressLoading());
     try {
       final data =
           await ApiCall().requestPostAddAddress(customerId, addAddressModel);
       emit(
-        AddAddressLoaded(addAddressModel: data ?? AddAddressModel()),
+        AddAddressLoaded(addAddressModel: data ?? Addresses()),
       );
     } catch (e) {
       emit(
@@ -76,15 +87,13 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
 
   _handlePutAddress(
     Emitter<CustomerState> emit,
-    int? customerId,
-    CustomerModel? customerModel,
+    PutAddress? putAddress,
   ) async {
     emit(const PutAddressLoading());
     try {
-      final data =
-          await ApiCall().requestPutAddAddress(customerId, customerModel);
+      final data = await ApiCall().requestPutAddress(putAddress);
       emit(
-        PutAddressLoaded(customerModel: data ?? CustomerModel()),
+        PutAddressLoaded(message: data),
       );
     } catch (e) {
       emit(
@@ -145,6 +154,61 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     } catch (e) {
       emit(
         ProductRatingLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleDeleteAddress(
+      Emitter<CustomerState> emit, int? customerId, int? addressId) async {
+    emit(const DeleteAddressLoading());
+    try {
+      final data = await ApiCall().requestDeleteAddress(customerId, addressId);
+      emit(
+        DeleteAddressLoaded(
+          message: data,
+        ),
+      );
+    } catch (e) {
+      emit(
+        DeleteAddressLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handlePutInfo(Emitter<CustomerState> emit, InfoModel? infoModel) async {
+    emit(const PutInfoLoading());
+    try {
+      final data = await ApiCall().requestUpdateInfo(infoModel);
+      emit(
+        PutInfoLoaded(
+          message: data,
+        ),
+      );
+    } catch (e) {
+      emit(
+        PutInfoLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleGetState(RequestGetState event, Emitter<CustomerState> emit) async {
+    emit(const GetStateLoading());
+    try {
+      final data = await ApiCall().requestGetState();
+      emit(
+        GetStateLoaded(
+          stateModel: data ?? [],
+        ),
+      );
+    } catch (e) {
+      emit(
+        GetStateLoadError(
           message: handleError(e),
         ),
       );
