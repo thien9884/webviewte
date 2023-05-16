@@ -21,6 +21,7 @@ class SharedPrefKeys {
   static const String listTopBanner = 'listTopBanner';
   static const String listHomeBanner = 'listHomeBanner';
   static const String infoCustomer = 'infoCustomer';
+  static const String state = 'state';
 }
 
 class SharedPreferencesService {
@@ -149,6 +150,13 @@ class SharedPreferencesService {
 
   // Get list home banner
   String get infoCustomer => _preferences.getString(SharedPrefKeys.infoCustomer) ?? '';
+
+  // Set state
+  Future<void> setState(String state) async =>
+      await _preferences.setString(SharedPrefKeys.state, state);
+
+  // Get state
+  String get state => _preferences.getString(SharedPrefKeys.state) ?? '';
 
   // Set password
   Future<void> setPassword(String password) async =>

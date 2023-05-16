@@ -14,17 +14,11 @@ import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
-import 'package:webviewtest/screen/login/login_screen.dart';
-import 'package:webviewtest/screen/login/register_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/search_products/search_products.dart';
 import 'package:webviewtest/screen/store/store_screen.dart';
-import 'package:webviewtest/screen/user/account_address/user_address.dart';
-import 'package:webviewtest/screen/user/account_info/account_info.dart';
-import 'package:webviewtest/screen/user/account_order/account_order.dart';
-import 'package:webviewtest/screen/user/rating_history/rating_history.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
@@ -69,18 +63,6 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
 
   late final Animation<double> _animation = CurvedAnimation(
     parent: _controller,
-    curve: Curves.linear,
-    reverseCurve: Curves.linear,
-  );
-
-  late final AnimationController _accountController = AnimationController(
-    duration: const Duration(milliseconds: 500),
-    reverseDuration: const Duration(milliseconds: 500),
-    vsync: this,
-  );
-
-  late final Animation<double> _accountAnimation = CurvedAnimation(
-    parent: _accountController,
     curve: Curves.linear,
     reverseCurve: Curves.linear,
   );
@@ -192,7 +174,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
       axis: Axis.vertical,
       axisAlignment: -1,
       child: Container(
-        height: (56 * 4) + (56 * (_accountExpand ? 4 : 0)),
+        height: 56 * 2,
         margin: const EdgeInsets.only(bottom: 40),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -209,178 +191,6 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
           child: ListView(
             physics: const NeverScrollableScrollPhysics(),
             children: [
-              if (!_isLogin)
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showDrawer = false;
-                      _controller.reverse();
-                    });
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const RegisterScreen()));
-                  },
-                  child: Container(
-                    height: 56,
-                    alignment: Alignment.centerLeft,
-                    decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(
-                                width: 1,
-                                color: Colors.grey.withOpacity(0.5)))),
-                    child: Text(
-                      'Tạo tài khoản ngay',
-                      style: CommonStyles.size15W400Black1D(context),
-                    ),
-                  ),
-                ),
-              if (!_isLogin)
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showDrawer = false;
-                      _controller.reverse();
-                    });
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const LoginScreen()));
-                  },
-                  child: Container(
-                    height: 56,
-                    alignment: Alignment.centerLeft,
-                    decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(
-                                width: 1,
-                                color: Colors.grey.withOpacity(0.5)))),
-                    child: Text(
-                      'Đăng nhập',
-                      style: CommonStyles.size15W400Black1D(context),
-                    ),
-                  ),
-                ),
-              if (_isLogin)
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _accountExpand = !_accountExpand;
-                      if (_accountExpand) {
-                        _accountController.forward();
-                      } else {
-                        _accountController.reverse();
-                      }
-                    });
-                  },
-                  child: Container(
-                    height: 56,
-                    alignment: Alignment.centerLeft,
-                    decoration: BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(
-                                width: 1,
-                                color: Colors.grey.withOpacity(0.5)))),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Tài khoản của tôi',
-                          style: CommonStyles.size15W400Black1D(context),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              if (_accountExpand)
-                SizeTransition(
-                  sizeFactor: _accountAnimation,
-                  axis: Axis.vertical,
-                  axisAlignment: -1,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    height: 56 * 4,
-                    child: Column(
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _showDrawer = false;
-                              _controller.reverse();
-                            });
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const AccountInfo()));
-                          },
-                          child: Container(
-                            height: 56,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Thông tin tài khoản',
-                              style: CommonStyles.size15W400Black1D(context),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _showDrawer = false;
-                              _controller.reverse();
-                            });
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const UserAddress()));
-                          },
-                          child: Container(
-                            height: 56,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Địa chỉ nhận hàng',
-                              style: CommonStyles.size15W400Black1D(context),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _showDrawer = false;
-                              _controller.reverse();
-                            });
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const AccountOrder()));
-                          },
-                          child: Container(
-                            height: 56,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Đơn đặt hàng',
-                              style: CommonStyles.size15W400Black1D(context),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _showDrawer = false;
-                              _controller.reverse();
-                            });
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const RatingHistory()));
-                          },
-                          child: Container(
-                            height: 56,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Lịch sử đánh giá sản phẩm',
-                              style: CommonStyles.size15W400Black1D(context),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               GestureDetector(
                 onTap: () {
                   final cIndex = _listCategories
@@ -449,28 +259,6 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
                   ),
                 ),
               ),
-              if (_isLogin)
-                GestureDetector(
-                  onTap: () async {
-                    SharedPreferencesService sPref =
-                        await SharedPreferencesService.instance;
-
-                    setState(() {
-                      sPref.setRememberMe(false);
-                      _isLogin = false;
-                      _showDrawer = false;
-                      _controller.reverse();
-                    });
-                  },
-                  child: Container(
-                    height: 56,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Đăng xuất',
-                      style: CommonStyles.size15W400Black1D(context),
-                    ),
-                  ),
-                ),
             ],
           ),
         ),

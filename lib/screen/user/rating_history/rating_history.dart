@@ -26,7 +26,7 @@ class RatingHistory extends StatefulWidget {
 }
 
 class _RatingHistoryState extends State<RatingHistory> {
-  List<RatingModel> _listRatingHistory = [];
+  List<RatingHistoryModel> _listRatingHistory = [];
   List<ProductHistory> _productsModel = [];
   int _customerId = 0;
   late ScrollController _hideButtonController;
@@ -89,8 +89,8 @@ class _RatingHistoryState extends State<RatingHistory> {
             _listRatingHistory = state.listRatingModel ?? [];
 
             for (var element in _listRatingHistory) {
-              BlocProvider.of<CustomerBloc>(context)
-                  .add(RequestGetProductRating(element.productId));
+              BlocProvider.of<CustomerBloc>(context).add(
+                  RequestGetProductRating(element.productReview?.productId));
             }
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
@@ -159,7 +159,7 @@ class _RatingHistoryState extends State<RatingHistory> {
               childCount: _listRatingHistory.length, (context, index) {
         final item = _listRatingHistory[index];
         var dateValue = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-            .parseUTC(item.createdOnUtc ?? '')
+            .parseUTC(item.productReview?.createdOnUtc ?? '')
             .toLocal();
         String formattedDate =
             DateFormat("dd/MM/yyyy").add_jm().format(dateValue);
@@ -177,7 +177,7 @@ class _RatingHistoryState extends State<RatingHistory> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.reviewText ?? '',
+                  item.productReview?.reviewText ?? '',
                   style: CommonStyles.size14W400Black1D(context),
                 ),
                 Padding(
@@ -186,7 +186,8 @@ class _RatingHistoryState extends State<RatingHistory> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       RatingBar(
-                        initialRating: (item.rating ?? 0).toDouble(),
+                        initialRating:
+                            (item.productReview?.rating ?? 0).toDouble(),
                         direction: Axis.horizontal,
                         allowHalfRating: true,
                         itemCount: 5,
@@ -236,10 +237,10 @@ class _RatingHistoryState extends State<RatingHistory> {
                         onTap: () =>
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => ShopDunkWebView(
-                                      url: item.productsModel?.seName ?? '',
+                                      url: item.productSeaName ?? '',
                                     ))),
                         child: Text(
-                          item.productsModel?.name ?? '',
+                          item.productName ?? '',
                           style: CommonStyles.size14W700Blue00(context),
                         ),
                       ),

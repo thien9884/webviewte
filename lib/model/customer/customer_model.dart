@@ -33,10 +33,10 @@ class CustomerModel {
 class ObjectPropertyNameValuePairs {
   ObjectPropertyNameValuePairs();
 
-  ObjectPropertyNameValuePairs.fromJson(Map<String, dynamic> json) {}
+  ObjectPropertyNameValuePairs.fromJson(Map<String, dynamic> json);
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     return data;
   }
 }
@@ -207,6 +207,8 @@ class BillingAddress {
   String? customerAttributes;
   String? createdOnUtc;
   dynamic province;
+  String? county;
+  int? countyId;
   int? id;
 
   BillingAddress(
@@ -226,6 +228,8 @@ class BillingAddress {
       this.customerAttributes,
       this.createdOnUtc,
       this.province,
+      this.county,
+      this.countyId,
       this.id});
 
   BillingAddress.fromJson(Map<String, dynamic> json) {
@@ -245,6 +249,8 @@ class BillingAddress {
     customerAttributes = json['customer_attributes'];
     createdOnUtc = json['created_on_utc'];
     province = json['province'];
+    county = json['county'];
+    countyId = json['countyId'];
     id = json['id'];
   }
 
@@ -266,6 +272,8 @@ class BillingAddress {
     data['customer_attributes'] = customerAttributes;
     data['created_on_utc'] = createdOnUtc;
     data['province'] = province;
+    data['county'] = county;
+    data['countyId'] = countyId;
     data['id'] = id;
     return data;
   }
@@ -288,6 +296,8 @@ class Addresses {
   String? customerAttributes;
   String? createdOnUtc;
   dynamic province;
+  String? county;
+  int? countyId;
   int? id;
 
   Addresses(
@@ -307,6 +317,8 @@ class Addresses {
       this.customerAttributes,
       this.createdOnUtc,
       this.province,
+      this.county,
+      this.countyId,
       this.id});
 
   Addresses.fromJson(Map<String, dynamic> json) {
@@ -326,6 +338,8 @@ class Addresses {
     customerAttributes = json['customer_attributes'];
     createdOnUtc = json['created_on_utc'];
     province = json['province'];
+    county = json['county'];
+    countyId = json['countyId'];
     id = json['id'];
   }
 
@@ -347,6 +361,8 @@ class Addresses {
     data['customer_attributes'] = customerAttributes;
     data['created_on_utc'] = createdOnUtc;
     data['province'] = province;
+    data['county'] = county;
+    data['countyId'] = countyId;
     data['id'] = id;
     return data;
   }

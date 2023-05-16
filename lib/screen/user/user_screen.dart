@@ -23,6 +23,7 @@ class UserScreen extends StatefulWidget {
 
 class _UserScreenState extends State<UserScreen> {
   InfoModel? _infoModel = InfoModel();
+  String _language = 'Tiếng Việt';
 
   _getData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
@@ -124,17 +125,33 @@ class _UserScreenState extends State<UserScreen> {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  Text(
-                    'Tiếng Việt',
-                    style: CommonStyles.size14W400Black1D(context),
+              DropdownButtonHideUnderline(
+                child: ButtonTheme(
+                  alignedDropdown: true,
+                  child: DropdownButton<String>(
+                    value: _language,
+                    menuMaxHeight: 300,
+                    icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                    elevation: 16,
+                    isDense: true,
+                    style: CommonStyles.size14W400Grey86(context),
+                    onChanged: (String? value) {
+                      // This is called when the user selects an item.
+                      setState(() {
+                        _language = value!;
+                      });
+                    },
+                    items: List.generate(1, (index) {
+                      return DropdownMenuItem<String>(
+                        value: 'Tiếng Việt',
+                        child: Text(
+                          'Tiếng Việt',
+                          style: CommonStyles.size14W400Black1D(context),
+                        ),
+                      );
+                    }).toList(),
                   ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  const Icon(Icons.keyboard_arrow_down, size: 20),
-                ],
+                ),
               ),
             ],
           ),

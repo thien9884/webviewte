@@ -19,6 +19,7 @@ import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
+import 'dart:io' show Platform;
 
 TopBanner payloadFromJson(String str) => TopBanner.fromJson(json.decode(str));
 
@@ -508,7 +509,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
-          mainAxisExtent: 300,
+          mainAxisExtent: Platform.isIOS ? 330 : 310,
         ),
       ),
     );

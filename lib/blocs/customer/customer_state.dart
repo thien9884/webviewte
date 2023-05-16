@@ -3,6 +3,7 @@ import 'package:webviewtest/model/customer/customer_model.dart';
 import 'package:webviewtest/model/customer/info_model.dart';
 import 'package:webviewtest/model/customer/product_rating_model.dart';
 import 'package:webviewtest/model/customer/rating_model.dart';
+import 'package:webviewtest/model/my_system/my_system_model.dart';
 import 'package:webviewtest/model/state/state_model.dart';
 
 abstract class CustomerState extends Equatable {
@@ -180,7 +181,7 @@ class RatingHistoryLoading extends CustomerState {
 }
 
 class RatingHistoryLoaded extends CustomerState {
-  final List<RatingModel>? listRatingModel;
+  final List<RatingHistoryModel>? listRatingModel;
 
   const RatingHistoryLoaded({required this.listRatingModel});
 
@@ -214,6 +215,28 @@ class ProductRatingLoadError extends CustomerState {
   final String message;
 
   const ProductRatingLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class MySystemLoading extends CustomerState {
+  const MySystemLoading();
+}
+
+class MySystemLoaded extends CustomerState {
+  final MySystemModel mySystemModel;
+
+  const MySystemLoaded({required this.mySystemModel});
+
+  @override
+  List<Object?> get props => [mySystemModel];
+}
+
+class MySystemLoadError extends CustomerState {
+  final String message;
+
+  const MySystemLoadError({required this.message});
 
   @override
   List<Object?> get props => [message];

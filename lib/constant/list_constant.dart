@@ -3,6 +3,8 @@ import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/user/account_info/account_info.dart';
 import 'package:webviewtest/screen/user/account_order/account_order.dart';
 import 'package:webviewtest/screen/user/account_address/user_address.dart';
+import 'package:webviewtest/screen/user/my_system/my_system_screen.dart';
+import 'package:webviewtest/screen/user/point/my_point_screen.dart';
 import 'package:webviewtest/screen/user/rating_history/rating_history.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
@@ -136,6 +138,18 @@ class ListCustom {
       img: 'assets/icons/ic_user_black.svg',
       name: 'Thông tin tài khoản',
       screen: const AccountInfo(),
+    ),
+    Resource(
+      id: 0,
+      img: 'assets/icons/ic_my_system.svg',
+      name: 'Hệ thống của tôi',
+      screen: const MySystemScreen(),
+    ),
+    Resource(
+      id: 0,
+      img: 'assets/icons/ic_point.svg',
+      name: 'Điểm thưởng',
+      screen: const MyPointScreen(),
     ),
     Resource(
       id: 1,

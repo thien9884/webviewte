@@ -1,6 +1,31 @@
-import 'package:webviewtest/model/customer/product_rating_model.dart';
+class RatingHistoryModel {
+  ProductReview? productReview;
+  String? productName;
+  String? productSeaName;
 
-class RatingModel {
+  RatingHistoryModel(
+      {this.productReview, this.productName, this.productSeaName});
+
+  RatingHistoryModel.fromJson(Map<String, dynamic> json) {
+    productReview = json['ProductReview'] != null
+        ? ProductReview.fromJson(json['ProductReview'])
+        : null;
+    productName = json['ProductName'];
+    productSeaName = json['ProductSeaName'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (productReview != null) {
+      data['ProductReview'] = productReview!.toJson();
+    }
+    data['ProductName'] = productName;
+    data['ProductSeaName'] = productSeaName;
+    return data;
+  }
+}
+
+class ProductReview {
   int? customerId;
   int? productId;
   int? storeId;
@@ -13,27 +38,24 @@ class RatingModel {
   int? helpfulYesTotal;
   int? helpfulNoTotal;
   String? createdOnUtc;
-  ProductHistory? productsModel;
   int? id;
 
-  RatingModel({
-    this.customerId,
-    this.productId,
-    this.storeId,
-    this.isApproved,
-    this.title,
-    this.reviewText,
-    this.replyText,
-    this.customerNotifiedOfReply,
-    this.rating,
-    this.helpfulYesTotal,
-    this.helpfulNoTotal,
-    this.createdOnUtc,
-    this.productsModel,
-    this.id,
-  });
+  ProductReview(
+      {this.customerId,
+      this.productId,
+      this.storeId,
+      this.isApproved,
+      this.title,
+      this.reviewText,
+      this.replyText,
+      this.customerNotifiedOfReply,
+      this.rating,
+      this.helpfulYesTotal,
+      this.helpfulNoTotal,
+      this.createdOnUtc,
+      this.id});
 
-  RatingModel.fromJson(Map<String, dynamic> json) {
+  ProductReview.fromJson(Map<String, dynamic> json) {
     customerId = json['CustomerId'];
     productId = json['ProductId'];
     storeId = json['StoreId'];
@@ -46,7 +68,6 @@ class RatingModel {
     helpfulYesTotal = json['HelpfulYesTotal'];
     helpfulNoTotal = json['HelpfulNoTotal'];
     createdOnUtc = json['CreatedOnUtc'];
-    productsModel = json['ProductsModel'] != null ? ProductHistory.fromJson(json['ProductsModel']) : null;
     id = json['Id'];
   }
 
@@ -64,9 +85,6 @@ class RatingModel {
     data['HelpfulYesTotal'] = helpfulYesTotal;
     data['HelpfulNoTotal'] = helpfulNoTotal;
     data['CreatedOnUtc'] = createdOnUtc;
-    if (productsModel != null) {
-      data['ProductsModel'] = productsModel!.toJson();
-    }
     data['Id'] = id;
     return data;
   }

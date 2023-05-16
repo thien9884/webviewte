@@ -224,7 +224,7 @@ class _UserAddressState extends State<UserAddress> {
                 _accountInfo(false, 'Số điện thoại', item.phoneNumber ?? ''),
                 _accountInfo(false, 'Email', item.email ?? ''),
                 _accountInfo(true, 'Địa chỉ',
-                    '${item.address1}${item.city!.isNotEmpty ? ', ${item.city}' : ''}'),
+                    '${item.address1}${item.city!.isNotEmpty ? ', ${item.city}' : ''}${item.county!.isNotEmpty ? ', ${item.county}' : ''}'),
               ],
             ),
           ),

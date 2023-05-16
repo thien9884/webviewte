@@ -36,4 +36,8 @@ class CommonText {
   static String confirmComment(BuildContext context) {
     return 'Đã thêm thành công nhận xét tin tức. Bạn sẽ thấy nó sau khi được quản trị viên lưu trữ phê duyệt.';
   }
+
+  static String noteMyCode(BuildContext context) {
+    return 'Mã giới thiệu của bạn có thể là Email, Số điện thoại hoặc User name. Bạn có thể xem danh sách người đã giới thiệu theo các cấp bên dưới đây.';
+  }
 }

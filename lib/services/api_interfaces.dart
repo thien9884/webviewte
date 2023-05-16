@@ -8,6 +8,7 @@ import 'package:webviewtest/model/customer/product_rating_model.dart';
 import 'package:webviewtest/model/customer/rating_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
+import 'package:webviewtest/model/my_system/my_system_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/news_category/news_category_model.dart';
 import 'package:webviewtest/model/order/order_model.dart';
@@ -55,7 +56,10 @@ abstract class ApiInterface {
   Future<CustomerModel?> requestGetCustomerAddress(int? id);
 
   // get customer address
-  Future<List<RatingModel>?> requestGetRatingHistory(int? id);
+  Future<MySystemModel?> requestGetMySystem(int? id);
+
+  // get customer address
+  Future<List<RatingHistoryModel>?> requestGetRatingHistory(int? id);
 
   // post customer address
   Future<Addresses?> requestPostAddAddress(

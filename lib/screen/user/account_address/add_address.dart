@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -32,11 +34,12 @@ class _AddAddressState extends State<AddAddress> {
   String _country = 'Việt Nam';
   String _city = '';
   int _customerId = 0;
+  int _stateProvinceId = 0;
   List<StateModel> _listState = [];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _districtController = TextEditingController();
+  final TextEditingController _countyController = TextEditingController();
   final TextEditingController _wardController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   late ScrollController _hideButtonController;
@@ -80,10 +83,39 @@ class _AddAddressState extends State<AddAddress> {
       _emailController.text = address.email ?? '';
       _phoneController.text = address.phoneNumber ?? '';
       _addressController.text = address.address1 ?? '';
+      _countyController.text = address.county ?? '';
+      _wardController.text = address.city ?? '';
     }
 
-    if (context.mounted) {
-      BlocProvider.of<CustomerBloc>(context).add(const RequestGetState());
+    if (sPref.state.isNotEmpty) {
+      _listState = StateModel.decode(sPref.state);
+      _getCity();
+    } else {
+      if (context.mounted) {
+        BlocProvider.of<CustomerBloc>(context).add(const RequestGetState());
+      }
+    }
+    setState(() {});
+  }
+
+  _saveListState(List<StateModel> listState) async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+
+    String listStateSave = jsonEncode(listState);
+    sPref.setState(listStateSave);
+  }
+
+  _getCity() {
+    if (widget.addressModel != null &&
+        widget.addressModel?.stateProvinceId != null) {
+      for (var element in _listState) {
+        if (int.parse(element.value.toString()) ==
+            widget.addressModel?.stateProvinceId) {
+          _city = element.text ?? '';
+        }
+      }
+    } else {
+      _city = _listState[0].text.toString();
     }
   }
 
@@ -157,7 +189,8 @@ class _AddAddressState extends State<AddAddress> {
             EasyLoading.show();
           } else if (state is GetStateLoaded) {
             _listState = state.stateModel ?? [];
-            _city = _listState[0].text.toString();
+            _saveListState(_listState);
+            _getCity();
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is GetStateLoadError) {
@@ -378,9 +411,12 @@ class _AddAddressState extends State<AddAddress> {
                 },
                 items: List.generate(
                     1,
-                    (index) => const DropdownMenuItem<String>(
+                    (index) => DropdownMenuItem<String>(
                           value: 'Việt Nam',
-                          child: Text('Việt Nam'),
+                          child: Text(
+                            'Việt Nam',
+                            style: CommonStyles.size14W400Black1D(context),
+                          ),
                         )).toList(),
               ),
             ),
@@ -429,7 +465,10 @@ class _AddAddressState extends State<AddAddress> {
 
                   return DropdownMenuItem<String>(
                     value: item.text,
-                    child: Text(item.text ?? ''),
+                    child: Text(
+                      item.text ?? '',
+                      style: CommonStyles.size14W400Black1D(context),
+                    ),
                   );
                 }).toList(),
               ),
@@ -453,7 +492,7 @@ class _AddAddressState extends State<AddAddress> {
           ),
         ),
         TextFormField(
-          controller: _districtController,
+          controller: _countyController,
           decoration: InputDecoration(
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -564,6 +603,12 @@ class _AddAddressState extends State<AddAddress> {
       child: CommonButton(
           title: 'Lưu lại',
           onTap: () {
+            for (var element in _listState) {
+              if (element.text == _city) {
+                _stateProvinceId = int.parse(element.value.toString());
+              }
+            }
+
             if (widget.addressModel != null) {
               var putAddressModel = PutAddress(
                 firstName: _nameController.text,
@@ -571,16 +616,16 @@ class _AddAddressState extends State<AddAddress> {
                 email: _emailController.text,
                 company: 'string',
                 countryId: 242,
-                stateProvinceId: 0,
-                county: 'VN',
-                city: _city,
+                stateProvinceId: _stateProvinceId,
+                county: _countyController.text,
+                city: _wardController.text,
                 address1: _addressController.text,
                 address2: 'string',
                 zipPostalCode: 'string',
                 phoneNumber: _phoneController.text,
                 faxNumber: 'string',
                 customAttributes: '',
-                createdOnUtc: DateTime.now().toUtc().toString(),
+                createdOnUtc: widget.addressModel?.createdOnUtc,
                 countyId: 0,
                 id: widget.addressModel?.id,
               );
@@ -594,16 +639,18 @@ class _AddAddressState extends State<AddAddress> {
                 company: 'string',
                 countryId: 242,
                 country: 'VN',
-                stateProvinceId: 0,
-                city: _city,
+                stateProvinceId: _stateProvinceId,
+                city: _wardController.text,
                 address1: _addressController.text,
                 address2: 'string',
                 zipPostalCode: 'string',
                 phoneNumber: _phoneController.text,
                 faxNumber: 'string',
                 customerAttributes: 'string',
-                createdOnUtc: '2023-05-08T17:43:35.207Z',
+                createdOnUtc: '',
                 province: 'string',
+                county: _countyController.text,
+                countyId: 0,
                 id: 0,
               );
               BlocProvider.of<CustomerBloc>(context)

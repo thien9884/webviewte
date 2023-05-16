@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class StateModel {
   bool? disabled;
   dynamic group;
@@ -24,4 +26,9 @@ class StateModel {
     data['Value'] = value;
     return data;
   }
+
+  static List<StateModel> decode(String stateModel) =>
+      (json.decode(stateModel) as List<dynamic>)
+          .map<StateModel>((item) => StateModel.fromJson(item))
+          .toList();
 }

@@ -33,6 +33,14 @@ class CommonStyles {
     );
   }
 
+  static TextStyle size12W400Black1D(BuildContext context) {
+    return const TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      color: Color(0xff1D1D1F),
+    );
+  }
+
   static TextStyle size12W400Blue00(BuildContext context) {
     return const TextStyle(
       fontSize: 12,

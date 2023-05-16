@@ -9,6 +9,7 @@ import 'package:webviewtest/model/customer/product_rating_model.dart';
 import 'package:webviewtest/model/customer/rating_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
+import 'package:webviewtest/model/my_system/my_system_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/news_category/news_category_model.dart';
 import 'package:webviewtest/model/order/order_model.dart';
@@ -117,6 +118,14 @@ class ApiCall implements ApiInterface {
   }
 
   @override
+  Future<MySystemModel?> requestGetMySystem(int? id) async {
+    var response = await DioClient().get('${ApiConstant.mySystem}$id');
+    if (response == null) return null;
+    final data = response['Data'];
+    return MySystemModel.fromJson(data);
+  }
+
+  @override
   Future<String> requestDeleteAddress(int? customerId, int? addressId) async {
     var response = await DioClient()
         .delete('${ApiConstant.address}$customerId/$addressId');
@@ -142,11 +151,11 @@ class ApiCall implements ApiInterface {
   }
 
   @override
-  Future<List<RatingModel>?> requestGetRatingHistory(int? id) async {
+  Future<List<RatingHistoryModel>?> requestGetRatingHistory(int? id) async {
     var response = await DioClient().get('${ApiConstant.rating}$id');
     if (response == null) return [];
     Iterable list = response;
-    return list.map((e) => RatingModel.fromJson(e)).toList();
+    return list.map((e) => RatingHistoryModel.fromJson(e)).toList();
   }
 
   @override

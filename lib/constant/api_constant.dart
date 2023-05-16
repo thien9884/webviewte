@@ -23,4 +23,5 @@ class ApiConstant {
   static const String updateInfo = '/api/customers/update-info';
   static const String productRating = '/api/products/';
   static const String state = '/api/customers/states';
+  static const String mySystem = '/api/customers/filter-system?level=';
 }

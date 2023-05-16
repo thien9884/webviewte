@@ -6,6 +6,7 @@ import 'package:webviewtest/blocs/customer/customer_state.dart';
 import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/customer/customer_model.dart';
 import 'package:webviewtest/model/customer/info_model.dart';
+import 'package:webviewtest/model/my_system/my_system_model.dart';
 import 'package:webviewtest/services/api_call.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
@@ -47,6 +48,10 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     on<RequestGetProductRating>((event, emit) {
       int? productId = event.productId;
       return _handleGetProductRating(emit, productId);
+    });
+    on<RequestGetMySystem>((event, emit) {
+      int? levelId = event.levelId;
+      return _handleGetMySystem(emit, levelId);
     });
   }
 
@@ -209,6 +214,24 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     } catch (e) {
       emit(
         GetStateLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleGetMySystem(Emitter<CustomerState> emit, int? levelId) async {
+    emit(const MySystemLoading());
+    try {
+      final data = await ApiCall().requestGetMySystem(levelId);
+      emit(
+        MySystemLoaded(
+          mySystemModel: data ?? MySystemModel(),
+        ),
+      );
+    } catch (e) {
+      emit(
+        MySystemLoadError(
           message: handleError(e),
         ),
       );

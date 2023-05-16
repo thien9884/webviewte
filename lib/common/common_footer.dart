@@ -32,7 +32,7 @@ class CommonFooter extends StatefulWidget {
 
 class _CommonFooterState extends State<CommonFooter> {
   final List<Footer> _listFooter = [];
-  TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   _getCategories() async {
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetFooterBanner());

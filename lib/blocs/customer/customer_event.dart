@@ -87,3 +87,12 @@ class RequestGetProductRating extends CustomerEvent {
   @override
   List<Object?> get props => [];
 }
+
+class RequestGetMySystem extends CustomerEvent {
+  final int? levelId;
+
+  const RequestGetMySystem(this.levelId);
+
+  @override
+  List<Object?> get props => [];
+}
