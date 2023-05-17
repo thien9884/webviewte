@@ -23,6 +23,7 @@ class RegisterBloc extends BaseBloc<RegisterEvent, RegisterState> {
     emit(const RegisterLoading());
     try {
       final user = await ApiCall().register(registerModel);
+      print('user:::::::::::: $user');
       emit(
         RegisterLoaded(registerResponse: user ?? RegisterResponse()),
       );

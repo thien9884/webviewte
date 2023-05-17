@@ -514,6 +514,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 contentPadding: const EdgeInsets.all(10),
               ),
+              keyboardType: TextInputType.phone,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Vui lòng nhập số điện thoại';
@@ -722,7 +723,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     password: _passwordController.text,
                     confirmPassword: _confirmPasswordController.text,
                     genderEnabled: true,
-                    gender: _selectGender == 0 ? 'Male' : 'Female',
+                    gender: _selectGender == 0 ? 'M' : 'F',
                     firstNameEnabled: true,
                     firstName: _nameController.text,
                     firstNameRequired: true,
@@ -838,7 +839,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   BlocProvider.of<RegisterBloc>(context).add(
                     RequestPostRegister(registerModel: registerModel),
                   );
-                  setState(() {});
                 }
               },
               child: Container(
