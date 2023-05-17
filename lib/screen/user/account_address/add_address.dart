@@ -144,8 +144,12 @@ class _AddAddressState extends State<AddAddress> {
                       actions: [
                         CupertinoDialogAction(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const UserAddress()));
+                              Navigator.pop(context);
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                      const UserAddress()));
                             },
                             child: Text(
                               'Đồng ý',
@@ -171,8 +175,12 @@ class _AddAddressState extends State<AddAddress> {
                       actions: [
                         CupertinoDialogAction(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const UserAddress()));
+                              Navigator.pop(context);
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const UserAddress()));
                             },
                             child: Text(
                               'Đồng ý',

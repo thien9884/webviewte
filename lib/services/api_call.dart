@@ -248,6 +248,22 @@ class ApiCall implements ApiInterface {
   }
 
   @override
+  Future<UserModel?> newToken() async {
+    var response = await DioClient().post(
+        ApiConstant.token,
+        LoginModel(
+          rememberMe: false,
+          guest: true,
+          username: 'shopdunk',
+          password: 'shopdunk',
+        ));
+    if (response == null) return null;
+    final user = UserModel.fromJson(response);
+    DioClient.setToken(user.accessToken ?? '');
+    return user;
+  }
+
+  @override
   Future<RegisterResponse?> register(RegisterModel? registerModel) async {
     var response = await DioClient().post(ApiConstant.register, registerModel);
     if (response == null) return null;

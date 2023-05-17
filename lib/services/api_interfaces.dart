@@ -107,6 +107,8 @@ abstract class ApiInterface {
   // Login
   Future<UserModel?> login(LoginModel? loginModel);
 
+  Future<UserModel?> newToken();
+
   // register
   Future<RegisterResponse?> register(RegisterModel? registerModel);
 }

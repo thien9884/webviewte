@@ -72,8 +72,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
+  _getToken() {
+    BlocProvider.of<RegisterBloc>(context).add(const RequestNewToken());
+  }
+
   @override
   void initState() {
+    _getToken();
     _getHideBottomValue();
     super.initState();
   }
@@ -116,6 +121,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             _confirmPasswordController.clear();
                             _nameController.clear();
                             _referralController.clear();
+                            _getToken();
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const NavigationScreen(
                                       isSelected: 2,
@@ -348,8 +354,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 contentPadding: const EdgeInsets.all(10),
               ),
               validator: (value) {
+                bool nameValid =
+                    RegExp(r'^[\sa-zA-Z]+$').hasMatch(value.toString());
                 if (value == null || value.isEmpty) {
                   return 'Vui lòng nhập tên';
+                } else if (!nameValid) {
+                  return 'Tên không được chứa số và ký tự đặc biệt';
                 }
                 return null;
               },

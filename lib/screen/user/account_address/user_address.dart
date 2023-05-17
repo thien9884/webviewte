@@ -29,6 +29,7 @@ class _UserAddressState extends State<UserAddress> {
   List<Addresses> _listAddress = [];
   late ScrollController _hideButtonController;
   int? customerId;
+  int _indexDeleted = -1;
 
   bool _isVisible = false;
 
@@ -95,19 +96,20 @@ class _UserAddressState extends State<UserAddress> {
           } else if (state is DeleteAddressLoading) {
             EasyLoading.show();
           } else if (state is DeleteAddressLoaded) {
+            _listAddress.removeAt(_indexDeleted);
             showCupertinoDialog(
                 context: context,
                 builder: (context) => CupertinoAlertDialog(
                       content: Text(
-                        'Xoá tài khoản thành công',
+                        'Xoá địa chỉ thành công',
                         style: CommonStyles.size14W400Grey33(context),
                       ),
                       actions: [
                         CupertinoDialogAction(
                             onPressed: () {
-                              BlocProvider.of<CustomerBloc>(context)
-                                  .add(RequestGetCustomerAddress(customerId));
-                              Navigator.pop(context);
+                              setState(() {
+                                Navigator.pop(context);
+                              });
                             },
                             child: Text(
                               'Đồng ý',
@@ -164,7 +166,7 @@ class _UserAddressState extends State<UserAddress> {
         final item = _listAddress[index];
 
         return Padding(
-          padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
@@ -194,19 +196,22 @@ class _UserAddressState extends State<UserAddress> {
                     Row(
                       children: [
                         _editButton(true, () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => AddAddress(
-                                    addressModel: item,
-                                  )));
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddAddress(
+                                        addressModel: item,
+                                      )));
                         }),
                         const SizedBox(
                           width: 10,
                         ),
-                        _editButton(false, () async {
-                          if (context.mounted) {
-                            BlocProvider.of<CustomerBloc>(context)
-                                .add(RequestDeleteAddress(customerId, item.id));
-                          }
+                        _editButton(false, () {
+                          setState(() {
+                            _indexDeleted = index;
+                          });
+                          BlocProvider.of<CustomerBloc>(context)
+                              .add(RequestDeleteAddress(customerId, item.id));
                         }),
                       ],
                     ),
@@ -316,10 +321,12 @@ class _UserAddressState extends State<UserAddress> {
       sliver: SliverToBoxAdapter(
         child: CommonButton(
           title: 'Thêm mới',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const AddAddress(
-                    addressModel: null,
-                  ))),
+          onTap: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AddAddress(
+                        addressModel: null,
+                      ))),
         ),
       ),
     );

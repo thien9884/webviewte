@@ -16,3 +16,11 @@ class RequestPostRegister extends RegisterEvent {
   @override
   List<Object?> get props => [];
 }
+
+class RequestNewToken extends RegisterEvent {
+
+  const RequestNewToken();
+
+  @override
+  List<Object?> get props => [];
+}

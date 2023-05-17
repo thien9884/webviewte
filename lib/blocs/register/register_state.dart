@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:webviewtest/model/login/user_model.dart';
 import 'package:webviewtest/model/register/register_response.dart';
 
 abstract class RegisterState extends Equatable {
@@ -34,6 +35,28 @@ class RegisterLoadError extends RegisterState {
   final String message;
 
   const RegisterLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class NewTokenLoading extends RegisterState {
+  const NewTokenLoading();
+}
+
+class NewTokenLoaded extends RegisterState {
+  final UserModel userModel;
+
+  const NewTokenLoaded({required this.userModel});
+
+  @override
+  List<Object?> get props => [userModel];
+}
+
+class NewTokenLoadError extends RegisterState {
+  final String message;
+
+  const NewTokenLoadError({required this.message});
 
   @override
   List<Object?> get props => [message];
