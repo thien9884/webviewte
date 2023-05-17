@@ -76,6 +76,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     BlocProvider.of<RegisterBloc>(context).add(const RequestNewToken());
   }
 
+  _getMessage() {
+    if (_registerResponse?.httpStatusCode != 201) {
+      return 'Đăng ký thất bại';
+    } else if (_registerResponse?.httpStatusCode == 201 &&
+        _registerResponse?.message == null) {
+      return _registerResponse?.data[0].toString();
+    } else {
+      return 'Đăng ký thành công';
+    }
+  }
+
   @override
   void initState() {
     _getToken();
@@ -92,27 +103,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
             EasyLoading.show();
           } else if (state is RegisterLoaded) {
             _registerResponse = state.registerResponse;
-            print(_registerResponse?.httpStatusCode);
+            print(_registerResponse);
 
             showCupertinoModalPopup(
                 context: context,
                 builder: (context) {
                   return CupertinoAlertDialog(
-                    title: Text(
-                      'Thông báo',
-                      style: CommonStyles.size17W700Black1D(context),
+                    title: Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        'Thông báo',
+                        style: CommonStyles.size17W700Black1D(context),
+                      ),
                     ),
                     content: Text(
-                      _registerResponse!.success!
-                          ? 'Đăng ký thành công'
-                          : 'Đăng ký thất bại',
+                      _getMessage(),
                       style: CommonStyles.size14W400Grey33(context),
                     ),
                     actions: [
                       CupertinoDialogAction(
                         isDestructiveAction: true,
                         onPressed: () {
-                          if (_registerResponse!.success!) {
+                          if (_registerResponse!.success! &&
+                              _registerResponse?.httpStatusCode == 201 &&
+                              _registerResponse?.message != null) {
                             Navigator.pop(context);
                             _userNameController.clear();
                             _emailController.clear();
