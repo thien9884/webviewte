@@ -80,9 +80,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_registerResponse?.httpStatusCode != 201) {
       return 'Đăng ký thất bại';
     } else if (_registerResponse?.httpStatusCode == 201 &&
-        _registerResponse?.message == null) {
+        _registerResponse?.data != null) {
       return _registerResponse?.data[0].toString();
-    } else {
+    } else if (_registerResponse?.httpStatusCode == 201 &&
+        _registerResponse?.message != null) {
       return 'Đăng ký thành công';
     }
   }
