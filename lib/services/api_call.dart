@@ -120,7 +120,7 @@ class ApiCall implements ApiInterface {
   @override
   Future<MySystemModel?> requestGetMySystem(int? id) async {
     var response = await DioClient().get('${ApiConstant.mySystem}$id');
-    if (response == null) return null;
+    if (response['Data'] == null) return null;
     final data = response['Data'];
     return MySystemModel.fromJson(data);
   }

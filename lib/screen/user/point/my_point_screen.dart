@@ -154,7 +154,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                           ),
                           DataCell(
                             Text(
-                              '10000000',
+                              '10.000',
                               style: CommonStyles.size12W400Black1D(context),
                             ),
                           ),

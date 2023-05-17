@@ -164,7 +164,7 @@ class _UserScreenState extends State<UserScreen> {
                       context: context,
                       builder: (context) => CupertinoAlertDialog(
                             content: Text(
-                              'bạn có chắc muốn đăng xuất chứ',
+                              'Bạn có chắc muốn đăng xuất chứ?',
                               style: CommonStyles.size14W400Grey33(context),
                             ),
                             actions: [
@@ -181,7 +181,8 @@ class _UserScreenState extends State<UserScreen> {
                                       }),
                                   child: Text(
                                     'Đồng ý',
-                                    style: CommonStyles.size14W700Blue007A(context),
+                                    style: CommonStyles.size14W700Blue007A(
+                                        context),
                                   )),
                             ],
                           ));
@@ -230,11 +231,12 @@ class _UserScreenState extends State<UserScreen> {
       children: List.generate(ListCustom.listAccountSettings.length, (index) {
         var item = ListCustom.listAccountSettings[index];
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: GestureDetector(
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => item.screen ?? const SizedBox())),
+        return GestureDetector(
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => item.screen ?? const SizedBox())),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            color: Colors.transparent,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

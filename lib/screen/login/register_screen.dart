@@ -354,8 +354,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 contentPadding: const EdgeInsets.all(10),
               ),
               validator: (value) {
-                bool nameValid =
-                    RegExp(r'^[\sa-zA-Z]+$').hasMatch(value.toString());
+                bool nameValid = RegExp(
+                        r'^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$')
+                    .hasMatch(value.toString());
                 if (value == null || value.isEmpty) {
                   return 'Vui lòng nhập tên';
                 } else if (!nameValid) {
@@ -668,12 +669,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 contentPadding: const EdgeInsets.all(10),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập mã giới thiệu';
-                }
-                return null;
-              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),

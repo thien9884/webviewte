@@ -458,7 +458,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                 overflow: TextOverflow.ellipsis,
                                 style: CommonStyles.size14W700Black1D(context)
                                     .copyWith(
-                                  wordSpacing: 1.1,
                                   letterSpacing: 0.3,
                                   height: 1.5,
                                 ),

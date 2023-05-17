@@ -134,7 +134,11 @@ class _MySystemScreenState extends State<MySystemScreen>
             EasyLoading.show();
           } else if (state is MySystemLoaded) {
             _listMySystem.add(state.mySystemModel);
-            _listMySystem.sort((a, b) => a.level!.compareTo(b.level!.toInt()));
+            if (_listMySystem.every((element) => element.level != null)) {
+              _listMySystem
+                  .sort((a, b) => a.level!.compareTo(b.level!.toInt()));
+            }
+            print(_listMySystem);
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is MySystemLoadError) {
@@ -247,6 +251,7 @@ class _MySystemScreenState extends State<MySystemScreen>
           ? Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 20),
+              height: 50,
               decoration: BoxDecoration(
                 border: Border.all(width: 1, color: const Color(0xffEBEBEB)),
                 borderRadius: BorderRadius.circular(8),
@@ -306,7 +311,7 @@ class _MySystemScreenState extends State<MySystemScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Cấp 1 (${_listMySystem[0].totalRecords})',
+                          'Cấp 1 (${_listMySystem[0].totalRecords ?? 0})',
                           style: CommonStyles.size14W700Black1D(context),
                         ),
                         const Icon(
@@ -319,7 +324,7 @@ class _MySystemScreenState extends State<MySystemScreen>
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: _expandLevel1
+                  child: _expandLevel1 && _listMySystem[0].details != null
                       ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: SizeTransition(
@@ -381,8 +386,9 @@ class _MySystemScreenState extends State<MySystemScreen>
                                   ),
                                   Column(
                                     children: List.generate(
-                                        _listMySystem[0].details!.length,
-                                        (index) {
+                                        _listMySystem[0].details != null
+                                            ? _listMySystem[0].details!.length
+                                            : 0, (index) {
                                       final a =
                                           _listMySystem[0].details![index];
 
@@ -456,7 +462,7 @@ class _MySystemScreenState extends State<MySystemScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Cấp 2 (${_listMySystem[1].totalRecords})',
+                          'Cấp 2 (${_listMySystem[1].totalRecords ?? 0})',
                           style: CommonStyles.size14W700Black1D(context),
                         ),
                         const Icon(
@@ -469,7 +475,7 @@ class _MySystemScreenState extends State<MySystemScreen>
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: _expandLevel2
+                  child: _expandLevel2 && _listMySystem[1].details != null
                       ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: SizeTransition(
@@ -531,8 +537,9 @@ class _MySystemScreenState extends State<MySystemScreen>
                                   ),
                                   Column(
                                     children: List.generate(
-                                        _listMySystem[1].details!.length,
-                                        (index) {
+                                        _listMySystem[1].details != null
+                                            ? _listMySystem[1].details!.length
+                                            : 0, (index) {
                                       final a =
                                           _listMySystem[1].details![index];
 
@@ -606,7 +613,7 @@ class _MySystemScreenState extends State<MySystemScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Cấp 3 (${_listMySystem[2].totalRecords})',
+                          'Cấp 3 (${_listMySystem[2].totalRecords ?? 0})',
                           style: CommonStyles.size14W700Black1D(context),
                         ),
                         const Icon(
@@ -619,7 +626,7 @@ class _MySystemScreenState extends State<MySystemScreen>
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: _expandLevel3
+                  child: _expandLevel3 && _listMySystem[2].details != null
                       ? Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: SizeTransition(
@@ -681,8 +688,9 @@ class _MySystemScreenState extends State<MySystemScreen>
                                   ),
                                   Column(
                                     children: List.generate(
-                                        _listMySystem[2].details!.length,
-                                        (index) {
+                                        _listMySystem[2].details != null
+                                            ? _listMySystem[2].details!.length
+                                            : 0, (index) {
                                       final a =
                                           _listMySystem[2].details![index];
 
