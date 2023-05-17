@@ -138,7 +138,7 @@ class _AddAddressState extends State<AddAddress> {
                 context: context,
                 builder: (context) => CupertinoAlertDialog(
                       content: Text(
-                        'Thêm tài khoản thành công',
+                        'Thêm địa chỉ thành công',
                         style: CommonStyles.size14W400Grey86(context),
                       ),
                       actions: [
@@ -148,8 +148,8 @@ class _AddAddressState extends State<AddAddress> {
                                   builder: (context) => const UserAddress()));
                             },
                             child: Text(
-                              'Ok',
-                              style: CommonStyles.size14W700Blue00(context),
+                              'Đồng ý',
+                              style: CommonStyles.size14W700Blue007A(context),
                             ))
                       ],
                     ));
@@ -165,7 +165,7 @@ class _AddAddressState extends State<AddAddress> {
                 context: context,
                 builder: (context) => CupertinoAlertDialog(
                       content: Text(
-                        state.message ?? '',
+                        'Sửa địa chỉ thành công',
                         style: CommonStyles.size14W400Grey86(context),
                       ),
                       actions: [
@@ -175,8 +175,8 @@ class _AddAddressState extends State<AddAddress> {
                                   builder: (context) => const UserAddress()));
                             },
                             child: Text(
-                              'Ok',
-                              style: CommonStyles.size14W700Blue00(context),
+                              'Đồng ý',
+                              style: CommonStyles.size14W700Blue007A(context),
                             ))
                       ],
                     ));

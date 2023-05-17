@@ -37,8 +37,15 @@ class _MySystemScreenState extends State<MySystemScreen>
   InfoModel? _infoModel = InfoModel();
   final List<MySystemModel> _listMySystem = [];
   bool _isVisible = false;
-  late AnimationController _controller;
-  late Animation<double> _animation;
+  bool _expandLevel1 = false;
+  bool _expandLevel2 = false;
+  bool _expandLevel3 = false;
+  late AnimationController _controller1;
+  late Animation<double> _animation1;
+  late AnimationController _controller2;
+  late Animation<double> _animation2;
+  late AnimationController _controller3;
+  late Animation<double> _animation3;
 
   _getHideBottomValue() {
     _isVisible = true;
@@ -91,12 +98,28 @@ class _MySystemScreenState extends State<MySystemScreen>
   void initState() {
     _getData();
     _getHideBottomValue();
-    _controller = AnimationController(
+    _controller1 = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    _animation = CurvedAnimation(
-      parent: _controller,
+    _animation1 = CurvedAnimation(
+      parent: _controller1,
+      curve: Curves.fastLinearToSlowEaseIn,
+    );
+    _controller2 = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _animation2 = CurvedAnimation(
+      parent: _controller2,
+      curve: Curves.fastLinearToSlowEaseIn,
+    );
+    _controller3 = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _animation3 = CurvedAnimation(
+      parent: _controller3,
       curve: Curves.fastLinearToSlowEaseIn,
     );
     super.initState();
@@ -125,7 +148,7 @@ class _MySystemScreenState extends State<MySystemScreen>
   Widget _mySystemUI() {
     return CommonNavigateBar(
         index: 2,
-        child: _listMySystem.isNotEmpty
+        child: _listMySystem.isNotEmpty && _listMySystem.length == 3
             ? Container(
                 color: Colors.white,
                 child: CustomScrollView(
@@ -254,112 +277,75 @@ class _MySystemScreenState extends State<MySystemScreen>
   Widget _dataTableMySystem() {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(childCount: _listMySystem.length,
-            (context, index) {
-          final item = _listMySystem[index];
-
-          return Column(
-            children: [
-              GestureDetector(
-                onTap: () => setState(() {
-                  item.expandLevel = !item.expandLevel;
-                  if (item.expandLevel) {
-                    _controller.forward();
-                  } else {
-                    _controller.animateBack(0,
-                        duration: const Duration(milliseconds: 500));
-                  }
-                }),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        width: 1,
-                        color: Color(0xffEBEBEB),
+      sliver: SliverToBoxAdapter(
+        child: Column(
+          children: [
+            Column(
+              children: [
+                GestureDetector(
+                  onTap: () => setState(() {
+                    _expandLevel1 = !_expandLevel1;
+                    if (_expandLevel1) {
+                      _controller1.forward();
+                    } else {
+                      _controller1.animateBack(0,
+                          duration: const Duration(milliseconds: 500));
+                    }
+                  }),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          width: 1,
+                          color: Color(0xffEBEBEB),
+                        ),
                       ),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Cấp ${item.level} (${item.totalRecords})',
-                        style: CommonStyles.size14W700Black1D(context),
-                      ),
-                      const Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: Color(0xff86868B),
-                      ),
-                    ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Cấp 1 (${_listMySystem[0].totalRecords})',
+                          style: CommonStyles.size14W700Black1D(context),
+                        ),
+                        const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: Color(0xff86868B),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: item.expandLevel
-                    ? SizeTransition(
-                        sizeFactor: _animation,
-                        axis: Axis.vertical,
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1,
-                              color: const Color(0xffEBEBEB),
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                decoration: const BoxDecoration(
-                                  border: Border(
-                                    bottom: BorderSide(
-                                      width: 1,
-                                      color: Color(0xffEBEBEB),
-                                    ),
-                                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: _expandLevel1
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: SizeTransition(
+                            sizeFactor: _animation1,
+                            axis: Axis.vertical,
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xffEBEBEB),
                                 ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Tên',
-                                        style: CommonStyles.size14W700Black1D(
-                                            context),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        'Số điện thoại',
-                                        style: CommonStyles.size14W700Black1D(
-                                            context),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        'Email',
-                                        style: CommonStyles.size14W700Black1D(
-                                            context),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              Column(
-                                children: List.generate(item.details!.length,
-                                    (index) {
-                                  final a = item.details![index];
-
-                                  return Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          width: 1,
+                                          color: Color(0xffEBEBEB),
+                                        ),
+                                      ),
+                                    ),
                                     child: Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -368,108 +354,384 @@ class _MySystemScreenState extends State<MySystemScreen>
                                       children: [
                                         Expanded(
                                           child: Text(
-                                            a.fullName ?? '',
+                                            'Tên',
                                             style:
-                                                CommonStyles.size14W400Black1D(
+                                                CommonStyles.size14W700Black1D(
                                                     context),
                                           ),
                                         ),
                                         Expanded(
                                           child: Text(
-                                            a.phone ?? '',
+                                            'Số điện thoại',
                                             style:
-                                                CommonStyles.size14W400Black1D(
+                                                CommonStyles.size14W700Black1D(
                                                     context),
                                           ),
                                         ),
                                         Expanded(
                                           child: Text(
-                                            a.email ?? '',
+                                            'Email',
                                             style:
-                                                CommonStyles.size14W400Black1D(
+                                                CommonStyles.size14W700Black1D(
                                                     context),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  );
-                                }),
+                                  ),
+                                  Column(
+                                    children: List.generate(
+                                        _listMySystem[0].details!.length,
+                                        (index) {
+                                      final a =
+                                          _listMySystem[0].details![index];
+
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                a.fullName ?? '',
+                                                style: CommonStyles
+                                                    .size14W400Black1D(context),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                a.phone ?? '',
+                                                style: CommonStyles
+                                                    .size14W400Black1D(context),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                a.email ?? '',
+                                                style: CommonStyles
+                                                    .size14W400Black1D(context),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
+                        )
+                      : const SizedBox(),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                GestureDetector(
+                  onTap: () => setState(() {
+                    _expandLevel2 = !_expandLevel2;
+                    if (_expandLevel2) {
+                      _controller2.forward();
+                    } else {
+                      _controller2.animateBack(0,
+                          duration: const Duration(milliseconds: 500));
+                    }
+                  }),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          width: 1,
+                          color: Color(0xffEBEBEB),
                         ),
-                        // child: SingleChildScrollView(
-                        //   scrollDirection: Axis.horizontal,
-                        //   child: DataTable(
-                        //     columns: [
-                        //       DataColumn(
-                        //         label: Expanded(
-                        //           child: Text(
-                        //             'Tên',
-                        //             style:
-                        //                 CommonStyles.size14W700Black1D(context),
-                        //           ),
-                        //         ),
-                        //       ),
-                        //       DataColumn(
-                        //         label: Expanded(
-                        //           child: Text(
-                        //             'Số điện thoại',
-                        //             style:
-                        //                 CommonStyles.size14W700Black1D(context),
-                        //           ),
-                        //         ),
-                        //       ),
-                        //       DataColumn(
-                        //         label: Expanded(
-                        //           child: Text(
-                        //             'Email',
-                        //             style:
-                        //                 CommonStyles.size14W700Black1D(context),
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //     rows: List.generate(
-                        //       item.details!.length,
-                        //       (index) {
-                        //         final dataColumn = item.details![index];
-                        //
-                        //         return DataRow(
-                        //           cells: [
-                        //             DataCell(
-                        //               Text(
-                        //                 dataColumn.fullName ?? '',
-                        //                 style: CommonStyles.size12W400Black1D(
-                        //                     context),
-                        //               ),
-                        //             ),
-                        //             DataCell(
-                        //               Text(
-                        //                 dataColumn.phone ?? '',
-                        //                 style: CommonStyles.size12W400Black1D(
-                        //                     context),
-                        //               ),
-                        //             ),
-                        //             DataCell(
-                        //               Text(
-                        //                 dataColumn.email ?? '',
-                        //                 style: CommonStyles.size12W400Black1D(
-                        //                     context),
-                        //               ),
-                        //             ),
-                        //           ],
-                        //         );
-                        //       },
-                        //     ),
-                        //   ),
-                        // ),
-                      )
-                    : const SizedBox(),
-              ),
-            ],
-          );
-        }),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Cấp 2 (${_listMySystem[1].totalRecords})',
+                          style: CommonStyles.size14W700Black1D(context),
+                        ),
+                        const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: Color(0xff86868B),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: _expandLevel2
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: SizeTransition(
+                            sizeFactor: _animation2,
+                            axis: Axis.vertical,
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xffEBEBEB),
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          width: 1,
+                                          color: Color(0xffEBEBEB),
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            'Tên',
+                                            style:
+                                                CommonStyles.size14W700Black1D(
+                                                    context),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'Số điện thoại',
+                                            style:
+                                                CommonStyles.size14W700Black1D(
+                                                    context),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'Email',
+                                            style:
+                                                CommonStyles.size14W700Black1D(
+                                                    context),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    children: List.generate(
+                                        _listMySystem[1].details!.length,
+                                        (index) {
+                                      final a =
+                                          _listMySystem[1].details![index];
+
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                a.fullName ?? '',
+                                                style: CommonStyles
+                                                    .size14W400Black1D(context),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                a.phone ?? '',
+                                                style: CommonStyles
+                                                    .size14W400Black1D(context),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                a.email ?? '',
+                                                style: CommonStyles
+                                                    .size14W400Black1D(context),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                GestureDetector(
+                  onTap: () => setState(() {
+                    _expandLevel3 = !_expandLevel3;
+                    if (_expandLevel3) {
+                      _controller3.forward();
+                    } else {
+                      _controller3.animateBack(0,
+                          duration: const Duration(milliseconds: 500));
+                    }
+                  }),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          width: 1,
+                          color: Color(0xffEBEBEB),
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Cấp 3 (${_listMySystem[2].totalRecords})',
+                          style: CommonStyles.size14W700Black1D(context),
+                        ),
+                        const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: Color(0xff86868B),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: _expandLevel3
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: SizeTransition(
+                            sizeFactor: _animation3,
+                            axis: Axis.vertical,
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 1,
+                                  color: const Color(0xffEBEBEB),
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          width: 1,
+                                          color: Color(0xffEBEBEB),
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            'Tên',
+                                            style:
+                                                CommonStyles.size14W700Black1D(
+                                                    context),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'Số điện thoại',
+                                            style:
+                                                CommonStyles.size14W700Black1D(
+                                                    context),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            'Email',
+                                            style:
+                                                CommonStyles.size14W700Black1D(
+                                                    context),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    children: List.generate(
+                                        _listMySystem[2].details!.length,
+                                        (index) {
+                                      final a =
+                                          _listMySystem[2].details![index];
+
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                a.fullName ?? '',
+                                                style: CommonStyles
+                                                    .size14W400Black1D(context),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                a.phone ?? '',
+                                                style: CommonStyles
+                                                    .size14W400Black1D(context),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                a.email ?? '',
+                                                style: CommonStyles
+                                                    .size14W400Black1D(context),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

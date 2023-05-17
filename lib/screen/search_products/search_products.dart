@@ -17,6 +17,7 @@ import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/search_products/search_products_model.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
+import 'dart:io' show Platform;
 
 class SearchProductsScreen extends StatefulWidget {
   final String? keySearch;
@@ -355,7 +356,8 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                                 overflow: TextOverflow.ellipsis,
                                 style: CommonStyles.size14W700Black1D(context)
                                     .copyWith(
-                                  wordSpacing: 1.5,
+                                  wordSpacing: 1.1,
+                                  letterSpacing: 0.3,
                                   height: 1.5,
                                 ),
                               ),
@@ -406,7 +408,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
-          mainAxisExtent: 300,
+          mainAxisExtent: Platform.isIOS ? 330 : 310,
         ),
       ),
     );

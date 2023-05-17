@@ -128,7 +128,7 @@ class ApiCall implements ApiInterface {
   @override
   Future<String> requestDeleteAddress(int? customerId, int? addressId) async {
     var response = await DioClient()
-        .delete('${ApiConstant.address}$customerId/$addressId');
+        .delete('${ApiConstant.address}/$customerId/$addressId');
     if (response == null) return '';
     final data = response;
     return data;

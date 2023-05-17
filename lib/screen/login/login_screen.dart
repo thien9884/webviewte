@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 5),
           child: Text(
-            'Email, Số điện thoại',
+            'User name, Số điện thoại',
             style: CommonStyles.size14W400Black1D(context),
           ),
         ),

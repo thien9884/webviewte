@@ -120,7 +120,6 @@ class _ShopDunkWebViewState extends State<ShopDunkWebView> {
             debugPrint('WebView is loading (progress : $progress%)');
           },
           onPageStarted: (String url) {
-            EasyLoading.show();
             debugPrint('Page started loading: $url');
           },
           onPageFinished: (String url) async {

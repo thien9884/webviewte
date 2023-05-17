@@ -99,8 +99,8 @@ class _UserAddressState extends State<UserAddress> {
                 context: context,
                 builder: (context) => CupertinoAlertDialog(
                       content: Text(
-                        state.message ?? '',
-                        style: CommonStyles.size14W400Grey86(context),
+                        'Xoá tài khoản thành công',
+                        style: CommonStyles.size14W400Grey33(context),
                       ),
                       actions: [
                         CupertinoDialogAction(
@@ -110,8 +110,8 @@ class _UserAddressState extends State<UserAddress> {
                               Navigator.pop(context);
                             },
                             child: Text(
-                              'Ok',
-                              style: CommonStyles.size14W700Blue00(context),
+                              'Đồng ý',
+                              style: CommonStyles.size14W700Blue007A(context),
                             ))
                       ],
                     ));
@@ -249,12 +249,13 @@ class _UserAddressState extends State<UserAddress> {
               borderRadius: BorderRadius.circular(4),
             ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SvgPicture.asset(isEdit
                     ? 'assets/icons/ic_edit.svg'
                     : 'assets/icons/ic_delete.svg'),
                 const SizedBox(
-                  width: 10,
+                  width: 4,
                 ),
                 Text(
                   isEdit ? 'Sửa' : 'Xoá',
@@ -262,7 +263,10 @@ class _UserAddressState extends State<UserAddress> {
                       ? CommonStyles.size14W400White(context)
                       : CommonStyles.size14W400White(context)
                           .copyWith(color: const Color(0xffFF4127)),
-                )
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
               ],
             ),
           ),

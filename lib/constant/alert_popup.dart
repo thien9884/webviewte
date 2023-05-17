@@ -7,7 +7,7 @@ class AlertUtils {
         context: context,
         builder: (_) {
           return CupertinoAlertDialog(
-            title: const Text('Error'),
+            title: const Text('Lỗi'),
             content: Text(message),
             actions: <CupertinoDialogAction>[
               CupertinoDialogAction(

@@ -181,8 +181,7 @@ class _UserScreenState extends State<UserScreen> {
                                       }),
                                   child: Text(
                                     'Đồng ý',
-                                    style:
-                                        CommonStyles.size14W700Blue00(context),
+                                    style: CommonStyles.size14W700Blue007A(context),
                                   )),
                             ],
                           ));
@@ -209,16 +208,20 @@ class _UserScreenState extends State<UserScreen> {
 
   // user name
   Widget _nameUser() {
-    return Text(
-      _infoModel?.firstName ?? '',
-      style: CommonStyles.size18W700Black1D(context),
+    return Center(
+      child: Text(
+        _infoModel?.firstName ?? '',
+        style: CommonStyles.size18W700Black1D(context),
+      ),
     );
   }
 
   Widget _emailUser() {
-    return Text(
-      _infoModel?.email ?? '',
-      style: CommonStyles.size13W400Grey51(context),
+    return Center(
+      child: Text(
+        _infoModel?.phone ?? '',
+        style: CommonStyles.size14W400Black1D(context),
+      ),
     );
   }
 

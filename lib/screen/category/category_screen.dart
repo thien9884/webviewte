@@ -22,6 +22,7 @@ import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/subcategory/subcategory_model.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
+import 'dart:io' show Platform;
 
 class CategoryScreen extends StatefulWidget {
   final String title;
@@ -380,8 +381,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                    color:
-                        _categorySelected == index ? Colors.blue : Colors.white,
+                    color: _categorySelected == index
+                        ? const Color(0xff0066CC)
+                        : Colors.white,
                     borderRadius: BorderRadius.circular(10)),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -562,7 +564,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                 overflow: TextOverflow.ellipsis,
                                 style: CommonStyles.size14W700Black1D(context)
                                     .copyWith(
-                                  wordSpacing: 1.5,
+                                  wordSpacing: 1.1,
+                                  letterSpacing: 0.3,
                                   height: 1.5,
                                 ),
                               ),
@@ -613,7 +616,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
-          mainAxisExtent: 300,
+          mainAxisExtent: Platform.isIOS ? 330 : 310,
         ),
       ),
     );
@@ -805,12 +808,15 @@ class _CategoryScreenState extends State<CategoryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    index == 0
-                        ? 'Phụ kiện ${widget.title} thường mua đi kèm'
-                        : 'Tìm ${widget.title} phù hợp với bạn',
-                    style: CommonStyles.size18W700Black1D(context),
-                    maxLines: 2,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: Text(
+                      index == 0
+                          ? 'Phụ kiện ${widget.title} thường mua đi kèm'
+                          : 'Tìm ${widget.title} phù hợp với bạn',
+                      style: CommonStyles.size18W700Black1D(context),
+                      maxLines: 2,
+                    ),
                   ),
                   const SizedBox(
                     height: 10,

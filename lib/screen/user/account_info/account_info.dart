@@ -93,6 +93,7 @@ class _AccountInfoState extends State<AccountInfo> {
         _year = _infoModel!.dateOfBirthYear.toString();
       }
     }
+    setState(() {});
   }
 
   @override
@@ -123,8 +124,8 @@ class _AccountInfoState extends State<AccountInfo> {
                 context: context,
                 builder: (context) => CupertinoAlertDialog(
                       content: Text(
-                        state.message ?? '',
-                        style: CommonStyles.size14W400Grey86(context),
+                        'Cập nhật thông tin thành công',
+                        style: CommonStyles.size14W400Grey33(context),
                       ),
                       actions: [
                         CupertinoDialogAction(
@@ -134,8 +135,8 @@ class _AccountInfoState extends State<AccountInfo> {
                               Navigator.pop(context);
                             },
                             child: Text(
-                              'Ok',
-                              style: CommonStyles.size14W700Blue00(context),
+                              'Đồng ý',
+                              style: CommonStyles.size14W700Blue007A(context),
                             ))
                       ],
                     ));
@@ -193,7 +194,6 @@ class _AccountInfoState extends State<AccountInfo> {
                       ],
                     ),
                     _userNameField(),
-                    _referralField(),
                     _buttonBuild(),
                   ],
                 ),

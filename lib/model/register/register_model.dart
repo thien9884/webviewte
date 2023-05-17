@@ -41,7 +41,6 @@ class RegisterModel {
   bool? countryEnabled;
   bool? countryRequired;
   int? countryId;
-  String? referralCode;
   List<AvailableCountries>? availableCountries;
   bool? stateProvinceEnabled;
   bool? stateProvinceRequired;
@@ -66,75 +65,77 @@ class RegisterModel {
   bool? displayCaptcha;
   List<CustomerAttributes>? customerAttributes;
   List<GdprConsents>? gdprConsents;
+  String? referralCode;
 
-  RegisterModel(
-      {this.email,
-      this.enteringEmailTwice,
-      this.confirmEmail,
-      this.usernamesEnabled,
-      this.username,
-      this.checkUsernameAvailabilityEnabled,
-      this.password,
-      this.confirmPassword,
-      this.genderEnabled,
-      this.gender,
-      this.firstNameEnabled,
-      this.firstName,
-      this.firstNameRequired,
-      this.lastNameEnabled,
-      this.lastName,
-      this.lastNameRequired,
-      this.dateOfBirthEnabled,
-      this.dateOfBirthDay,
-      this.dateOfBirthMonth,
-      this.dateOfBirthYear,
-      this.dateOfBirthRequired,
-      this.companyEnabled,
-      this.companyRequired,
-      this.company,
-      this.streetAddressEnabled,
-      this.streetAddressRequired,
-      this.streetAddress,
-      this.streetAddress2Enabled,
-      this.streetAddress2Required,
-      this.streetAddress2,
-      this.zipPostalCodeEnabled,
-      this.zipPostalCodeRequired,
-      this.zipPostalCode,
-      this.cityEnabled,
-      this.cityRequired,
-      this.city,
-      this.countyEnabled,
-      this.countyRequired,
-      this.county,
-      this.countryEnabled,
-      this.countryRequired,
-      this.countryId,
-      this.referralCode,
-      this.availableCountries,
-      this.stateProvinceEnabled,
-      this.stateProvinceRequired,
-      this.stateProvinceId,
-      this.availableStates,
-      this.phoneEnabled,
-      this.phoneRequired,
-      this.phone,
-      this.faxEnabled,
-      this.faxRequired,
-      this.fax,
-      this.newsletterEnabled,
-      this.newsletter,
-      this.acceptPrivacyPolicyEnabled,
-      this.acceptPrivacyPolicyPopup,
-      this.timeZoneId,
-      this.allowCustomersToSetTimeZone,
-      this.availableTimeZones,
-      this.vatNumber,
-      this.displayVatNumber,
-      this.honeypotEnabled,
-      this.displayCaptcha,
-      this.customerAttributes,
-      this.gdprConsents});
+  RegisterModel({
+    this.email,
+    this.enteringEmailTwice,
+    this.confirmEmail,
+    this.usernamesEnabled,
+    this.username,
+    this.checkUsernameAvailabilityEnabled,
+    this.password,
+    this.confirmPassword,
+    this.genderEnabled,
+    this.gender,
+    this.firstNameEnabled,
+    this.firstName,
+    this.firstNameRequired,
+    this.lastNameEnabled,
+    this.lastName,
+    this.lastNameRequired,
+    this.dateOfBirthEnabled,
+    this.dateOfBirthDay,
+    this.dateOfBirthMonth,
+    this.dateOfBirthYear,
+    this.dateOfBirthRequired,
+    this.companyEnabled,
+    this.companyRequired,
+    this.company,
+    this.streetAddressEnabled,
+    this.streetAddressRequired,
+    this.streetAddress,
+    this.streetAddress2Enabled,
+    this.streetAddress2Required,
+    this.streetAddress2,
+    this.zipPostalCodeEnabled,
+    this.zipPostalCodeRequired,
+    this.zipPostalCode,
+    this.cityEnabled,
+    this.cityRequired,
+    this.city,
+    this.countyEnabled,
+    this.countyRequired,
+    this.county,
+    this.countryEnabled,
+    this.countryRequired,
+    this.countryId,
+    this.availableCountries,
+    this.stateProvinceEnabled,
+    this.stateProvinceRequired,
+    this.stateProvinceId,
+    this.availableStates,
+    this.phoneEnabled,
+    this.phoneRequired,
+    this.phone,
+    this.faxEnabled,
+    this.faxRequired,
+    this.fax,
+    this.newsletterEnabled,
+    this.newsletter,
+    this.acceptPrivacyPolicyEnabled,
+    this.acceptPrivacyPolicyPopup,
+    this.timeZoneId,
+    this.allowCustomersToSetTimeZone,
+    this.availableTimeZones,
+    this.vatNumber,
+    this.displayVatNumber,
+    this.honeypotEnabled,
+    this.displayCaptcha,
+    this.customerAttributes,
+    this.gdprConsents,
+    this.referralCode,
+  });
 
   RegisterModel.fromJson(Map<String, dynamic> json) {
     email = json['Email'];
@@ -179,7 +180,6 @@ class RegisterModel {
     countryEnabled = json['CountryEnabled'];
     countryRequired = json['CountryRequired'];
     countryId = json['CountryId'];
-    referralCode = json['ReferralCode'];
     if (json['AvailableCountries'] != null) {
       availableCountries = <AvailableCountries>[];
       json['AvailableCountries'].forEach((v) {
@@ -229,6 +229,7 @@ class RegisterModel {
         gdprConsents!.add(GdprConsents.fromJson(v));
       });
     }
+    referralCode = json['ReferralCode'];
   }
 
   Map<String, dynamic> toJson() {
@@ -275,7 +276,6 @@ class RegisterModel {
     data['CountryEnabled'] = countryEnabled;
     data['CountryRequired'] = countryRequired;
     data['CountryId'] = countryId;
-    data['ReferralCode'] = referralCode;
     if (availableCountries != null) {
       data['AvailableCountries'] =
           availableCountries!.map((v) => v.toJson()).toList();
@@ -314,6 +314,7 @@ class RegisterModel {
     if (gdprConsents != null) {
       data['GdprConsents'] = gdprConsents!.map((v) => v.toJson()).toList();
     }
+    data['ReferralCode'] = referralCode;
     return data;
   }
 }

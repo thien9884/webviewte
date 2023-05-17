@@ -11,6 +11,7 @@ import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
+import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/customer/product_rating_model.dart';
@@ -234,11 +235,13 @@ class _RatingHistoryState extends State<RatingHistory> {
                         width: 10,
                       ),
                       GestureDetector(
-                        onTap: () =>
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ShopDunkWebView(
-                                      url: item.productSeaName ?? '',
-                                    ))),
+                        onTap: () => Navigator.of(context).push(
+                          CustomMaterialPageRoute(
+                            builder: (context) => ShopDunkWebView(
+                              url: item.productSeaName,
+                            ),
+                          ),
+                        ),
                         child: Text(
                           item.productName ?? '',
                           style: CommonStyles.size14W700Blue00(context),

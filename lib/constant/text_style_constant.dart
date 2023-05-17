@@ -273,6 +273,14 @@ class CommonStyles {
     );
   }
 
+  static TextStyle size14W700Blue007A(BuildContext context) {
+    return const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w700,
+      color: Color(0xff007AFF),
+    );
+  }
+
   static TextStyle size15W400WhiteD2(BuildContext context) {
     return const TextStyle(
       fontSize: 15,
@@ -438,6 +446,14 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xff0066CC),
+    );
+  }
+
+  static TextStyle size24W700White(BuildContext context) {
+    return const TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      color: Colors.white,
     );
   }
 

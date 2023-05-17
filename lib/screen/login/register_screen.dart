@@ -16,7 +16,6 @@ import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/register/register_model.dart';
 import 'package:webviewtest/model/register/register_response.dart';
-import 'package:webviewtest/screen/login/login_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -43,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _referralController = TextEditingController();
   RegisterResponse? _registerResponse = RegisterResponse();
   late ScrollController _hideButtonController;
-
+  final _formKey = GlobalKey<FormState>();
   bool _isVisible = false;
 
   _getHideBottomValue() {
@@ -88,51 +87,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
             EasyLoading.show();
           } else if (state is RegisterLoaded) {
             _registerResponse = state.registerResponse;
+            print(_registerResponse?.httpStatusCode);
 
-            if (_registerResponse != null) {
-              showCupertinoModalPopup(
-                  context: context,
-                  builder: (context) {
-                    if (EasyLoading.isShow) EasyLoading.dismiss();
-
-                    return CupertinoAlertDialog(
-                      title: Text(
-                        'Thông báo',
-                        style: CommonStyles.size17W700Black1D(context),
-                      ),
-                      content: Text(
-                        _registerResponse?.message ?? '',
-                        style: CommonStyles.size14W400Green66(context),
-                      ),
-                      actions: [
-                        CupertinoDialogAction(
-                          isDestructiveAction: true,
-                          onPressed: () {
-                            if (_registerResponse!.success!) {
-                              Navigator.pop(context);
-                              _userNameController.clear();
-                              _emailController.clear();
-                              _phoneController.clear();
-                              _passwordController.clear();
-                              _confirmPasswordController.clear();
-                              _nameController.clear();
-                              _referralController.clear();
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const LoginScreen()));
-                            } else {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: const Text('OK'),
+            showCupertinoModalPopup(
+                context: context,
+                builder: (context) {
+                  return CupertinoAlertDialog(
+                    title: Text(
+                      'Thông báo',
+                      style: CommonStyles.size17W700Black1D(context),
+                    ),
+                    content: Text(
+                      _registerResponse!.success!
+                          ? 'Đăng ký thành công'
+                          : 'Đăng ký thất bại',
+                      style: CommonStyles.size14W400Grey33(context),
+                    ),
+                    actions: [
+                      CupertinoDialogAction(
+                        isDestructiveAction: true,
+                        onPressed: () {
+                          if (_registerResponse!.success!) {
+                            Navigator.pop(context);
+                            _userNameController.clear();
+                            _emailController.clear();
+                            _phoneController.clear();
+                            _passwordController.clear();
+                            _confirmPasswordController.clear();
+                            _nameController.clear();
+                            _referralController.clear();
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const NavigationScreen(
+                                      isSelected: 2,
+                                    )));
+                          } else {
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Text(
+                          'Đồng ý',
+                          style: CommonStyles.size14W700Blue007A(context),
                         ),
-                      ],
-                    );
-                  });
-            }
+                      ),
+                    ],
+                  );
+                });
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is RegisterLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            String error = state.message;
+            if (error == 'Wrong username or password') {
+              error = 'Sai tên tài khoản hoặc mật khẩu';
+            }
+            AlertUtils.displayErrorAlert(context, error);
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
@@ -142,27 +149,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _registerUI() {
     return CommonNavigateBar(
       index: 2,
-      child: Container(
-        color: Colors.white,
-        child: CustomScrollView(
-          controller: _hideButtonController,
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              sliver: SliverToBoxAdapter(
-                child: Center(
-                  child: Text(
-                    'Đăng ký',
-                    style: CommonStyles.size24W700Black1D(context),
+      child: Form(
+        key: _formKey,
+        child: Container(
+          color: Colors.white,
+          child: CustomScrollView(
+            controller: _hideButtonController,
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                sliver: SliverToBoxAdapter(
+                  child: Center(
+                    child: Text(
+                      'Đăng ký',
+                      style: CommonStyles.size24W700Black1D(context),
+                    ),
                   ),
                 ),
               ),
-            ),
-            _formRegister(),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1, (context, index) => const CommonFooter())),
-          ],
+              _formRegister(),
+              SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                      childCount: 1, (context, index) => const CommonFooter())),
+            ],
+          ),
         ),
       ),
     );
@@ -337,6 +347,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 contentPadding: const EdgeInsets.all(10),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập tên';
+                }
+                return null;
+              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 18),
@@ -433,6 +449,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 contentPadding: const EdgeInsets.all(10),
               ),
+              validator: (value) {
+                final bool emailValid = RegExp(
+                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                    .hasMatch(value.toString());
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập email';
+                } else if (!emailValid) {
+                  return 'Email không hợp lệ';
+                }
+                return null;
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 5),
@@ -461,6 +488,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 contentPadding: const EdgeInsets.all(10),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập số điện thoại';
+                }
+                return null;
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 5),
@@ -489,6 +522,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 contentPadding: const EdgeInsets.all(10),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Username không được để trống';
+                }
+                return null;
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -527,10 +566,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 contentPadding: const EdgeInsets.all(10),
               ),
               obscureText: !_showPassword,
+              validator: (value) {
+                bool passwordValid = RegExp(
+                        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$')
+                    .hasMatch(value.toString());
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập mật khẩu';
+                } else if (!passwordValid) {
+                  return 'Mật khẩu không hợp lệ';
+                }
+                return null;
+              },
             ),
-            Text(
-              'Lưu ý: Mật khẩu phải có tối thiểu 8 ký tự bao gồm chữ, số và các ký tự đặc biệt',
-              style: CommonStyles.size12W400Grey51(context),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Lưu ý: Mật khẩu phải có tối thiểu 8 ký tự bao gồm chữ, số và các ký tự đặc biệt',
+                style: CommonStyles.size12W400Grey51(context),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -569,6 +622,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 contentPadding: const EdgeInsets.all(10),
               ),
               obscureText: !_showConfirmPassword,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập lại mật khẩu';
+                } else if (value != _passwordController.text) {
+                  return 'Mật khẩu nhập lại không khớp';
+                }
+                return null;
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -597,7 +658,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 contentPadding: const EdgeInsets.all(10),
               ),
-              obscureText: !_showConfirmPassword,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vui lòng nhập mã giới thiệu';
+                }
+                return null;
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),
@@ -625,132 +691,135 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             GestureDetector(
               onTap: () {
-                final registerModel = RegisterModel(
-                  email: _emailController.text,
-                  enteringEmailTwice: false,
-                  confirmEmail: _emailController.text,
-                  usernamesEnabled: true,
-                  username: _userNameController.text,
-                  checkUsernameAvailabilityEnabled: true,
-                  password: _passwordController.text,
-                  confirmPassword: _confirmPasswordController.text,
-                  genderEnabled: true,
-                  gender: _selectGender == 0 ? 'Male' : 'Female',
-                  firstNameEnabled: true,
-                  firstName: '',
-                  firstNameRequired: true,
-                  lastNameEnabled: true,
-                  lastName: _nameController.text,
-                  lastNameRequired: true,
-                  dateOfBirthEnabled: true,
-                  dateOfBirthDay: int.parse(_day),
-                  dateOfBirthMonth: int.parse(_month),
-                  dateOfBirthYear: int.parse(_year),
-                  dateOfBirthRequired: true,
-                  companyEnabled: true,
-                  companyRequired: true,
-                  company: '',
-                  streetAddressEnabled: true,
-                  streetAddressRequired: true,
-                  streetAddress: 'HN',
-                  streetAddress2Enabled: true,
-                  streetAddress2Required: true,
-                  streetAddress2: 'HN',
-                  zipPostalCodeEnabled: true,
-                  zipPostalCodeRequired: true,
-                  zipPostalCode: '',
-                  cityEnabled: true,
-                  cityRequired: true,
-                  city: 'HN',
-                  countyEnabled: true,
-                  countyRequired: true,
-                  county: 'VietNam',
-                  countryEnabled: true,
-                  countryRequired: true,
-                  countryId: 242,
-                  availableCountries: [
-                    AvailableCountries(
-                      disabled: true,
-                      group: Group(
+                if (_formKey.currentState!.validate()) {
+                  final registerModel = RegisterModel(
+                    email: _emailController.text,
+                    enteringEmailTwice: false,
+                    confirmEmail: _emailController.text,
+                    usernamesEnabled: true,
+                    username: _userNameController.text,
+                    checkUsernameAvailabilityEnabled: true,
+                    password: _passwordController.text,
+                    confirmPassword: _confirmPasswordController.text,
+                    genderEnabled: true,
+                    gender: _selectGender == 0 ? 'Male' : 'Female',
+                    firstNameEnabled: true,
+                    firstName: _nameController.text,
+                    firstNameRequired: true,
+                    lastNameEnabled: true,
+                    lastName: '',
+                    lastNameRequired: true,
+                    dateOfBirthEnabled: true,
+                    dateOfBirthDay: int.parse(_day),
+                    dateOfBirthMonth: int.parse(_month),
+                    dateOfBirthYear: int.parse(_year),
+                    dateOfBirthRequired: true,
+                    companyEnabled: true,
+                    companyRequired: true,
+                    company: '',
+                    streetAddressEnabled: true,
+                    streetAddressRequired: true,
+                    streetAddress: '',
+                    streetAddress2Enabled: true,
+                    streetAddress2Required: true,
+                    streetAddress2: '',
+                    zipPostalCodeEnabled: true,
+                    zipPostalCodeRequired: true,
+                    zipPostalCode: '',
+                    cityEnabled: true,
+                    cityRequired: true,
+                    city: '',
+                    countyEnabled: true,
+                    countyRequired: true,
+                    county: '',
+                    countryEnabled: true,
+                    countryRequired: true,
+                    countryId: 242,
+                    availableCountries: [
+                      AvailableCountries(
                         disabled: true,
-                        name: '',
-                      ),
-                      selected: true,
-                      text: '',
-                      value: '',
-                    ),
-                  ],
-                  stateProvinceEnabled: true,
-                  stateProvinceRequired: true,
-                  stateProvinceId: 0,
-                  availableStates: [
-                    AvailableStates(
-                      disabled: true,
-                      group: Group(
-                        disabled: true,
-                        name: '',
-                      ),
-                      selected: true,
-                      text: '',
-                      value: '',
-                    ),
-                  ],
-                  phoneEnabled: true,
-                  phoneRequired: true,
-                  phone: _phoneController.text,
-                  faxEnabled: true,
-                  faxRequired: true,
-                  fax: '',
-                  newsletterEnabled: true,
-                  newsletter: true,
-                  acceptPrivacyPolicyEnabled: true,
-                  acceptPrivacyPolicyPopup: true,
-                  timeZoneId: '',
-                  allowCustomersToSetTimeZone: true,
-                  availableTimeZones: [
-                    AvailableTimeZones(
-                      disabled: true,
-                      group: Group(
-                        disabled: true,
-                        name: '',
-                      ),
-                      selected: true,
-                      text: '',
-                      value: '',
-                    ),
-                  ],
-                  vatNumber: '',
-                  displayVatNumber: true,
-                  honeypotEnabled: true,
-                  displayCaptcha: true,
-                  customerAttributes: [
-                    CustomerAttributes(
-                      name: '',
-                      isRequired: true,
-                      defaultValue: '',
-                      attributeControlType: 'DropdownList',
-                      values: [
-                        Values(
+                        group: Group(
+                          disabled: true,
                           name: '',
-                          isPreSelected: true,
                         ),
-                      ],
-                    ),
-                  ],
-                  gdprConsents: [
-                    GdprConsents(
-                      message: '',
-                      isRequired: true,
-                      requiredMessage: '',
-                      accepted: true,
-                    ),
-                  ],
-                );
+                        selected: true,
+                        text: '',
+                        value: '',
+                      ),
+                    ],
+                    stateProvinceEnabled: true,
+                    stateProvinceRequired: true,
+                    stateProvinceId: 0,
+                    availableStates: [
+                      AvailableStates(
+                        disabled: true,
+                        group: Group(
+                          disabled: true,
+                          name: '',
+                        ),
+                        selected: true,
+                        text: '',
+                        value: '',
+                      ),
+                    ],
+                    phoneEnabled: true,
+                    phoneRequired: true,
+                    phone: _phoneController.text,
+                    faxEnabled: true,
+                    faxRequired: true,
+                    fax: '',
+                    newsletterEnabled: true,
+                    newsletter: true,
+                    acceptPrivacyPolicyEnabled: true,
+                    acceptPrivacyPolicyPopup: true,
+                    timeZoneId: '',
+                    allowCustomersToSetTimeZone: true,
+                    availableTimeZones: [
+                      AvailableTimeZones(
+                        disabled: true,
+                        group: Group(
+                          disabled: true,
+                          name: '',
+                        ),
+                        selected: true,
+                        text: '',
+                        value: '',
+                      ),
+                    ],
+                    vatNumber: '',
+                    displayVatNumber: true,
+                    honeypotEnabled: true,
+                    displayCaptcha: true,
+                    customerAttributes: [
+                      CustomerAttributes(
+                        name: '',
+                        isRequired: true,
+                        defaultValue: '',
+                        attributeControlType: 'DropdownList',
+                        values: [
+                          Values(
+                            name: '',
+                            isPreSelected: true,
+                          ),
+                        ],
+                      ),
+                    ],
+                    gdprConsents: [
+                      GdprConsents(
+                        message: '',
+                        isRequired: true,
+                        requiredMessage: '',
+                        accepted: true,
+                      ),
+                    ],
+                    referralCode: _referralController.text,
+                  );
 
-                BlocProvider.of<RegisterBloc>(context).add(
-                  RequestPostRegister(registerModel: registerModel),
-                );
-                setState(() {});
+                  BlocProvider.of<RegisterBloc>(context).add(
+                    RequestPostRegister(registerModel: registerModel),
+                  );
+                  setState(() {});
+                }
               },
               child: Container(
                 padding: const EdgeInsets.all(12),
