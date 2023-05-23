@@ -143,6 +143,31 @@ class ApiCall implements ApiInterface {
   }
 
   @override
+  Future<String> requestRecoveryPassword(String email) async {
+    var response =
+        await DioClient().post(ApiConstant.recovery, {"email": email});
+    if (response == null) return '';
+    final data = response;
+    return data;
+  }
+
+  @override
+  Future<String> requestChangePassword(
+    String oldPassword,
+    String newPassword,
+    String confirmNew,
+  ) async {
+    var response = await DioClient().put(ApiConstant.changePassword, {
+      "OldPassword": oldPassword,
+      "NewPassword": newPassword,
+      "ConfirmNewPassword": confirmNew
+    });
+    if (response == null) return '';
+    final data = response;
+    return data;
+  }
+
+  @override
   Future<List<ProductHistory>> requestGetProduct(int? id) async {
     var response = await DioClient().get('${ApiConstant.productRating}$id');
     if (response == null) return [];

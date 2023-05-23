@@ -516,8 +516,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               keyboardType: TextInputType.phone,
               validator: (value) {
+                bool phoneValid =
+                    RegExp(r'^(?:[+0]9)?[0-9]{10}$').hasMatch(value.toString());
                 if (value == null || value.isEmpty) {
                   return 'Vui lòng nhập số điện thoại';
+                } else if (!phoneValid && value.startsWith('0')) {
+                  return 'Số điện thoại không hợp lệ';
                 }
                 return null;
               },

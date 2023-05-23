@@ -9,7 +9,9 @@ import 'package:webviewtest/blocs/login/login_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
+import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
+import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
@@ -37,6 +39,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   List<ProductsModel> _listSound = [];
   List<ProductsModel> _listAccessories = [];
   String _topBanner = '';
+  String _messageError = '';
   final List<TopBanner> _listTopBannerImg = [];
 
   String _homeBanner = '';
@@ -144,9 +147,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
         _listTopBannerImg.isNotEmpty &&
         _listHomeBannerImg.isNotEmpty &&
         _newsGroup.isNotEmpty &&
-        _latestNews.isNotEmpty &&
-        _listTopBannerImg.isNotEmpty &&
-        _listHomeBannerImg.isNotEmpty) {
+        _latestNews.isNotEmpty
+    ) {
       String listCategories = jsonEncode(_listCategories);
       String listIpad = jsonEncode(_listIpad);
       String listIphone = jsonEncode(_listIphone);
@@ -232,10 +234,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listCategories[indexAccessories].name = 'Phụ kiện';
             _getListProduct();
           } else if (state is CategoriesLoadError) {
-            if (context.mounted) {
-              AlertUtils.displayErrorAlert(context, state.message);
-              if (EasyLoading.isShow) EasyLoading.dismiss();
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
             }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is IpadLoading) {
@@ -243,8 +246,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listIpad = state.ipad;
             _saveData();
           } else if (state is IpadLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-            if (EasyLoading.isShow) EasyLoading.dismiss();
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
@@ -253,7 +258,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listIphone = state.iphone;
             _saveData();
           } else if (state is IphoneLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
@@ -262,7 +270,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listMac = state.mac;
             _saveData();
           } else if (state is MacLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
@@ -271,7 +282,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listAppleWatch = state.watch;
             _saveData();
           } else if (state is AppleWatchLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
@@ -280,7 +294,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listSound = state.sound;
             _saveData();
           } else if (state is SoundLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
@@ -289,14 +306,17 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listAccessories = state.accessories;
             _saveData();
           } else if (state is AccessoriesLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
           if (state is NewsLoading) {
           } else if (state is NewsLoaded) {
             _newsGroup = state.newsData.newsGroup ?? [];
-            _newsGroup.forEach((element) {
+            for (var element in _newsGroup) {
               if (element.name!.toLowerCase().contains('apple')) {
                 element.icon = 'assets/icons/ic_apple_news.png';
               } else if (element.name!.toLowerCase().contains('review')) {
@@ -312,13 +332,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
               } else if (element.name!.toLowerCase().contains('ivideo')) {
                 element.icon = 'assets/icons/ic_ivideo_news.png';
               }
-            });
+            }
             _latestNews = state.newsData.latestNews ?? [];
             _latestNews.removeRange(
                 2, _latestNews.lastIndexOf(_latestNews.last));
             _saveData();
           } else if (state is NewsLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
@@ -353,7 +376,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listTopBannerImg.addAll(topBanner);
             _saveData();
           } else if (state is TopBannerLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
@@ -388,7 +414,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             _listHomeBannerImg.addAll(homeBanner);
             _saveData();
           } else if (state is HomeBannerLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
         });
@@ -396,6 +425,37 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   // loading screen
   Widget _buildLoadingUI() {
-    return SafeArea(bottom: false, child: Container());
+    return SafeArea(
+      bottom: false,
+      child: _messageError.isNotEmpty
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Hệ thống đang bảo trì\nVui lòng ấn vào đây để cập nhật lại dữ liệu.',
+                  style: CommonStyles.size15W400Black1D(context),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                SizedBox(
+                  width: 160,
+                  child: CommonButton(
+                    title: 'Cập nhật lại dữ liệu',
+                    onTap: () {
+                      setState(() {
+                        _messageError = '';
+                        _getToken();
+                        _getCategories();
+                      });
+                    },
+                  ),
+                 ),
+              ],
+            )
+          : const SizedBox(),
+    );
   }
 }

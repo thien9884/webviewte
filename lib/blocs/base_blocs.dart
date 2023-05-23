@@ -22,7 +22,7 @@ abstract class BaseBloc<Event, State> extends Bloc<Event, State> {
     } else if (error is ResponseException) {
       return error.message.toString();
     } else {
-      return 'Unknown Exception';
+      return 'Có lỗi xảy ra, vui lòng thử lại.';
     }
   }
 }

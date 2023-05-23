@@ -12,6 +12,7 @@ import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/login/login_model.dart';
+import 'package:webviewtest/screen/login/forgot_password_screen.dart';
 import 'package:webviewtest/screen/login/register_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
@@ -29,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   late ScrollController _hideButtonController;
+  String _messageError = '';
 
   bool _isVisible = false;
 
@@ -89,10 +91,11 @@ class _LoginScreenState extends State<LoginScreen> {
             }
             // Navigator.of(context).pop(state.isLogin);
           } else if (state is LoginLoadError) {
-            if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
             }
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
         });
   }
@@ -173,6 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               borderRadius: BorderRadius.circular(8),
             ),
+            contentPadding: const EdgeInsets.all(16),
           ),
         ),
       ],
@@ -217,6 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               borderRadius: BorderRadius.circular(8),
             ),
+            contentPadding: const EdgeInsets.all(16),
           ),
           obscureText: !_showPassword,
         )
@@ -245,9 +250,13 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(right: 14),
-            child: Text(
-              'Quên mật khẩu?',
-              style: CommonStyles.size14W400Blue00(context),
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => const ForgotPasswordScreen())),
+              child: Text(
+                'Quên mật khẩu?',
+                style: CommonStyles.size14W400Blue00(context),
+              ),
             ),
           ),
         ],
@@ -282,6 +291,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: CommonButton(
         onTap: () async {
           FocusScope.of(context).unfocus();
+          setState(() {
+            _messageError = '';
+          });
           var login = LoginModel(
             guest: false,
             username: _emailController.text,

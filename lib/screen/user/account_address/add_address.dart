@@ -395,7 +395,7 @@ class _AddAddressState extends State<AddAddress> {
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           width: double.infinity,
           decoration: BoxDecoration(
             border: Border.all(color: const Color(0xffEBEBEB), width: 1),
@@ -446,7 +446,7 @@ class _AddAddressState extends State<AddAddress> {
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           width: double.infinity,
           decoration: BoxDecoration(
             border: Border.all(color: const Color(0xffEBEBEB), width: 1),

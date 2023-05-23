@@ -62,8 +62,7 @@ abstract class ApiInterface {
   Future<List<RatingHistoryModel>?> requestGetRatingHistory(int? id);
 
   // post customer address
-  Future<Addresses?> requestPostAddAddress(
-      int? id, Addresses? addAddressModel);
+  Future<Addresses?> requestPostAddAddress(int? id, Addresses? addAddressModel);
 
   // put address
   Future<String?> requestPutAddress(PutAddress? putAddress);
@@ -88,6 +87,16 @@ abstract class ApiInterface {
 
   // update info
   Future<String> requestUpdateInfo(InfoModel? infoModel);
+
+  // recovery password
+  Future<String> requestRecoveryPassword(String email);
+
+  // change password
+  Future<String> requestChangePassword(
+    String oldPassword,
+    String newPassword,
+    String confirmNew,
+  );
 
   // Get product
   Future<List<ProductHistory>> requestGetProduct(int? id);

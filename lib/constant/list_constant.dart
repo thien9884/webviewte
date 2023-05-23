@@ -3,6 +3,7 @@ import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/user/account_info/account_info.dart';
 import 'package:webviewtest/screen/user/account_order/account_order.dart';
 import 'package:webviewtest/screen/user/account_address/user_address.dart';
+import 'package:webviewtest/screen/user/change_password/change_password.dart';
 import 'package:webviewtest/screen/user/my_system/my_system_screen.dart';
 import 'package:webviewtest/screen/user/point/my_point_screen.dart';
 import 'package:webviewtest/screen/user/rating_history/rating_history.dart';
@@ -140,25 +141,25 @@ class ListCustom {
       screen: const AccountInfo(),
     ),
     Resource(
-      id: 0,
+      id: 1,
       img: 'assets/icons/ic_my_system.svg',
       name: 'Hệ thống của tôi',
       screen: const MySystemScreen(),
     ),
     Resource(
-      id: 0,
+      id: 2,
       img: 'assets/icons/ic_point.svg',
       name: 'Điểm thưởng',
       screen: const MyPointScreen(),
     ),
     Resource(
-      id: 1,
+      id: 3,
       img: 'assets/icons/ic_address.svg',
       name: 'Địa chỉ nhận hàng',
       screen: const UserAddress(),
     ),
     Resource(
-      id: 2,
+      id: 4,
       img: 'assets/icons/ic_order.svg',
       name: 'Đơn đặt hàng',
       screen: const AccountOrder(),
@@ -169,14 +170,14 @@ class ListCustom {
     //   name: 'Hoàn trả hàng',
     //   screen: const AccountInfo(),
     // ),
-    // Resource(
-    //   id: 4,
-    //   img: 'assets/icons/ic_change_password.svg',
-    //   name: 'Đổi mật khẩu',
-    //   screen: const AccountInfo(),
-    // ),
     Resource(
-      id: 3,
+      id: 5,
+      img: 'assets/icons/ic_change_password.svg',
+      name: 'Đổi mật khẩu',
+      screen: const ChangePasswordScreen(),
+    ),
+    Resource(
+      id: 6,
       img: 'assets/icons/ic_history.svg',
       name: 'Lịch sử đánh giá sản phẩm',
       screen: const RatingHistory(),

@@ -587,157 +587,157 @@ class _MySystemScreenState extends State<MySystemScreen>
                 ),
               ],
             ),
-            Column(
-              children: [
-                GestureDetector(
-                  onTap: () => setState(() {
-                    _expandLevel3 = !_expandLevel3;
-                    if (_expandLevel3) {
-                      _controller3.forward();
-                    } else {
-                      _controller3.animateBack(0,
-                          duration: const Duration(milliseconds: 500));
-                    }
-                  }),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          width: 1,
-                          color: Color(0xffEBEBEB),
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Cấp 3 (${_listMySystem[2].totalRecords ?? 0})',
-                          style: CommonStyles.size14W700Black1D(context),
-                        ),
-                        const Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          color: Color(0xff86868B),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: _expandLevel3 && _listMySystem[2].details != null
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: SizeTransition(
-                            sizeFactor: _animation3,
-                            axis: Axis.vertical,
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 1,
-                                  color: const Color(0xffEBEBEB),
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.only(bottom: 12),
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          width: 1,
-                                          color: Color(0xffEBEBEB),
-                                        ),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            'Tên',
-                                            style:
-                                                CommonStyles.size14W700Black1D(
-                                                    context),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            'Số điện thoại',
-                                            style:
-                                                CommonStyles.size14W700Black1D(
-                                                    context),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            'Email',
-                                            style:
-                                                CommonStyles.size14W700Black1D(
-                                                    context),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Column(
-                                    children: List.generate(
-                                        _listMySystem[2].details != null
-                                            ? _listMySystem[2].details!.length
-                                            : 0, (index) {
-                                      final a =
-                                          _listMySystem[2].details![index];
-
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                a.fullName ?? '',
-                                                style: CommonStyles
-                                                    .size14W400Black1D(context),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                a.phone ?? '',
-                                                style: CommonStyles
-                                                    .size14W400Black1D(context),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                a.email ?? '',
-                                                style: CommonStyles
-                                                    .size14W400Black1D(context),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        )
-                      : const SizedBox(),
-                ),
-              ],
-            ),
+            // Column(
+            //   children: [
+            //     GestureDetector(
+            //       onTap: () => setState(() {
+            //         _expandLevel3 = !_expandLevel3;
+            //         if (_expandLevel3) {
+            //           _controller3.forward();
+            //         } else {
+            //           _controller3.animateBack(0,
+            //               duration: const Duration(milliseconds: 500));
+            //         }
+            //       }),
+            //       child: Container(
+            //         padding: const EdgeInsets.symmetric(vertical: 10),
+            //         decoration: const BoxDecoration(
+            //           border: Border(
+            //             bottom: BorderSide(
+            //               width: 1,
+            //               color: Color(0xffEBEBEB),
+            //             ),
+            //           ),
+            //         ),
+            //         child: Row(
+            //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //           children: [
+            //             Text(
+            //               'Cấp 3 (${_listMySystem[2].totalRecords ?? 0})',
+            //               style: CommonStyles.size14W700Black1D(context),
+            //             ),
+            //             const Icon(
+            //               Icons.keyboard_arrow_down_rounded,
+            //               color: Color(0xff86868B),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //     Padding(
+            //       padding: const EdgeInsets.symmetric(vertical: 8),
+            //       child: _expandLevel3 && _listMySystem[2].details != null
+            //           ? Padding(
+            //               padding: const EdgeInsets.symmetric(vertical: 4),
+            //               child: SizeTransition(
+            //                 sizeFactor: _animation3,
+            //                 axis: Axis.vertical,
+            //                 child: Container(
+            //                   padding: const EdgeInsets.all(16),
+            //                   decoration: BoxDecoration(
+            //                     border: Border.all(
+            //                       width: 1,
+            //                       color: const Color(0xffEBEBEB),
+            //                     ),
+            //                     borderRadius: BorderRadius.circular(8),
+            //                   ),
+            //                   child: Column(
+            //                     children: [
+            //                       Container(
+            //                         padding: const EdgeInsets.only(bottom: 12),
+            //                         decoration: const BoxDecoration(
+            //                           border: Border(
+            //                             bottom: BorderSide(
+            //                               width: 1,
+            //                               color: Color(0xffEBEBEB),
+            //                             ),
+            //                           ),
+            //                         ),
+            //                         child: Row(
+            //                           crossAxisAlignment:
+            //                               CrossAxisAlignment.start,
+            //                           mainAxisAlignment:
+            //                               MainAxisAlignment.spaceBetween,
+            //                           children: [
+            //                             Expanded(
+            //                               child: Text(
+            //                                 'Tên',
+            //                                 style:
+            //                                     CommonStyles.size14W700Black1D(
+            //                                         context),
+            //                               ),
+            //                             ),
+            //                             Expanded(
+            //                               child: Text(
+            //                                 'Số điện thoại',
+            //                                 style:
+            //                                     CommonStyles.size14W700Black1D(
+            //                                         context),
+            //                               ),
+            //                             ),
+            //                             Expanded(
+            //                               child: Text(
+            //                                 'Email',
+            //                                 style:
+            //                                     CommonStyles.size14W700Black1D(
+            //                                         context),
+            //                               ),
+            //                             ),
+            //                           ],
+            //                         ),
+            //                       ),
+            //                       Column(
+            //                         children: List.generate(
+            //                             _listMySystem[2].details != null
+            //                                 ? _listMySystem[2].details!.length
+            //                                 : 0, (index) {
+            //                           final a =
+            //                               _listMySystem[2].details![index];
+            //
+            //                           return Padding(
+            //                             padding: const EdgeInsets.symmetric(
+            //                                 vertical: 8),
+            //                             child: Row(
+            //                               crossAxisAlignment:
+            //                                   CrossAxisAlignment.start,
+            //                               mainAxisAlignment:
+            //                                   MainAxisAlignment.spaceBetween,
+            //                               children: [
+            //                                 Expanded(
+            //                                   child: Text(
+            //                                     a.fullName ?? '',
+            //                                     style: CommonStyles
+            //                                         .size14W400Black1D(context),
+            //                                   ),
+            //                                 ),
+            //                                 Expanded(
+            //                                   child: Text(
+            //                                     a.phone ?? '',
+            //                                     style: CommonStyles
+            //                                         .size14W400Black1D(context),
+            //                                   ),
+            //                                 ),
+            //                                 Expanded(
+            //                                   child: Text(
+            //                                     a.email ?? '',
+            //                                     style: CommonStyles
+            //                                         .size14W400Black1D(context),
+            //                                   ),
+            //                                 ),
+            //                               ],
+            //                             ),
+            //                           );
+            //                         }),
+            //                       ),
+            //                     ],
+            //                   ),
+            //                 ),
+            //               ),
+            //             )
+            //           : const SizedBox(),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

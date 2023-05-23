@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:webviewtest/blocs/change_password/change_password_bloc.dart';
 import 'package:webviewtest/blocs/customer/customer_bloc.dart';
+import 'package:webviewtest/blocs/forgot_password/forgot_password_bloc.dart';
 import 'package:webviewtest/blocs/login/login_bloc.dart';
 import 'package:webviewtest/blocs/news/news_bloc.dart';
 import 'package:webviewtest/blocs/news_category/news_category_bloc.dart';
@@ -30,5 +32,9 @@ class MainBloc {
             create: (BuildContext context) => OrderBloc()),
         BlocProvider<CustomerBloc>(
             create: (BuildContext context) => CustomerBloc()),
+        BlocProvider<ForgotPasswordBloc>(
+            create: (BuildContext context) => ForgotPasswordBloc()),
+        BlocProvider<ChangePasswordBloc>(
+            create: (BuildContext context) => ChangePasswordBloc()),
       ];
 }

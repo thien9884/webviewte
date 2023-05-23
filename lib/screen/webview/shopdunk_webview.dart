@@ -154,7 +154,7 @@ Page resource error:
           );
         },
       )
-      ..loadRequest(Uri.parse((widget.baseUrl ?? 'https://api.shopdunk.com/') +
+      ..loadRequest(Uri.parse((widget.baseUrl ?? 'https://shopdunk.com/') +
           (widget.url ?? '')));
 
     // #docregion platform_features
