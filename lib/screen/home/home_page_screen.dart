@@ -659,13 +659,13 @@ class _HomePageScreenState extends State<HomePageScreen> {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => const NavigationScreen(
-                    isSelected: 0,
+                    isSelected: 1,
                   ),
                 ),
               ),
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 decoration: BoxDecoration(
                   border: Border.all(color: const Color(0xff0066CC), width: 1),
                   borderRadius: BorderRadius.circular(8),

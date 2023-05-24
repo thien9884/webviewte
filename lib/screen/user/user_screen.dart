@@ -7,6 +7,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webviewtest/blocs/customer/customer_bloc.dart';
 import 'package:webviewtest/blocs/customer/customer_event.dart';
 import 'package:webviewtest/blocs/customer/customer_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
@@ -51,9 +53,10 @@ class _UserScreenState extends State<UserScreen> {
 
     if (context.mounted) {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => const NavigationScreen(
-                isSelected: 2,
-              )));
+          builder: (context) =>
+          const NavigationScreen(
+            isSelected: 2,
+          )));
     }
   }
 
@@ -163,21 +166,24 @@ class _UserScreenState extends State<UserScreen> {
                   setState(() {
                     showCupertinoDialog(
                         context: context,
-                        builder: (context) => CupertinoAlertDialog(
+                        builder: (context) =>
+                            CupertinoAlertDialog(
                               content: Text(
                                 'Bạn có chắc muốn đăng xuất chứ?',
                                 style: CommonStyles.size14W400Grey33(context),
                               ),
                               actions: [
                                 CupertinoDialogAction(
-                                    onPressed: () => Navigator.of(context).pop(),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
                                     child: Text(
                                       'Trở lại',
-                                      style:
-                                          CommonStyles.size14W400Grey86(context),
+                                      style: CommonStyles.size14W400Grey86(
+                                          context),
                                     )),
                                 CupertinoDialogAction(
-                                    onPressed: () => setState(() {
+                                    onPressed: () =>
+                                        setState(() {
                                           _clearData();
                                         }),
                                     child: Text(
@@ -234,8 +240,16 @@ class _UserScreenState extends State<UserScreen> {
         var item = ListCustom.listAccountSettings[index];
 
         return GestureDetector(
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => item.screen ?? const SizedBox())),
+          onTap: () =>
+              Navigator.of(context)
+                  .push(MaterialPageRoute(
+                  builder: (context) => item.screen ?? const SizedBox()))
+                  .then((value) {
+                setState(() {
+                  BlocProvider.of<ShopdunkBloc>(context)
+                      .add(const RequestGetHideBottom(true));
+                });
+              }),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
             color: Colors.transparent,

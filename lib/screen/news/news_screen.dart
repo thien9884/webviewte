@@ -226,7 +226,7 @@ class _NewsScreenState extends State<NewsScreen> {
               onTap: () => Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => NewsCategory(
                         newsGroup: news,
-                        index: 0,
+                        index: 1,
                       ))),
               child: Container(
                 decoration: BoxDecoration(

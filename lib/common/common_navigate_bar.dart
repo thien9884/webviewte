@@ -296,7 +296,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => const NavigationScreen(
-                  isSelected: 1,
+                  isSelected: 0,
                 ),
               ),
             ),

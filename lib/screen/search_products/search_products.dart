@@ -78,7 +78,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
               child: GestureDetector(
                   onTap: () => Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const NavigationScreen(
-                            isSelected: 1,
+                            isSelected: 0,
                           ))),
                   child: Text(
                     'Trở về trang chủ',
@@ -94,6 +94,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
     return Scaffold(
       body: SafeArea(
         child: CommonNavigateBar(
+          index: 0,
           child: _listAllProduct.isEmpty
               ? _widget ?? Container()
               : Container(

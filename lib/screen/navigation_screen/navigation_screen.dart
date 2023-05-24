@@ -27,7 +27,7 @@ import 'package:webviewtest/services/shared_preferences/shared_pref_services.dar
 class NavigationScreen extends StatefulWidget {
   final int isSelected;
 
-  const NavigationScreen({this.isSelected = 1, Key? key}) : super(key: key);
+  const NavigationScreen({this.isSelected = 0, Key? key}) : super(key: key);
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
@@ -35,7 +35,7 @@ class NavigationScreen extends StatefulWidget {
 
 class _NavigationScreenState extends State<NavigationScreen>
     with TickerProviderStateMixin {
-  int _isSelected = 1;
+  int _isSelected = 0;
   String url = '';
   final TextEditingController _searchController = TextEditingController();
   List<ProductsModel> _listAllProduct = [];
@@ -64,8 +64,8 @@ class _NavigationScreenState extends State<NavigationScreen>
 
   final pages = [
     // const FlashSaleScreen(),
-    const NewsScreen(),
     const HomePageScreen(),
+    const NewsScreen(),
     // const LoginScreen(),
     const LoginScreen(),
     // const StoreScreen(),

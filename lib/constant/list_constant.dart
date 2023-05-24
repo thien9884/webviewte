@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
 import 'package:webviewtest/screen/user/account_info/account_info.dart';
-import 'package:webviewtest/screen/user/account_order/account_order.dart';
 import 'package:webviewtest/screen/user/account_address/user_address.dart';
 import 'package:webviewtest/screen/user/change_password/change_password.dart';
 import 'package:webviewtest/screen/user/my_system/my_system_screen.dart';
 import 'package:webviewtest/screen/user/point/my_point_screen.dart';
-import 'package:webviewtest/screen/user/rating_history/rating_history.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
 class Resource {
@@ -68,14 +66,14 @@ class ListCustom {
     //     imgUnselect: 'assets/icons/ic_flash_sale_uns.png'),
     Resource(
         id: 0,
-        name: 'Tin tức',
-        img: 'assets/icons/ic_news_sel.png',
-        imgUnselect: 'assets/icons/ic_news_uns.png'),
-    Resource(
-        id: 1,
         name: 'Trang chủ',
         img: 'assets/icons/ic_home_sel.png',
         imgUnselect: 'assets/icons/ic_home_uns.png'),
+    Resource(
+        id: 1,
+        name: 'Tin tức',
+        img: 'assets/icons/ic_news_sel.png',
+        imgUnselect: 'assets/icons/ic_news_uns.png'),
     Resource(
         id: 2,
         name: 'Tài khoản',
@@ -158,12 +156,12 @@ class ListCustom {
       name: 'Địa chỉ nhận hàng',
       screen: const UserAddress(),
     ),
-    Resource(
-      id: 4,
-      img: 'assets/icons/ic_order.svg',
-      name: 'Đơn đặt hàng',
-      screen: const AccountOrder(),
-    ),
+    // Resource(
+    //   id: 4,
+    //   img: 'assets/icons/ic_order.svg',
+    //   name: 'Đơn đặt hàng',
+    //   screen: const AccountOrder(),
+    // ),
     // Resource(
     //   id: 3,
     //   img: 'assets/icons/ic_refund.svg',
@@ -176,12 +174,12 @@ class ListCustom {
       name: 'Đổi mật khẩu',
       screen: const ChangePasswordScreen(),
     ),
-    Resource(
-      id: 6,
-      img: 'assets/icons/ic_history.svg',
-      name: 'Lịch sử đánh giá sản phẩm',
-      screen: const RatingHistory(),
-    ),
+    // Resource(
+    //   id: 6,
+    //   img: 'assets/icons/ic_history.svg',
+    //   name: 'Lịch sử đánh giá sản phẩm',
+    //   screen: const RatingHistory(),
+    // ),
   ];
 
   static List<InfoFooter> listFooter = [

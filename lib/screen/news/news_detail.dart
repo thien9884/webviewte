@@ -194,7 +194,7 @@ class _NewsDetailState extends State<NewsDetail> {
 
   // news detail UI
   Widget _newsDetailUI(BuildContext context) {
-    return CommonNavigateBar(index: 0, child: _buildBody());
+    return CommonNavigateBar(index: 1, child: _buildBody());
   }
 
   Widget _buildBody() {
@@ -241,7 +241,7 @@ class _NewsDetailState extends State<NewsDetail> {
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
                     const NavigationScreen(
-                      isSelected: 0,
+                      isSelected: 1,
                     )));
               },
               child: Text(
@@ -259,7 +259,7 @@ class _NewsDetailState extends State<NewsDetail> {
                     builder: (context) =>
                         NewsCategory(
                           newsGroup: widget.newsGroup,
-                          index: 0,
+                          index: 1,
                         )));
               },
               child: Text(
