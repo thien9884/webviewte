@@ -172,7 +172,7 @@ Page resource error:
   Widget build(BuildContext context) {
     return CommonNavigateBar(
         index: 1,
-        showAppBar: widget.hideBottom,
+        showNavigation: widget.hideBottom,
         child: WillPopScope(
             onWillPop: () async {
               if(await _controller.canGoBack()) {

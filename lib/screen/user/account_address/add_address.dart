@@ -10,6 +10,7 @@ import 'package:webviewtest/blocs/customer/customer_event.dart';
 import 'package:webviewtest/blocs/customer/customer_state.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -18,7 +19,6 @@ import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/customer/customer_model.dart';
 import 'package:webviewtest/model/state/state_model.dart';
-import 'package:webviewtest/screen/user/account_address/user_address.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class AddAddress extends StatefulWidget {
@@ -43,6 +43,7 @@ class _AddAddressState extends State<AddAddress> {
   final TextEditingController _wardController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   late ScrollController _hideButtonController;
+  String _messageError = '';
 
   bool _isVisible = false;
 
@@ -145,11 +146,7 @@ class _AddAddressState extends State<AddAddress> {
                         CupertinoDialogAction(
                             onPressed: () {
                               Navigator.pop(context);
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                      const UserAddress()));
+                              Navigator.pop(context);
                             },
                             child: Text(
                               'Đồng ý',
@@ -160,7 +157,10 @@ class _AddAddressState extends State<AddAddress> {
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is AddAddressLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is PutAddressLoading) {
             EasyLoading.show();
@@ -176,11 +176,7 @@ class _AddAddressState extends State<AddAddress> {
                         CupertinoDialogAction(
                             onPressed: () {
                               Navigator.pop(context);
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const UserAddress()));
+                              Navigator.pop(context);
                             },
                             child: Text(
                               'Đồng ý',
@@ -191,7 +187,10 @@ class _AddAddressState extends State<AddAddress> {
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is PutAddressLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is GetStateLoading) {
             EasyLoading.show();
@@ -202,8 +201,10 @@ class _AddAddressState extends State<AddAddress> {
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is GetStateLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
-
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
         });
@@ -212,6 +213,7 @@ class _AddAddressState extends State<AddAddress> {
   Widget _addAddressUI() {
     return CommonNavigateBar(
         index: 2,
+        showAppBar: false,
         child: CustomScrollView(
           controller: _hideButtonController,
           slivers: [
@@ -224,15 +226,10 @@ class _AddAddressState extends State<AddAddress> {
                   children: [
                     Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Center(
-                            child: Text(
-                              'Thêm địa chỉ',
-                              style: CommonStyles.size24W400Black1D(context),
-                            ),
-                          ),
-                        ),
+                        CommonAppbar(
+                            title: widget.addressModel != null
+                                ? 'Sửa địa chỉ'
+                                : 'Thêm địa chỉ'),
                         Container(
                           padding: const EdgeInsets.all(16),
                           margin: const EdgeInsets.only(bottom: 20),

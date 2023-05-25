@@ -26,12 +26,14 @@ class CommonNavigateBar extends StatefulWidget {
   final Widget child;
   final int index;
   final bool isLogin;
+  final bool showNavigation;
   final bool showAppBar;
 
   const CommonNavigateBar({
     required this.child,
     this.index = 1,
     this.isLogin = false,
+    this.showNavigation = true,
     this.showAppBar = true,
     Key? key,
   }) : super(key: key);
@@ -135,8 +137,8 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
           children: [
             Column(
               children: [
-                if (widget.showAppBar) _buildAppbar(),
-                if (widget.showAppBar) _buildCategoryBar(),
+                if (widget.showNavigation && widget.showAppBar) _buildAppbar(),
+                if (widget.showNavigation && widget.showAppBar) _buildCategoryBar(),
                 Expanded(
                   child: Stack(
                     children: [
@@ -149,7 +151,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
                     ],
                   ),
                 ),
-                if (widget.showAppBar)
+                if (widget.showNavigation)
                   AnimatedContainer(
                       duration: const Duration(milliseconds: 500),
                       height: _isVisible ? 65 : 0,

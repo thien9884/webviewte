@@ -9,7 +9,7 @@ class CommonAppbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.all(24),
       child: Stack(
         children: [
           Container(
@@ -30,6 +30,7 @@ class CommonAppbar extends StatelessWidget {
                   const Icon(
                     Icons.arrow_back_ios_new_rounded,
                     size: 16,
+                    color: Color(0xff0066CC),
                   ),
                   const SizedBox(
                     width: 5,

@@ -10,6 +10,7 @@ import 'package:webviewtest/blocs/customer/customer_event.dart';
 import 'package:webviewtest/blocs/customer/customer_state.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -152,19 +153,12 @@ class _AccountInfoState extends State<AccountInfo> {
   Widget _accountInfo() {
     return CommonNavigateBar(
       index: 2,
+      showAppBar: false,
       child: CustomScrollView(
         controller: _hideButtonController,
         slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-            sliver: SliverToBoxAdapter(
-              child: Center(
-                child: Text(
-                  'Thông tin tài khoản',
-                  style: CommonStyles.size24W400Black1D(context),
-                ),
-              ),
-            ),
+          const SliverToBoxAdapter(
+            child: CommonAppbar(title: 'Thông tin tài khoản'),
           ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 20),

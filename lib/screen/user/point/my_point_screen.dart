@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
@@ -15,11 +16,12 @@ class _MyPointScreenState extends State<MyPointScreen> {
   Widget build(BuildContext context) {
     return CommonNavigateBar(
       index: 2,
+      showAppBar: false,
       child: Container(
         color: const Color(0xffF5F5F7),
         child: CustomScrollView(
           slivers: [
-            _myPointUI(),
+            _myPointAppBar(),
             _myPointBackground(),
             _dataTable(),
             SliverList(
@@ -31,17 +33,9 @@ class _MyPointScreenState extends State<MyPointScreen> {
     );
   }
 
-  Widget _myPointUI() {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      sliver: SliverToBoxAdapter(
-        child: Center(
-          child: Text(
-            'Thành tích giới thiệu',
-            style: CommonStyles.size24W400Black1D(context),
-          ),
-        ),
-      ),
+  Widget _myPointAppBar() {
+    return const SliverToBoxAdapter(
+      child: CommonAppbar(title: 'Điểm thưởng'),
     );
   }
 

@@ -9,6 +9,7 @@ import 'package:webviewtest/blocs/customer/customer_event.dart';
 import 'package:webviewtest/blocs/customer/customer_state.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -129,19 +130,12 @@ class _UserAddressState extends State<UserAddress> {
   Widget _userAddressUI() {
     return CommonNavigateBar(
         index: 2,
+        showAppBar: false,
         child: CustomScrollView(
           controller: _hideButtonController,
           slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              sliver: SliverToBoxAdapter(
-                child: Center(
-                  child: Text(
-                    'Địa chỉ nhận hàng',
-                    style: CommonStyles.size24W400Black1D(context),
-                  ),
-                ),
-              ),
+            const SliverToBoxAdapter(
+              child: CommonAppbar(title: 'Địa chỉ nhận hàng'),
             ),
             _listAddress.isNotEmpty
                 ? _buildListAddress()
@@ -196,12 +190,21 @@ class _UserAddressState extends State<UserAddress> {
                     Row(
                       children: [
                         _editButton(true, () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(
                                   builder: (context) => AddAddress(
                                         addressModel: item,
-                                      )));
+                                      )))
+                              .then((value) async {
+                            SharedPreferencesService sPref =
+                                await SharedPreferencesService.instance;
+                            customerId = sPref.customerId;
+
+                            if (context.mounted) {
+                              BlocProvider.of<CustomerBloc>(context)
+                                  .add(RequestGetCustomerAddress(customerId));
+                            }
+                          });
                         }),
                         const SizedBox(
                           width: 10,
@@ -321,12 +324,21 @@ class _UserAddressState extends State<UserAddress> {
       sliver: SliverToBoxAdapter(
         child: CommonButton(
           title: 'Thêm mới',
-          onTap: () => Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
+          onTap: () => Navigator.of(context)
+              .push(MaterialPageRoute(
                   builder: (context) => const AddAddress(
                         addressModel: null,
-                      ))),
+                      )))
+              .then((value) async {
+            SharedPreferencesService sPref =
+                await SharedPreferencesService.instance;
+            customerId = sPref.customerId;
+
+            if (context.mounted) {
+              BlocProvider.of<CustomerBloc>(context)
+                  .add(RequestGetCustomerAddress(customerId));
+            }
+          }),
         ),
       ),
     );

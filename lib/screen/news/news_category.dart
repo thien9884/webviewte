@@ -260,35 +260,38 @@ class _NewsCategoryState extends State<NewsCategory> {
                     ),
                   ),
                 Expanded(
-                  child: ListView.builder(
-                    controller: _pageScrollController,
-                    itemCount: totalPage,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) => GestureDetector(
-                      onTap: () => setState(() {
-                        _pagesSelected = index;
-                        BlocProvider.of<ShopdunkBloc>(context).add(
-                          RequestGetNewsCategory(
-                              widget.newsGroup.id, index + 1),
-                        );
-                        Scrollable.ensureVisible(dataKey.currentContext!);
-                      }),
-                      child: Container(
-                        height: 35,
-                        width: 35,
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
-                        decoration: BoxDecoration(
-                          color: _pagesSelected == index
-                              ? Colors.blueAccent
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          (index + 1).toString(),
-                          style: _pagesSelected == index
-                              ? CommonStyles.size14W400White(context)
-                              : CommonStyles.size14W400Black1D(context),
+                  child: Center(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      controller: _pageScrollController,
+                      itemCount: totalPage,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) => GestureDetector(
+                        onTap: () => setState(() {
+                          _pagesSelected = index;
+                          BlocProvider.of<ShopdunkBloc>(context).add(
+                            RequestGetNewsCategory(
+                                widget.newsGroup.id, index + 1),
+                          );
+                          Scrollable.ensureVisible(dataKey.currentContext!);
+                        }),
+                        child: Container(
+                          height: 35,
+                          width: 35,
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            color: _pagesSelected == index
+                                ? Colors.blueAccent
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            (index + 1).toString(),
+                            style: _pagesSelected == index
+                                ? CommonStyles.size14W400White(context)
+                                : CommonStyles.size14W400Black1D(context),
+                          ),
                         ),
                       ),
                     ),

@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html_table/flutter_html_table.dart';
+import 'package:flutter_html_all/flutter_html_all.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
@@ -43,7 +43,7 @@ class NewsDetail extends StatefulWidget {
 class _NewsDetailState extends State<NewsDetail> {
   RelatedNews _relatedNewsData = RelatedNews();
   NewsCommentResponseModel _newsCommentResponseModel =
-  NewsCommentResponseModel();
+      NewsCommentResponseModel();
   List<NewsComments> _listComment = [];
   String _firstContent = '';
   String _videoContent = '';
@@ -87,18 +87,18 @@ class _NewsDetailState extends State<NewsDetail> {
     if (widget.latestNews != null &&
         widget.latestNews!.full!.contains('<div class="video-container"')) {
       _firstContent = widget.latestNews!.full?.replaceRange(
-          widget.latestNews!.full
-              ?.indexOf('<div class="video-container"') ??
-              0,
-          widget.latestNews!.full?.length,
-          '') ??
+              widget.latestNews!.full
+                      ?.indexOf('<div class="video-container"') ??
+                  0,
+              widget.latestNews!.full?.length,
+              '') ??
           '';
       _lastContent = widget.latestNews!.full?.replaceRange(
-          0,
-          widget.latestNews!.full
-              ?.lastIndexOf('<div class="video-container"') ??
               0,
-          '') ??
+              widget.latestNews!.full
+                      ?.lastIndexOf('<div class="video-container"') ??
+                  0,
+              '') ??
           '';
       _videoContent =
           _lastContent.replaceRange(0, _lastContent.indexOf('embed/') + 6, '');
@@ -108,17 +108,17 @@ class _NewsDetailState extends State<NewsDetail> {
     } else if (widget.newsItems != null &&
         widget.newsItems!.full!.contains('<div class="video-container"')) {
       _firstContent = widget.newsItems?.full?.replaceRange(
-          widget.newsItems?.full?.indexOf('<div class="video-container"') ??
-              0,
-          widget.newsItems?.full?.length,
-          '') ??
+              widget.newsItems?.full?.indexOf('<div class="video-container"') ??
+                  0,
+              widget.newsItems?.full?.length,
+              '') ??
           '';
       _lastContent = widget.newsItems?.full?.replaceRange(
-          0,
-          widget.newsItems?.full
-              ?.lastIndexOf('<div class="video-container"') ??
               0,
-          '') ??
+              widget.newsItems?.full
+                      ?.lastIndexOf('<div class="video-container"') ??
+                  0,
+              '') ??
           '';
       _videoContent =
           _lastContent.replaceRange(0, _lastContent.indexOf('embed/') + 6, '');
@@ -239,10 +239,9 @@ class _NewsDetailState extends State<NewsDetail> {
             GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                    const NavigationScreen(
-                      isSelected: 1,
-                    )));
+                    builder: (context) => const NavigationScreen(
+                          isSelected: 1,
+                        )));
               },
               child: Text(
                 'Trang chủ News',
@@ -256,8 +255,7 @@ class _NewsDetailState extends State<NewsDetail> {
             GestureDetector(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) =>
-                        NewsCategory(
+                    builder: (context) => NewsCategory(
                           newsGroup: widget.newsGroup,
                           index: 1,
                         )));
@@ -277,8 +275,8 @@ class _NewsDetailState extends State<NewsDetail> {
   Widget _newsDetail(BuildContext context) {
     final timeUpload = DateTime.parse(
       (widget.latestNews != null
-          ? widget.latestNews?.createdOn
-          : widget.newsItems?.createdOn) ??
+              ? widget.latestNews?.createdOn
+              : widget.newsItems?.createdOn) ??
           '',
     );
     final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
@@ -293,8 +291,8 @@ class _NewsDetailState extends State<NewsDetail> {
                 width: double.infinity,
                 child: Image.network(
                   (widget.latestNews != null
-                      ? widget.latestNews?.pictureModel?.fullSizeImageUrl
-                      : widget.newsItems?.pictureModel?.fullSizeImageUrl) ??
+                          ? widget.latestNews?.pictureModel?.fullSizeImageUrl
+                          : widget.newsItems?.pictureModel?.fullSizeImageUrl) ??
                       '',
                   fit: BoxFit.cover,
                 ),
@@ -303,8 +301,8 @@ class _NewsDetailState extends State<NewsDetail> {
                 padding: const EdgeInsets.all(20),
                 child: Text(
                   (widget.latestNews != null
-                      ? widget.latestNews?.title
-                      : widget.newsItems?.title) ??
+                          ? widget.latestNews?.title
+                          : widget.newsItems?.title) ??
                       '',
                   style: CommonStyles.size24W700Grey39(context),
                 ),
@@ -431,22 +429,22 @@ class _NewsDetailState extends State<NewsDetail> {
             )
                 : Html(
               data: widget.latestNews != null
-                  ? widget.latestNews?.full
-                  ?.replaceAll('src="', 'src="http://shopdunk.com')
-                  : widget.newsItems?.full
-                  ?.replaceAll('shopdunk.com', 'shopdunk.com')
-                  .replaceAll(
-                  'src="', 'src="http://api.shopdunk.com'),
+                  ? widget.latestNews?.full?.replaceAll('/images/uploaded/',
+                      'https://shopdunk.com/images/uploaded/')
+                  : widget.newsItems?.full?.replaceAll('/images/uploaded/',
+                      'https://shopdunk.com/images/uploaded/'),
               onLinkTap: (str, list, element) =>
                   Navigator.of(context).push(CustomMaterialPageRoute(
-                      builder: (context) =>
-                          ShopDunkWebView(
+                      builder: (context) => ShopDunkWebView(
                             baseUrl: str,
                           ))),
+              shrinkWrap: true,
+              extensions: const [
+                IframeHtmlExtension(),
+              ],
               style: {
                 "table": Style(
-                  backgroundColor:
-                  const Color.fromARGB(0x50, 0xee, 0xee, 0xee),
+                  backgroundColor: const Color.fromARGB(0x50, 0xee, 0xee, 0xee),
                 ),
                 "th": Style(
                   padding: const EdgeInsets.all(6),
@@ -454,8 +452,7 @@ class _NewsDetailState extends State<NewsDetail> {
                 ),
                 "td": Style(
                   padding: const EdgeInsets.all(6),
-                  border: const Border(
-                      bottom: BorderSide(color: Colors.grey)),
+                  border: const Border(bottom: BorderSide(color: Colors.grey)),
                 ),
                 "h3": Style(
                   fontSize: FontSize.xxLarge,
@@ -536,7 +533,7 @@ class _NewsDetailState extends State<NewsDetail> {
       sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate(
           childCount: _relatedNewsData.productOverviewModels?.length,
-              (context, index) {
+          (context, index) {
             final item = _relatedNewsData.productOverviewModels?[index];
             return Card(
               shape: RoundedRectangleBorder(
@@ -546,8 +543,7 @@ class _NewsDetailState extends State<NewsDetail> {
                 child: InkWell(
                   onTap: () =>
                       Navigator.of(context).push(CustomMaterialPageRoute(
-                          builder: (context) =>
-                              ShopDunkWebView(
+                          builder: (context) => ShopDunkWebView(
                                 url: item?.seName,
                               ))),
                   borderRadius: BorderRadius.circular(4),
@@ -567,13 +563,13 @@ class _NewsDetailState extends State<NewsDetail> {
                             Expanded(
                               child: Padding(
                                 padding:
-                                const EdgeInsets.symmetric(horizontal: 15),
+                                    const EdgeInsets.symmetric(horizontal: 15),
                                 child: Text(
                                   item?.name ?? '',
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style:
-                                  CommonStyles.size14W700Black1D(context),
+                                      CommonStyles.size14W700Black1D(context),
                                 ),
                               ),
                             ),
@@ -584,12 +580,12 @@ class _NewsDetailState extends State<NewsDetail> {
                                 children: [
                                   Row(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         item?.productPrice?.priceValue != null
                                             ? priceFormat.format(
-                                            item?.productPrice?.priceValue)
+                                                item?.productPrice?.priceValue)
                                             : '',
                                         style: CommonStyles.size16W700Blue00(
                                             context),
@@ -739,82 +735,81 @@ class _NewsDetailState extends State<NewsDetail> {
   Widget _newsComments() {
     return SliverList(
         delegate: SliverChildBuilderDelegate(childCount: _listComment.length,
-                (context, index) {
-              final item = _listComment[index];
-              var dateValue = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                  .parseUTC(item.createdOn ?? '')
-                  .toLocal();
-              String formattedDate = DateFormat("dd/MM/yyyy HH:mm").format(
-                  dateValue);
+            (context, index) {
+      final item = _listComment[index];
+      var dateValue = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+          .parseUTC(item.createdOn ?? '')
+          .toLocal();
+      String formattedDate = DateFormat("dd/MM/yyyy HH:mm").format(dateValue);
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(item.customerAvatarUrl ??
+                  'https://api.shopdunk.com/images/thumbs/default-avatar_120.jpg'),
+              radius: 20,
+              backgroundColor: Colors.transparent,
+            ),
+            // Container(
+            //   decoration: BoxDecoration(
+            //     border: Border.all(
+            //       width: 2,
+            //       color: Colors.black,
+            //     ),
+            //     shape: BoxShape.circle,
+            //   ),
+            //   child: Image.network(
+            //     'https://api.api.shopdunk.com/images/thumbs/default-avatar_120.jpg',
+            //     height: 30,
+            //     width: 30,
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(left: 10, bottom: 10),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xffF5F5F7),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(item.customerAvatarUrl ??
-                          'https://api.shopdunk.com/images/thumbs/default-avatar_120.jpg'),
-                      radius: 20,
-                      backgroundColor: Colors.transparent,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          item.customerName ?? '',
+                          style: CommonStyles.size16W700Blue00(context),
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          formattedDate,
+                          style: CommonStyles.size13W400Grey86(context),
+                        ),
+                      ],
                     ),
-                    // Container(
-                    //   decoration: BoxDecoration(
-                    //     border: Border.all(
-                    //       width: 2,
-                    //       color: Colors.black,
-                    //     ),
-                    //     shape: BoxShape.circle,
-                    //   ),
-                    //   child: Image.network(
-                    //     'https://api.api.shopdunk.com/images/thumbs/default-avatar_120.jpg',
-                    //     height: 30,
-                    //     width: 30,
-                    //     fit: BoxFit.cover,
-                    //   ),
-                    // ),
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.only(left: 10, bottom: 10),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffF5F5F7),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  item.customerName ?? '',
-                                  style: CommonStyles.size16W700Blue00(context),
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                Text(
-                                  formattedDate,
-                                  style: CommonStyles.size13W400Grey86(context),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            Text(
-                              item.commentText ?? '',
-                              style: CommonStyles.size14W400Black1D(context),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      item.commentText ?? '',
+                      style: CommonStyles.size14W400Black1D(context),
+                    ),
                   ],
                 ),
-              );
-            }));
+              ),
+            )
+          ],
+        ),
+      );
+    }));
   }
 
   // news comment tittle
@@ -834,70 +829,68 @@ class _NewsDetailState extends State<NewsDetail> {
   Widget _relatedNews(BuildContext context) {
     return SliverList(
         delegate: SliverChildBuilderDelegate(
-          childCount: _relatedNewsData.newsItemModels?.length,
-              (context, index) {
-            final item = _relatedNewsData.newsItemModels?[index];
-            final timeUpload =
+      childCount: _relatedNewsData.newsItemModels?.length,
+      (context, index) {
+        final item = _relatedNewsData.newsItemModels?[index];
+        final timeUpload =
             DateTime.parse(item?.createdOn ?? DateTime.now().toString());
-            final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
+        final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
 
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: const BoxDecoration(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () =>
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) =>
-                                NewsDetail(
-                                  newsItems: item ?? NewsItems(),
-                                  newsGroup: widget.newsGroup,
-                                ))),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            item?.pictureModel?.fullSizeImageUrl ?? '',
-                            width: 140,
-                            height: 140,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 20, top: 5),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  timeFormat,
-                                  style: CommonStyles.size13W400Grey86(context),
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  item?.title ?? '',
-                                  style: CommonStyles.size18W700Black1D(context)
-                                      .copyWith(height: 1.5),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: const BoxDecoration(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => NewsDetail(
+                          newsItems: item ?? NewsItems(),
+                          newsGroup: widget.newsGroup,
+                        ))),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        item?.pictureModel?.fullSizeImageUrl ?? '',
+                        width: 140,
+                        height: 140,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20, top: 5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              timeFormat,
+                              style: CommonStyles.size13W400Grey86(context),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              item?.title ?? '',
+                              style: CommonStyles.size18W700Black1D(context)
+                                  .copyWith(height: 1.5),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          },
-        ));
+            ],
+          ),
+        );
+      },
+    ));
   }
 }

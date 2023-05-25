@@ -8,6 +8,7 @@ import 'package:webviewtest/blocs/change_password/change_password_event.dart';
 import 'package:webviewtest/blocs/change_password/change_password_state.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -148,6 +149,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget _buildLoginUI(BuildContext context) {
     return CommonNavigateBar(
       index: 2,
+      showAppBar: false,
       child: Form(
         key: _formKey,
         child: Container(
@@ -155,7 +157,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           child: CustomScrollView(
             controller: _hideButtonController,
             slivers: [
-              _titleLogin(),
+              _titleChangePass(),
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 sliver: SliverToBoxAdapter(
@@ -179,18 +181,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 
-  // title recovery
-  Widget _titleLogin() {
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      sliver: SliverToBoxAdapter(
-        child: Center(
-          child: Text(
-            'Khôi phục mật khẩu',
-            style: CommonStyles.size24W700Black1D(context),
-          ),
-        ),
-      ),
+  // title change password
+  Widget _titleChangePass() {
+    return const SliverToBoxAdapter(
+      child: CommonAppbar(title: 'Đổi mật khẩu'),
     );
   }
 
