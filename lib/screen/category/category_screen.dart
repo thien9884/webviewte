@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
 import 'package:intl/intl.dart';
@@ -533,7 +533,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           right: Responsive.isMobile(context) ? 5 : 10),
                       child: item.productTags!.isNotEmpty
                           ? Image.network(
-                              "https://api.shopdunk.com/images/uploaded/icon/${item.productTags?.first.seName}.png",
+                              "https://shopdunk.com/images/uploaded/icon/${item.productTags?.first.seName}.png",
                               height: 25,
                               fit: BoxFit.cover,
                               errorBuilder: (context, obj, trace) =>
@@ -853,41 +853,39 @@ class _CategoryScreenState extends State<CategoryScreen> {
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [
-            Html(
-              data: _isExpand
+            HtmlWidget(
+              _isExpand
                   ? _desc
                   : _desc.substring(0, 3000).replaceRange(3000, 3000, '...'),
-              style: {
-                "h3": Style(
-                  fontSize: FontSize.xxLarge,
-                  textAlign: TextAlign.justify,
-                  fontFamily: "ArialCustom",
-                ),
-                "p": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                  lineHeight: LineHeight.number(1.1),
-                  fontFamily: "ArialCustom",
-                ),
-                "span": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                  lineHeight: LineHeight.number(1.1),
-                  fontFamily: "ArialCustom",
-                ),
-                "li": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                  lineHeight: LineHeight.number(1.1),
-                  fontFamily: "ArialCustom",
-                ),
-                "img": Style(alignment: Alignment.center),
+              textStyle: const TextStyle(fontSize: 16, height: 1.2),
+              onTapUrl: (st) {
+                print('object');
+                return true;
+              },
+              customStylesBuilder: (element) {
+                if (element.localName == 'p') {
+                  return {'color': '#777', 'text-align': 'justify'};
+                }
+                if (element.localName == 'span') {
+                  return {'color': '#777', 'text-align': 'justify'};
+                }
+                if (element.localName == 'ul') {
+                  return {'color': '#777', 'text-align': 'justify'};
+                }
+                if (element.localName == 'h2') {
+                  return {'font-weight': '500'};
+                }
+                if (element.localName == 'a') {
+                  return {'color': '#0000ff'};
+                }
+                return null;
               },
             ),
             GestureDetector(

@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:webviewtest/blocs/customer/customer_bloc.dart';
 import 'package:webviewtest/blocs/customer/customer_event.dart';
 import 'package:webviewtest/blocs/customer/customer_state.dart';
@@ -26,6 +28,7 @@ class UserScreen extends StatefulWidget {
 class _UserScreenState extends State<UserScreen> {
   InfoModel? _infoModel = InfoModel();
   String _language = 'Tiếng Việt';
+  XFile? _image;
 
   _getData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
@@ -53,10 +56,9 @@ class _UserScreenState extends State<UserScreen> {
 
     if (context.mounted) {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) =>
-          const NavigationScreen(
-            isSelected: 2,
-          )));
+          builder: (context) => const NavigationScreen(
+                isSelected: 2,
+              )));
     }
   }
 
@@ -92,6 +94,58 @@ class _UserScreenState extends State<UserScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: Stack(
+                children: [
+                  SizedBox(
+                    width: 72,
+                    height: 72,
+                    child: _image == null
+                        ? const CircleAvatar(
+                            backgroundColor: Colors.white,
+                            backgroundImage: NetworkImage(
+                                'https://nhadepso.com/wp-content/uploads/2023/03/suu-tam-60-hinh-anh-avatar-trang-cho-facebook-dep-doc-dao_4.jpg'),
+                          )
+                        : CircleAvatar(
+                            backgroundColor: Colors.white,
+                            backgroundImage: FileImage(
+                              File(_image!.path),
+                            ),
+                          ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () async {
+                        final ImagePicker picker = ImagePicker();
+                        final XFile? image =
+                            await picker.pickImage(source: ImageSource.gallery);
+                        setState(() {
+                          _image = image;
+                        });
+                      },
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                blurRadius: 1,
+                                spreadRadius: 1,
+                              ),
+                            ]),
+                        child: SvgPicture.asset('assets/icons/ic_camera.svg'),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             _nameUser(),
             const SizedBox(
               height: 5,
@@ -166,8 +220,7 @@ class _UserScreenState extends State<UserScreen> {
                   setState(() {
                     showCupertinoDialog(
                         context: context,
-                        builder: (context) =>
-                            CupertinoAlertDialog(
+                        builder: (context) => CupertinoAlertDialog(
                               content: Text(
                                 'Bạn có chắc muốn đăng xuất chứ?',
                                 style: CommonStyles.size14W400Grey33(context),
@@ -182,8 +235,7 @@ class _UserScreenState extends State<UserScreen> {
                                           context),
                                     )),
                                 CupertinoDialogAction(
-                                    onPressed: () =>
-                                        setState(() {
+                                    onPressed: () => setState(() {
                                           _clearData();
                                         }),
                                     child: Text(
@@ -218,9 +270,12 @@ class _UserScreenState extends State<UserScreen> {
   // user name
   Widget _nameUser() {
     return Center(
-      child: Text(
-        _infoModel?.firstName ?? '',
-        style: CommonStyles.size18W700Black1D(context),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16),
+        child: Text(
+          _infoModel?.firstName ?? '',
+          style: CommonStyles.size18W700Black1D(context),
+        ),
       ),
     );
   }
@@ -240,16 +295,15 @@ class _UserScreenState extends State<UserScreen> {
         var item = ListCustom.listAccountSettings[index];
 
         return GestureDetector(
-          onTap: () =>
-              Navigator.of(context)
-                  .push(MaterialPageRoute(
+          onTap: () => Navigator.of(context)
+              .push(MaterialPageRoute(
                   builder: (context) => item.screen ?? const SizedBox()))
-                  .then((value) {
-                setState(() {
-                  BlocProvider.of<ShopdunkBloc>(context)
-                      .add(const RequestGetHideBottom(true));
-                });
-              }),
+              .then((value) {
+            setState(() {
+              BlocProvider.of<ShopdunkBloc>(context)
+                  .add(const RequestGetHideBottom(true));
+            });
+          }),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10),
             color: Colors.transparent,

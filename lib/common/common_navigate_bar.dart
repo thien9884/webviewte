@@ -569,6 +569,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
   // bottom bar
   Widget _buildBottomBar() {
     return Container(
+      height: 65,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [

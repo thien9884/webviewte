@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
@@ -70,38 +70,9 @@ class _LoadHtmlScreenState extends State<LoadHtmlScreen> {
           controller: _hideButtonController,
           slivers: [
             SliverToBoxAdapter(
-              child: Html(
-                data:
-                    widget.data.replaceAll('src="', 'src="http://shopdunk.com'),
-                style: {
-                  "h3": Style(
-                    fontSize: FontSize.xxLarge,
-                    textAlign: TextAlign.justify,
-                    fontFamily: "ArialCustom",
-                  ),
-                  "strong": Style(
-                    fontSize: FontSize.xLarge,
-                    textAlign: TextAlign.justify,
-                    fontFamily: "ArialCustom",
-                  ),
-                  "p": Style(
-                    fontSize: FontSize.xLarge,
-                    textAlign: TextAlign.justify,
-                    fontFamily: "ArialCustom",
-                  ),
-                  "span": Style(
-                    fontSize: FontSize.xLarge,
-                    textAlign: TextAlign.justify,
-                    fontFamily: "ArialCustom",
-                  ),
-                  "li": Style(
-                    fontSize: FontSize.xLarge,
-                    textAlign: TextAlign.justify,
-                    lineHeight: LineHeight.number(1.1),
-                    fontFamily: "ArialCustom",
-                  ),
-                  "img": Style(alignment: Alignment.center),
-                },
+              child: HtmlWidget(
+                widget.data.replaceAll('src="', 'src="http://shopdunk.com'),
+                textStyle: const TextStyle(fontSize: 16),
               ),
             ),
             SliverList(

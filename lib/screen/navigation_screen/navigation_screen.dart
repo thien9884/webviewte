@@ -561,6 +561,7 @@ class _NavigationScreenState extends State<NavigationScreen>
   // bottom bar
   Widget _buildBottomBar() {
     return Container(
+      height: 65,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [

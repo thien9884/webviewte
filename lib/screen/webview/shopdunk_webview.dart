@@ -80,7 +80,7 @@ class ShopDunkWebView extends StatefulWidget {
   const ShopDunkWebView({
     this.baseUrl,
     this.url,
-    this.index = 1,
+    this.index = 0,
     this.hideBottom = true,
     super.key,
   });
@@ -171,7 +171,7 @@ Page resource error:
   @override
   Widget build(BuildContext context) {
     return CommonNavigateBar(
-        index: 1,
+        index: widget.index,
         showNavigation: widget.hideBottom,
         child: WillPopScope(
             onWillPop: () async {

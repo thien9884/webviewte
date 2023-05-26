@@ -93,7 +93,7 @@ class _NewsCategoryState extends State<NewsCategory> {
   // build news group
   Widget _buildNewsGroup(BuildContext context) {
     return CommonNavigateBar(
-      index: widget.index ?? -1,
+      index: 1,
       child: _newsCategoryModel.newsCategoryData != null
           ? Container(
               color: const Color(0xfff5f5f7),

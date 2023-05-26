@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html_all/flutter_html_all.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
@@ -20,7 +19,6 @@ import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../blocs/shopdunk/shopdunk_event.dart';
 
@@ -45,10 +43,6 @@ class _NewsDetailState extends State<NewsDetail> {
   NewsCommentResponseModel _newsCommentResponseModel =
       NewsCommentResponseModel();
   List<NewsComments> _listComment = [];
-  String _firstContent = '';
-  String _videoContent = '';
-  String _lastContent = '';
-  late YoutubePlayerController _controller;
   late ScrollController _hideButtonController;
   bool _isVisible = false;
 
@@ -83,65 +77,11 @@ class _NewsDetailState extends State<NewsDetail> {
     });
   }
 
-  _checkVideo() {
-    if (widget.latestNews != null &&
-        widget.latestNews!.full!.contains('<div class="video-container"')) {
-      _firstContent = widget.latestNews!.full?.replaceRange(
-              widget.latestNews!.full
-                      ?.indexOf('<div class="video-container"') ??
-                  0,
-              widget.latestNews!.full?.length,
-              '') ??
-          '';
-      _lastContent = widget.latestNews!.full?.replaceRange(
-              0,
-              widget.latestNews!.full
-                      ?.lastIndexOf('<div class="video-container"') ??
-                  0,
-              '') ??
-          '';
-      _videoContent =
-          _lastContent.replaceRange(0, _lastContent.indexOf('embed/') + 6, '');
-      _videoContent = _videoContent.replaceRange(
-          _videoContent.indexOf('"'), _videoContent.length, '');
-      return;
-    } else if (widget.newsItems != null &&
-        widget.newsItems!.full!.contains('<div class="video-container"')) {
-      _firstContent = widget.newsItems?.full?.replaceRange(
-              widget.newsItems?.full?.indexOf('<div class="video-container"') ??
-                  0,
-              widget.newsItems?.full?.length,
-              '') ??
-          '';
-      _lastContent = widget.newsItems?.full?.replaceRange(
-              0,
-              widget.newsItems?.full
-                      ?.lastIndexOf('<div class="video-container"') ??
-                  0,
-              '') ??
-          '';
-      _videoContent =
-          _lastContent.replaceRange(0, _lastContent.indexOf('embed/') + 6, '');
-      _videoContent = _videoContent.replaceRange(
-          _videoContent.indexOf('"'), _videoContent.length, '');
-      return;
-    }
-  }
-
   @override
   void initState() {
     _getRelatedNewsData(widget.newsItems?.id ?? 0);
-    _checkVideo();
     _getHideBottomValue();
     _listComment.addAll(widget.newsItems?.newsComments ?? []);
-    _controller = YoutubePlayerController(
-      initialVideoId: _videoContent,
-      flags: const YoutubePlayerFlags(
-        isLive: false,
-        autoPlay: false,
-        mute: false,
-      ),
-    );
     super.initState();
   }
 
@@ -318,180 +258,41 @@ class _NewsDetailState extends State<NewsDetail> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: (widget.latestNews != null &&
-                widget.latestNews!.full!.contains('video-container')) ||
-                (widget.newsItems != null &&
-                    widget.newsItems!.full!.contains('video-container'))
-                ? Column(
-              children: [
-                Html(
-                  data: _firstContent.replaceAll(
-                      'src="', 'src="http://shopdunk.com'),
-                  onLinkTap: (str, list, element) =>
-                      Navigator.of(context).push(CustomMaterialPageRoute(
-                          builder: (context) =>
-                              ShopDunkWebView(
-                                baseUrl: str,
-                              ))),
-                  style: {
-                    "table": Style(
-                      backgroundColor:
-                      const Color.fromARGB(0x50, 0xee, 0xee, 0xee),
-                    ),
-                    "th": Style(
-                      padding: const EdgeInsets.all(6),
-                      backgroundColor: Colors.grey,
-                    ),
-                    "td": Style(
-                      padding: const EdgeInsets.all(6),
-                      border: const Border(
-                          bottom: BorderSide(color: Colors.grey)),
-                    ),
-                    "h3": Style(
-                      fontSize: FontSize.xxLarge,
-                      textAlign: TextAlign.justify,
-                      fontFamily: "ArialCustom",
-                    ),
-                    "strong": Style(
-                      fontSize: FontSize.xLarge,
-                      textAlign: TextAlign.justify,
-                      fontFamily: "ArialCustom",
-                    ),
-                    "p": Style(
-                      fontSize: FontSize.xLarge,
-                      textAlign: TextAlign.justify,
-                      fontFamily: "ArialCustom",
-                    ),
-                    "span": Style(
-                      fontSize: FontSize.xLarge,
-                      textAlign: TextAlign.justify,
-                      fontFamily: "ArialCustom",
-                    ),
-                    "li": Style(
-                      fontSize: FontSize.xLarge,
-                      textAlign: TextAlign.justify,
-                      lineHeight: LineHeight.number(1.1),
-                      fontFamily: "ArialCustom",
-                    ),
-                    "img": Style(alignment: Alignment.center),
-                  },
-                ),
-                _youtubePlayer(),
-                Html(
-                  data: _lastContent.replaceAll(
-                      'src="', 'src="http://shopdunk.com'),
-                  extensions: [
-                    TableHtmlExtension(),
-                  ],
-                  onLinkTap: (str, list, element) =>
-                      Navigator.of(context).push(CustomMaterialPageRoute(
-                          builder: (context) =>
-                              ShopDunkWebView(
-                                baseUrl: str,
-                              ))),
-                  style: {
-                    "table": Style(
-                      backgroundColor:
-                      const Color.fromARGB(0x50, 0xee, 0xee, 0xee),
-                    ),
-                    "th": Style(
-                      backgroundColor: Colors.grey,
-                    ),
-                    "td": Style(
-                      border: const Border(
-                          bottom: BorderSide(color: Colors.grey)),
-                    ),
-                    "h3": Style(
-                      fontSize: FontSize.xxLarge,
-                      textAlign: TextAlign.justify,
-                      fontFamily: "ArialCustom",
-                    ),
-                    "p": Style(
-                      fontSize: FontSize.xLarge,
-                      textAlign: TextAlign.justify,
-                      fontFamily: "ArialCustom",
-                    ),
-                    "span": Style(
-                      fontSize: FontSize.xLarge,
-                      textAlign: TextAlign.justify,
-                      fontFamily: "ArialCustom",
-                    ),
-                    "li": Style(
-                      fontSize: FontSize.xLarge,
-                      textAlign: TextAlign.justify,
-                      lineHeight: LineHeight.number(1.1),
-                      fontFamily: "ArialCustom",
-                    ),
-                    "img": Style(alignment: Alignment.center),
-                  },
-                ),
-              ],
-            )
-                : Html(
-              data: widget.latestNews != null
+            child: HtmlWidget(
+              widget.latestNews != null
                   ? widget.latestNews?.full?.replaceAll('/images/uploaded/',
-                      'https://shopdunk.com/images/uploaded/')
+                          'https://shopdunk.com/images/uploaded/') ??
+                      ''
                   : widget.newsItems?.full?.replaceAll('/images/uploaded/',
-                      'https://shopdunk.com/images/uploaded/'),
-              onLinkTap: (str, list, element) =>
-                  Navigator.of(context).push(CustomMaterialPageRoute(
-                      builder: (context) => ShopDunkWebView(
-                            baseUrl: str,
-                          ))),
-              shrinkWrap: true,
-              extensions: const [
-                IframeHtmlExtension(),
-              ],
-              style: {
-                "table": Style(
-                  backgroundColor: const Color.fromARGB(0x50, 0xee, 0xee, 0xee),
-                ),
-                "th": Style(
-                  padding: const EdgeInsets.all(6),
-                  backgroundColor: Colors.grey,
-                ),
-                "td": Style(
-                  padding: const EdgeInsets.all(6),
-                  border: const Border(bottom: BorderSide(color: Colors.grey)),
-                ),
-                "h3": Style(
-                  fontSize: FontSize.xxLarge,
-                  textAlign: TextAlign.justify,
-                  fontFamily: "ArialCustom",
-                ),
-                "p": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                  fontFamily: "ArialCustom",
-                ),
-                "span": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                  fontFamily: "ArialCustom",
-                ),
-                "li": Style(
-                  fontSize: FontSize.xLarge,
-                  textAlign: TextAlign.justify,
-                  lineHeight: LineHeight.number(1.1),
-                  fontFamily: "ArialCustom",
-                ),
-                "img": Style(alignment: Alignment.center),
+                          'https://shopdunk.com/images/uploaded/') ??
+                      '',
+              textStyle: const TextStyle(fontSize: 16, height: 1.2),
+              onTapUrl: (st) {
+                print('object');
+                return true;
+              },
+              customStylesBuilder: (element) {
+                if (element.localName == 'p') {
+                  return {'text-align' : 'justify'};
+                }
+                if (element.localName == 'span') {
+                  return {'text-align' : 'justify'};
+                }
+                if (element.localName == 'ul') {
+                  return {'text-align' : 'justify'};
+                }
+                if (element.localName == 'h2') {
+                  return {'font-weight': '500'};
+                }
+                if (element.localName == 'a') {
+                  return {'color': '#0000ff'};
+                }
+                return null;
               },
             ),
           ),
         ],
       ),
-    );
-  }
-
-  // youtube player
-  Widget _youtubePlayer() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: YoutubePlayer(
-          controller: _controller,
-          liveUIColor: Colors.redAccent,
-          bottomActions: const []),
     );
   }
 

@@ -84,7 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return _registerResponse?.data[0].toString();
     } else if (_registerResponse?.httpStatusCode == 201 &&
         _registerResponse?.message != null) {
-      return 'Đăng ký thành công';
+      return 'Bạn đã đăng ký thành công\nBạn sẽ nhận được email với hướng dẫn kích hoạt tài khoản';
     }
   }
 
