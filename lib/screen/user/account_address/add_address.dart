@@ -44,7 +44,12 @@ class _AddAddressState extends State<AddAddress> {
   final TextEditingController _addressController = TextEditingController();
   late ScrollController _hideButtonController;
   String _messageError = '';
-
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _phoneFocus = FocusNode();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _districtFocus = FocusNode();
+  final FocusNode _wardFocus = FocusNode();
+  final FocusNode _addressFocus = FocusNode();
   bool _isVisible = false;
 
   _getHideBottomValue() {
@@ -124,6 +129,42 @@ class _AddAddressState extends State<AddAddress> {
   void initState() {
     _getData();
     _getHideBottomValue();
+    _nameFocus.addListener(() {
+      if (_nameFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _phoneFocus.addListener(() {
+      if (_phoneFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _emailFocus.addListener(() {
+      if (_emailFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _districtFocus.addListener(() {
+      if (_districtFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _wardFocus.addListener(() {
+      if (_wardFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _addressFocus.addListener(() {
+      if (_addressFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
     super.initState();
   }
 
@@ -217,8 +258,12 @@ class _AddAddressState extends State<AddAddress> {
         child: CustomScrollView(
           controller: _hideButtonController,
           slivers: [
+            CommonAppbar(
+                title: widget.addressModel != null
+                    ? 'Sửa địa chỉ'
+                    : 'Thêm địa chỉ'),
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
               sliver: SliverFillRemaining(
                 hasScrollBody: false,
                 child: Column(
@@ -226,10 +271,6 @@ class _AddAddressState extends State<AddAddress> {
                   children: [
                     Column(
                       children: [
-                        CommonAppbar(
-                            title: widget.addressModel != null
-                                ? 'Sửa địa chỉ'
-                                : 'Thêm địa chỉ'),
                         Container(
                           padding: const EdgeInsets.all(16),
                           margin: const EdgeInsets.only(bottom: 20),
@@ -299,6 +340,7 @@ class _AddAddressState extends State<AddAddress> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+          focusNode: _nameFocus,
         ),
       ],
     );
@@ -337,6 +379,7 @@ class _AddAddressState extends State<AddAddress> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+          focusNode: _phoneFocus,
         ),
       ],
     );
@@ -375,6 +418,7 @@ class _AddAddressState extends State<AddAddress> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+          focusNode: _emailFocus,
         ),
       ],
     );
@@ -517,6 +561,7 @@ class _AddAddressState extends State<AddAddress> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+          focusNode: _districtFocus,
         ),
       ],
     );
@@ -555,6 +600,7 @@ class _AddAddressState extends State<AddAddress> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+          focusNode: _wardFocus,
         ),
       ],
     );
@@ -596,6 +642,7 @@ class _AddAddressState extends State<AddAddress> {
               ),
             ),
             maxLines: 3,
+            focusNode: _addressFocus,
           ),
         ],
       ),
@@ -608,6 +655,10 @@ class _AddAddressState extends State<AddAddress> {
       child: CommonButton(
           title: 'Lưu lại',
           onTap: () {
+            FocusScope.of(context).unfocus();
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(const RequestGetHideBottom(true));
+
             for (var element in _listState) {
               if (element.text == _city) {
                 _stateProvinceId = int.parse(element.value.toString());

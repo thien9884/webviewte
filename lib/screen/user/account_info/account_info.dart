@@ -157,11 +157,9 @@ class _AccountInfoState extends State<AccountInfo> {
       child: CustomScrollView(
         controller: _hideButtonController,
         slivers: [
-          const SliverToBoxAdapter(
-            child: CommonAppbar(title: 'Thông tin tài khoản'),
-          ),
+          const CommonAppbar(title: 'Thông tin tài khoản'),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
             sliver: SliverToBoxAdapter(
               child: Container(
                 padding: const EdgeInsets.all(16),

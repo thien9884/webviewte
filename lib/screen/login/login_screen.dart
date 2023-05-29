@@ -31,6 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   late ScrollController _hideButtonController;
   String _messageError = '';
+  final FocusNode _userFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
 
   bool _isVisible = false;
 
@@ -70,6 +72,18 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     _getHideBottomValue();
+    _userFocusNode.addListener(() {
+      if (_userFocusNode.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _passwordFocusNode.addListener(() {
+      if (_passwordFocusNode.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
     super.initState();
   }
 
@@ -178,6 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             contentPadding: const EdgeInsets.all(16),
           ),
+          focusNode: _userFocusNode,
         ),
       ],
     );
@@ -224,7 +239,8 @@ class _LoginScreenState extends State<LoginScreen> {
             contentPadding: const EdgeInsets.all(16),
           ),
           obscureText: !_showPassword,
-        )
+          focusNode: _passwordFocusNode,
+        ),
       ],
     );
   }
@@ -291,6 +307,8 @@ class _LoginScreenState extends State<LoginScreen> {
       child: CommonButton(
         onTap: () async {
           FocusScope.of(context).unfocus();
+          BlocProvider.of<ShopdunkBloc>(context)
+              .add(const RequestGetHideBottom(true));
           setState(() {
             _messageError = '';
           });

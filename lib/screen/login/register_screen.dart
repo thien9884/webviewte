@@ -16,6 +16,7 @@ import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/register/register_model.dart';
 import 'package:webviewtest/model/register/register_response.dart';
+import 'package:webviewtest/screen/login/register_success.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -44,6 +45,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late ScrollController _hideButtonController;
   final _formKey = GlobalKey<FormState>();
   bool _isVisible = false;
+  String _messageError = '';
+  final dataKey = GlobalKey();
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _phoneFocus = FocusNode();
+  final FocusNode _userNameFocus = FocusNode();
+  final FocusNode _passFocus = FocusNode();
+  final FocusNode _confirmPassFocus = FocusNode();
+  final FocusNode _referralFocus = FocusNode();
 
   _getHideBottomValue() {
     _isVisible = true;
@@ -78,13 +88,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   _getMessage() {
     if (_registerResponse?.httpStatusCode != 201) {
-      return 'Đăng ký thất bại';
+      setState(() {
+        Scrollable.ensureVisible(dataKey.currentContext!);
+        _messageError = 'Đăng ký thất bại';
+      });
     } else if (_registerResponse?.httpStatusCode == 201 &&
         _registerResponse?.data != null) {
-      return _registerResponse?.data[0].toString();
+      setState(() {
+        Scrollable.ensureVisible(dataKey.currentContext!);
+        _messageError = _registerResponse!.data[0].toString();
+      });
     } else if (_registerResponse?.httpStatusCode == 201 &&
         _registerResponse?.message != null) {
-      return 'Bạn đã đăng ký thành công\nBạn sẽ nhận được email với hướng dẫn kích hoạt tài khoản';
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const RegisterSuccessScreen(),
+        ),
+      );
+      // return 'Bạn đã đăng ký thành công\nBạn sẽ nhận được email với hướng dẫn kích hoạt tài khoản';
     }
   }
 
@@ -92,6 +113,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     _getToken();
     _getHideBottomValue();
+    _nameFocus.addListener(() {
+      if (_nameFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _emailFocus.addListener(() {
+      if (_emailFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _phoneFocus.addListener(() {
+      if (_phoneFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _userNameFocus.addListener(() {
+      if (_userNameFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _passFocus.addListener(() {
+      if (_passFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _confirmPassFocus.addListener(() {
+      if (_confirmPassFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _referralFocus.addListener(() {
+      if (_referralFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
     super.initState();
   }
 
@@ -105,54 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           } else if (state is RegisterLoaded) {
             _registerResponse = state.registerResponse;
             print(_registerResponse);
-
-            showCupertinoModalPopup(
-                context: context,
-                builder: (context) {
-                  return CupertinoAlertDialog(
-                    title: Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Text(
-                        'Thông báo',
-                        style: CommonStyles.size17W700Black1D(context),
-                      ),
-                    ),
-                    content: Text(
-                      _getMessage(),
-                      style: CommonStyles.size14W400Grey33(context),
-                    ),
-                    actions: [
-                      CupertinoDialogAction(
-                        isDestructiveAction: true,
-                        onPressed: () {
-                          if (_registerResponse!.success! &&
-                              _registerResponse?.httpStatusCode == 201 &&
-                              _registerResponse?.message != null) {
-                            Navigator.pop(context);
-                            _userNameController.clear();
-                            _emailController.clear();
-                            _phoneController.clear();
-                            _passwordController.clear();
-                            _confirmPasswordController.clear();
-                            _nameController.clear();
-                            _referralController.clear();
-                            _getToken();
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const NavigationScreen(
-                                      isSelected: 2,
-                                    )));
-                          } else {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Text(
-                          'Đồng ý',
-                          style: CommonStyles.size14W700Blue007A(context),
-                        ),
-                      ),
-                    ],
-                  );
-                });
+            _getMessage();
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is RegisterLoadError) {
@@ -178,6 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             controller: _hideButtonController,
             slivers: [
               SliverPadding(
+                key: dataKey,
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 sliver: SliverToBoxAdapter(
                   child: Center(
@@ -188,6 +205,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               ),
+              if (_messageError.isNotEmpty)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffEBF5E6),
+                        border: Border.all(
+                          width: 1,
+                          color: const Color(0xff339901),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          SvgPicture.asset('assets/icons/ic_alert.svg'),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            _messageError,
+                            style: CommonStyles.size14W400Green33(context),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               _formRegister(),
               SliverList(
                   delegate: SliverChildBuilderDelegate(
@@ -379,6 +425,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
                 return null;
               },
+              focusNode: _nameFocus,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 18),
@@ -486,6 +533,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
                 return null;
               },
+              focusNode: _emailFocus,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 5),
@@ -525,6 +573,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
                 return null;
               },
+              focusNode: _phoneFocus,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 5),
@@ -559,6 +608,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
                 return null;
               },
+              focusNode: _userNameFocus,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -608,6 +658,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
                 return null;
               },
+              focusNode: _passFocus,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -661,6 +712,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 }
                 return null;
               },
+              focusNode: _confirmPassFocus,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -689,6 +741,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 contentPadding: const EdgeInsets.all(10),
               ),
+              focusNode: _referralFocus,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),
@@ -716,6 +769,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             GestureDetector(
               onTap: () {
+                FocusScope.of(context).unfocus();
+                BlocProvider.of<ShopdunkBloc>(context)
+                    .add(const RequestGetHideBottom(true));
+                setState(() {
+                  _messageError = '';
+                });
                 if (_formKey.currentState!.validate()) {
                   final registerModel = RegisterModel(
                     email: _emailController.text,

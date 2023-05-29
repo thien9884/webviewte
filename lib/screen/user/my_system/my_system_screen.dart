@@ -168,15 +168,13 @@ class _MySystemScreenState extends State<MySystemScreen>
   }
 
   Widget _mySystemTitle() {
-    return const SliverToBoxAdapter(
-      child: CommonAppbar(title: 'Hệ thống của tôi'),
-    );
+    return const CommonAppbar(title: 'Hệ thống của tôi');
   }
 
   Widget _myReferralCode() {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         child: Text(
           'Mã giới thiệu của bạn:',
           style: CommonStyles.size14W700Black1D(context),
@@ -293,7 +291,7 @@ class _MySystemScreenState extends State<MySystemScreen>
                 ),
               ),
             ),
-            _tableViewData(_indexSelected + 1),
+            _tableViewData(_indexSelected),
           ],
         ),
       ),
@@ -360,10 +358,10 @@ class _MySystemScreenState extends State<MySystemScreen>
                         ),
                         Column(
                           children: List.generate(
-                              _listMySystem[0].details != null
-                                  ? _listMySystem[0].details!.length
-                                  : 0, (index) {
-                            final a = _listMySystem[0].details![index];
+                              _listMySystem[index].details != null
+                                  ? _listMySystem[index].details!.length
+                                  : 0, (i) {
+                            final a = _listMySystem[index].details![i];
 
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),

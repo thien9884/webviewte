@@ -91,9 +91,8 @@ class _CommonFooterState extends State<CommonFooter> {
             children: [
               Container(
                 color: const Color(0xffF2F2F2),
-                padding: const EdgeInsets.symmetric(vertical: 40),
+                padding: const EdgeInsets.only(top: 60, bottom: 40),
                 margin: EdgeInsets.only(
-                  top: 20,
                   left: Responsive.isMobile(context) ? 0 : 150,
                   right: Responsive.isMobile(context) ? 0 : 150,
                 ),

@@ -8,43 +8,37 @@ class CommonAppbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Stack(
-        children: [
-          Container(
-            height: 25,
-            alignment: Alignment.center,
-            child: Text(
-              title,
-              style: CommonStyles.size18W700Black1D(context),
-            ),
-          ),
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              height: 25,
-              alignment: Alignment.centerLeft,
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    size: 16,
-                    color: Color(0xff0066CC),
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    'Trở lại',
-                    style: CommonStyles.size16W400Blue00(context),
-                  ),
-                ],
+    return SliverAppBar(
+      pinned: true,
+      backgroundColor: Colors.white,
+      leadingWidth: 90,
+      leading: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 16,
+                color: Color(0xff0066CC),
               ),
-            ),
-          )
-        ],
+              const SizedBox(
+                width: 5,
+              ),
+              Text(
+                'Trở lại',
+                style: CommonStyles.size16W400Blue00(context),
+              ),
+            ],
+          ),
+        ),
       ),
+      title: Text(
+        title,
+        style: CommonStyles.size18W700Black1D(context),
+      ),
+      centerTitle: true,
     );
   }
 }

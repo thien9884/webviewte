@@ -134,9 +134,7 @@ class _UserAddressState extends State<UserAddress> {
         child: CustomScrollView(
           controller: _hideButtonController,
           slivers: [
-            const SliverToBoxAdapter(
-              child: CommonAppbar(title: 'Địa chỉ nhận hàng'),
-            ),
+            const CommonAppbar(title: 'Địa chỉ nhận hàng'),
             _listAddress.isNotEmpty
                 ? _buildListAddress()
                 : const SliverToBoxAdapter(
@@ -160,7 +158,7 @@ class _UserAddressState extends State<UserAddress> {
         final item = _listAddress[index];
 
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(

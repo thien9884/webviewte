@@ -31,6 +31,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   String _messageError = '';
   String _message = '';
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _oldPassFocus = FocusNode();
+  final FocusNode _newPassFocus = FocusNode();
+  final FocusNode _confirmPassFocus = FocusNode();
 
   bool _isVisible = false;
 
@@ -80,6 +83,24 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   void initState() {
     _getHideBottomValue();
+    _oldPassFocus.addListener(() {
+      if (_oldPassFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _newPassFocus.addListener(() {
+      if (_newPassFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
+    _confirmPassFocus.addListener(() {
+      if (_confirmPassFocus.hasFocus) {
+        BlocProvider.of<ShopdunkBloc>(context)
+            .add(const RequestGetHideBottom(false));
+      }
+    });
     super.initState();
   }
 
@@ -183,9 +204,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   // title change password
   Widget _titleChangePass() {
-    return const SliverToBoxAdapter(
-      child: CommonAppbar(title: 'Đổi mật khẩu'),
-    );
+    return const CommonAppbar(title: 'Đổi mật khẩu');
   }
 
   // email recovery
@@ -232,6 +251,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             }
             return null;
           },
+          focusNode: _oldPassFocus,
         ),
       ],
     );
@@ -281,6 +301,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             }
             return null;
           },
+          focusNode: _newPassFocus,
         ),
       ],
     );
@@ -327,6 +348,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             }
             return null;
           },
+          focusNode: _confirmPassFocus,
         ),
       ],
     );

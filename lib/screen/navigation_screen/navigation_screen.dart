@@ -70,7 +70,7 @@ class _NavigationScreenState extends State<NavigationScreen>
     const LoginScreen(),
     // const StoreScreen(),
     const ShopDunkWebView(
-      url: '/find-store',
+      url: 'find-store',
       hideBottom: false,
     )
   ];
@@ -129,7 +129,11 @@ class _NavigationScreenState extends State<NavigationScreen>
       body: WillPopScope(
         onWillPop: () async => false,
         child: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(const RequestGetHideBottom(true));
+          },
           child: SafeArea(
             bottom: false,
             child: Stack(
@@ -313,7 +317,7 @@ class _NavigationScreenState extends State<NavigationScreen>
             ),
           ),
           GestureDetector(
-            onTap: () => setState(() => _isSelected = 1),
+            onTap: () => setState(() => _isSelected = 0),
             child: Image.asset(
               'assets/icons/ic_sd_white.png',
               scale: Responsive.isMobile(context) ? 4 : 1.5,
@@ -327,7 +331,6 @@ class _NavigationScreenState extends State<NavigationScreen>
             },
             child: SvgPicture.asset(
               'assets/icons/ic_search_home.svg',
-              color: Colors.white,
             ),
           ),
         ],

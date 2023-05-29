@@ -138,13 +138,17 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             Column(
               children: [
                 if (widget.showNavigation && widget.showAppBar) _buildAppbar(),
-                if (widget.showNavigation && widget.showAppBar) _buildCategoryBar(),
+                if (widget.showNavigation && widget.showAppBar)
+                  _buildCategoryBar(),
                 Expanded(
                   child: Stack(
                     children: [
                       GestureDetector(
-                        onTap: () =>
-                            FocusManager.instance.primaryFocus?.unfocus(),
+                        onTap: () {
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          BlocProvider.of<ShopdunkBloc>(context)
+                              .add(const RequestGetHideBottom(true));
+                        },
                         child: widget.child,
                       ),
                       _buildDrawerUI(),
@@ -315,7 +319,6 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             },
             child: SvgPicture.asset(
               'assets/icons/ic_search_home.svg',
-              color: Colors.white,
             ),
           ),
         ],

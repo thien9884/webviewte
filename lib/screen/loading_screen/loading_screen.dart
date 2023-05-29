@@ -351,7 +351,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
             var document = parse(
               _topBanner
                   .replaceAll('src="', 'src="http://shopdunk.com')
-                  .replaceAll('shopdunk.com', 'api.shopdunk.com'),
             );
             var imgList = document.querySelectorAll("img");
             var linkList = document.querySelectorAll("a");
@@ -389,7 +388,6 @@ class _LoadingScreenState extends State<LoadingScreen> {
             var document = parse(
               _homeBanner
                   .replaceAll('src="', 'src="http://shopdunk.com')
-                  .replaceAll('shopdunk.com', 'api.shopdunk.com'),
             );
             var imgList = document.querySelectorAll("img");
             var linkList = document.querySelectorAll("a");
