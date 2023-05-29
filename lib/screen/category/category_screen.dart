@@ -864,7 +864,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               _isExpand
                   ? _desc
                   : _desc.substring(0, 3000).replaceRange(3000, 3000, '...'),
-              textStyle: const TextStyle(fontSize: 16, height: 1.2),
+              textStyle: const TextStyle(fontSize: 16, height: 1.3),
               onTapUrl: (st) {
                 print('object');
                 return true;

@@ -400,8 +400,7 @@ class _MySystemScreenState extends State<MySystemScreen>
                     ),
                   ),
                 ),
-                Container(
-                ),
+                Container(),
               ],
             )
           : const SizedBox(),

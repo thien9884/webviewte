@@ -257,7 +257,7 @@ class _NewsDetailState extends State<NewsDetail> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: HtmlWidget(
               widget.latestNews != null
                   ? widget.latestNews?.full?.replaceAll('/images/uploaded/',
@@ -266,23 +266,26 @@ class _NewsDetailState extends State<NewsDetail> {
                   : widget.newsItems?.full?.replaceAll('/images/uploaded/',
                           'https://shopdunk.com/images/uploaded/') ??
                       '',
-              textStyle: const TextStyle(fontSize: 16, height: 1.2),
+              textStyle: const TextStyle(fontSize: 16, height: 1.3),
               onTapUrl: (st) {
                 print('object');
                 return true;
               },
               customStylesBuilder: (element) {
                 if (element.localName == 'p') {
-                  return {'text-align' : 'justify'};
+                  return {'text-align': 'justify', 'font-size': '18px'};
                 }
                 if (element.localName == 'span') {
-                  return {'text-align' : 'justify'};
+                  return {'text-align': 'justify'};
                 }
                 if (element.localName == 'ul') {
-                  return {'text-align' : 'justify'};
+                  return {'text-align': 'justify'};
                 }
                 if (element.localName == 'h2') {
-                  return {'font-weight': '500'};
+                  return {'font-weight': '700'};
+                }
+                if (element.localName == 'td') {
+                  return {'padding-left': '8px'};
                 }
                 if (element.localName == 'a') {
                   return {'color': '#0000ff'};
