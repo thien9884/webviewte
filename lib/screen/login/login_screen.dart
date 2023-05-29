@@ -63,6 +63,12 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  _showNavigationBar() {
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(const RequestGetHideBottom(true));
+    print('open');
+  }
+
   _setLogin() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
 
@@ -193,6 +199,9 @@ class _LoginScreenState extends State<LoginScreen> {
             contentPadding: const EdgeInsets.all(16),
           ),
           focusNode: _userFocusNode,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );
@@ -240,6 +249,9 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           obscureText: !_showPassword,
           focusNode: _passwordFocusNode,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );

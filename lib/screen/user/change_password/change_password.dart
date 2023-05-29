@@ -64,6 +64,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     });
   }
 
+  _showNavigationBar() {
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(const RequestGetHideBottom(true));
+    print('open');
+  }
+
   _recoveryPassword() async {
     BlocProvider.of<ChangePasswordBloc>(context).add(RequestPutChangePassword(
       oldPassword: _oldPasswordController.text,
@@ -252,6 +258,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             return null;
           },
           focusNode: _oldPassFocus,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );
@@ -302,6 +311,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             return null;
           },
           focusNode: _newPassFocus,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );
@@ -349,6 +361,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             return null;
           },
           focusNode: _confirmPassFocus,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );

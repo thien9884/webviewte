@@ -82,6 +82,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
+  _showNavigationBar() {
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(const RequestGetHideBottom(true));
+    print('open');
+  }
+
   _getToken() {
     BlocProvider.of<RegisterBloc>(context).add(const RequestNewToken());
   }
@@ -426,6 +432,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 return null;
               },
               focusNode: _nameFocus,
+              onFieldSubmitted: (value) {
+                _showNavigationBar();
+              },
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 18),
@@ -534,6 +543,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 return null;
               },
               focusNode: _emailFocus,
+              onFieldSubmitted: (value) {
+                _showNavigationBar();
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 5),
@@ -574,6 +586,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 return null;
               },
               focusNode: _phoneFocus,
+              onFieldSubmitted: (value) {
+                _showNavigationBar();
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 5),
@@ -609,6 +624,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 return null;
               },
               focusNode: _userNameFocus,
+              onFieldSubmitted: (value) {
+                _showNavigationBar();
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -659,6 +677,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 return null;
               },
               focusNode: _passFocus,
+              onFieldSubmitted: (value) {
+                _showNavigationBar();
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -713,6 +734,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 return null;
               },
               focusNode: _confirmPassFocus,
+              onFieldSubmitted: (value) {
+                _showNavigationBar();
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 5),
@@ -742,6 +766,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 contentPadding: const EdgeInsets.all(10),
               ),
               focusNode: _referralFocus,
+              onFieldSubmitted: (value) {
+                _showNavigationBar();
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20),

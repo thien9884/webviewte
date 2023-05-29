@@ -79,6 +79,12 @@ class _AddAddressState extends State<AddAddress> {
     });
   }
 
+  _showNavigationBar() {
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(const RequestGetHideBottom(true));
+    print('open');
+  }
+
   _getData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
 
@@ -181,7 +187,7 @@ class _AddAddressState extends State<AddAddress> {
                 builder: (context) => CupertinoAlertDialog(
                       content: Text(
                         'Thêm địa chỉ thành công',
-                        style: CommonStyles.size14W400Grey86(context),
+                        style: CommonStyles.size14W400Grey33(context),
                       ),
                       actions: [
                         CupertinoDialogAction(
@@ -211,7 +217,7 @@ class _AddAddressState extends State<AddAddress> {
                 builder: (context) => CupertinoAlertDialog(
                       content: Text(
                         'Sửa địa chỉ thành công',
-                        style: CommonStyles.size14W400Grey86(context),
+                        style: CommonStyles.size14W400Grey33(context),
                       ),
                       actions: [
                         CupertinoDialogAction(
@@ -341,6 +347,9 @@ class _AddAddressState extends State<AddAddress> {
             ),
           ),
           focusNode: _nameFocus,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );
@@ -380,6 +389,9 @@ class _AddAddressState extends State<AddAddress> {
             ),
           ),
           focusNode: _phoneFocus,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );
@@ -419,6 +431,9 @@ class _AddAddressState extends State<AddAddress> {
             ),
           ),
           focusNode: _emailFocus,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );
@@ -562,6 +577,9 @@ class _AddAddressState extends State<AddAddress> {
             ),
           ),
           focusNode: _districtFocus,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );
@@ -601,6 +619,9 @@ class _AddAddressState extends State<AddAddress> {
             ),
           ),
           focusNode: _wardFocus,
+          onFieldSubmitted: (value) {
+            _showNavigationBar();
+          },
         ),
       ],
     );
@@ -643,6 +664,9 @@ class _AddAddressState extends State<AddAddress> {
             ),
             maxLines: 3,
             focusNode: _addressFocus,
+            onFieldSubmitted: (value) {
+              _showNavigationBar();
+            },
           ),
         ],
       ),
