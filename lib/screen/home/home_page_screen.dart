@@ -258,11 +258,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         _listTopBannerImg[index % _listTopBannerImg.length];
 
                     return GestureDetector(
-                      onTap: () =>
-                          Navigator.of(context).push(CustomMaterialPageRoute(
-                              builder: (context) => ShopDunkWebView(
-                                    baseUrl: item.link,
-                                  ))),
+                      // onTap: () =>
+                      //     Navigator.of(context).push(CustomMaterialPageRoute(
+                      //         builder: (context) => ShopDunkWebView(
+                      //               baseUrl: item.link,
+                      //             ))),
                       child: SizedBox(
                         child: Image.network(
                           item.img ?? '',
@@ -312,10 +312,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
           (BuildContext context, int index) {
             final item = _listHomeBannerImg[index];
             return GestureDetector(
-              onTap: () => Navigator.of(context).push(CustomMaterialPageRoute(
-                  builder: (context) => ShopDunkWebView(
-                        baseUrl: item.link,
-                      ))),
+              // onTap: () => Navigator.of(context).push(CustomMaterialPageRoute(
+              //     builder: (context) => ShopDunkWebView(
+              //           baseUrl: item.link,
+              //         ))),
               child: Container(
                 margin: const EdgeInsets.only(bottom: 24),
                 child: Image.network(item.img ?? ''),
