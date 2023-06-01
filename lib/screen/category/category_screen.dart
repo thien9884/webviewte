@@ -514,7 +514,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               onTap: () => Navigator.of(context).push(
                 CustomMaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
-                    url: item.seName,
+                    url: 'app-${item.seName}',
                   ),
                 ),
               ),
@@ -563,10 +563,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                 item.name ?? '',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: CommonStyles.size14W700Black1D(context)
+                                style: CommonStyles.size16W700Black1D(context)
                                     .copyWith(
                                   letterSpacing: 0.3,
-                                  height: 1.5,
+                                  height: 1.3,
                                 ),
                               ),
                             ),
@@ -616,7 +616,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
-          mainAxisExtent: Platform.isIOS ? 330 : 310,
+          mainAxisExtent: Platform.isIOS ? 320 : 300,
         ),
       ),
     );

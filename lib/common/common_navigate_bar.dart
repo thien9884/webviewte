@@ -319,6 +319,10 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             },
             child: SvgPicture.asset(
               'assets/icons/ic_search_home.svg',
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
             ),
           ),
         ],

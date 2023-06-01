@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class BannerModel {
   List<Topics>? topics;
 
@@ -112,4 +114,9 @@ class Topics {
     data['id'] = id;
     return data;
   }
+
+  static List<Topics> decode(String topics) =>
+      (json.decode(topics) as List<dynamic>)
+          .map<Topics>((item) => Topics.fromJson(item))
+          .toList();
 }

@@ -20,6 +20,7 @@ class SharedPrefKeys {
   static const String listLatestNews = 'listLatestNews';
   static const String listTopBanner = 'listTopBanner';
   static const String listHomeBanner = 'listHomeBanner';
+  static const String listTopics = 'listTopics';
   static const String infoCustomer = 'infoCustomer';
   static const String state = 'state';
 }
@@ -143,6 +144,13 @@ class SharedPreferencesService {
 
   // Get list home banner
   String get listHomeBanner => _preferences.getString(SharedPrefKeys.listHomeBanner) ?? '';
+
+  // Set list topics
+  Future<void> setListTopics(String listTopics) async =>
+      await _preferences.setString(SharedPrefKeys.listTopics, listTopics);
+
+  // Get list topics
+  String get listTopics => _preferences.getString(SharedPrefKeys.listTopics) ?? '';
 
   // Set list home banner
   Future<void> setInfoCustomer(String infoCustomer) async =>

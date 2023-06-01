@@ -4,6 +4,7 @@ import 'package:webviewtest/screen/user/account_info/account_info.dart';
 import 'package:webviewtest/screen/user/account_address/user_address.dart';
 import 'package:webviewtest/screen/user/change_password/change_password.dart';
 import 'package:webviewtest/screen/user/my_system/my_system_screen.dart';
+import 'package:webviewtest/screen/user/point/exchange_point.dart';
 import 'package:webviewtest/screen/user/point/my_point_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 
@@ -152,6 +153,12 @@ class ListCustom {
     ),
     Resource(
       id: 3,
+      img: 'assets/icons/ic_exchange_point.svg',
+      name: 'Đổi thưởng',
+      screen: const ExchangePointScreen(),
+    ),
+    Resource(
+      id: 4,
       img: 'assets/icons/ic_address.svg',
       name: 'Địa chỉ nhận hàng',
       screen: const UserAddress(),

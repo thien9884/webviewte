@@ -10,13 +10,13 @@ import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
-import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
+import 'package:webviewtest/screen/news/news_detail.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 import 'dart:io' show Platform;
@@ -64,31 +64,27 @@ class _HomePageScreenState extends State<HomePageScreen> {
   int _currentIndex = 0;
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
   List<LatestNews> _latestNews = [];
+  List<NewsGroup> _newsGroup = [];
   List<TopBanner> _listTopBannerImg = [];
-
+  late ScrollController _hideButtonController;
+  bool _isVisible = false;
   List<TopBanner> _listHomeBannerImg = [];
 
   // Categories
   List<Categories> _listCategories = [];
 
   _autoSlidePage() {
-    if (_listTopBannerImg.isNotEmpty) {
-      _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-        if (_currentIndex < ListCustom.listIcon.length + 1) {
-          _currentIndex++;
-        } else {
-          _currentIndex = 0;
-        }
+    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+      if (_currentIndex < _listTopBannerImg.length + 1) {
+        _currentIndex++;
+      } else {
+        _currentIndex = 0;
+      }
 
-        _pageController.nextPage(
-            duration: const Duration(seconds: 1), curve: Curves.linear);
-      });
-    }
+      _pageController.nextPage(
+          duration: const Duration(seconds: 1), curve: Curves.linear);
+    });
   }
-
-  late ScrollController _hideButtonController;
-
-  bool _isVisible = false;
 
   _getHideBottomValue() {
     _isVisible = true;
@@ -136,6 +132,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
     _latestNews = LatestNews.decode(sPref.listLatestNews);
     _listTopBannerImg = TopBanner.decode(sPref.listTopBanner);
     _listHomeBannerImg = TopBanner.decode(sPref.listHomeBanner);
+    _newsGroup = NewsGroup.decode(sPref.listNewsGroup);
 
     if (_listCategories.isNotEmpty) {
       int indexIpad =
@@ -203,6 +200,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                         onTap: () =>
                             Navigator.of(context).push(CustomMaterialPageRoute(
                                 builder: (context) => const ShopDunkWebView(
+                                      hideBottom: false,
                                       baseUrl:
                                           'https://doanhnghiep.shopdunk.com/',
                                     ))),
@@ -411,7 +409,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
               onTap: () => Navigator.of(context).push(
                 CustomMaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
-                    url: item.seName,
+                    url: 'app-${item.seName}',
                   ),
                 ),
               ),
@@ -456,10 +454,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                 item.name ?? '',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: CommonStyles.size14W700Black1D(context)
+                                style: CommonStyles.size16W700Black1D(context)
                                     .copyWith(
                                   letterSpacing: 0.3,
-                                  height: 1.5,
+                                  height: 1.3,
                                 ),
                               ),
                             ),
@@ -509,7 +507,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
-          mainAxisExtent: Platform.isIOS ? 330 : 310,
+          mainAxisExtent: Platform.isIOS ? 320 : 300,
         ),
       ),
     );
@@ -586,7 +584,16 @@ class _HomePageScreenState extends State<HomePageScreen> {
         final timeFormat = DateFormat("dd/MM/yyyy").format(timeUpload);
 
         return GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => NewsDetail(
+                      newsGroup: _newsGroup
+                          .where((element) => element.newsItems!
+                              .any((element) => element.id == item.id))
+                          .first,
+                      latestNews: item,
+                    )));
+          },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Container(

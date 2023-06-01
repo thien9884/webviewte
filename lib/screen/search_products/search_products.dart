@@ -91,28 +91,24 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
 
   // build UI
   Widget _buildUI() {
-    return Scaffold(
-      body: SafeArea(
-        child: CommonNavigateBar(
-          index: 0,
-          child: _listAllProduct.isEmpty
-              ? _widget ?? Container()
-              : Container(
-                  color: const Color(0xfff5f5f7),
-                  child: CustomScrollView(
-                    slivers: [
-                      _searchProducts(),
-                      _sortListProduct(),
-                      _listProduct(_listAllProduct),
-                      if (catalogProductsModel.totalPages != null)
-                        _pagesNumber(),
-                      SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                              childCount: 1,
-                              (context, index) => const CommonFooter())),
-                    ],
-                  ),
-                ),
+    return CommonNavigateBar(
+      index: 0,
+      child: _listAllProduct.isEmpty
+          ? _widget ?? Container()
+          : Container(
+        color: const Color(0xfff5f5f7),
+        child: CustomScrollView(
+          slivers: [
+            _searchProducts(),
+            _sortListProduct(),
+            _listProduct(_listAllProduct),
+            if (catalogProductsModel.totalPages != null)
+              _pagesNumber(),
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
+                    childCount: 1,
+                        (context, index) => const CommonFooter())),
+          ],
         ),
       ),
     );
@@ -310,7 +306,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
               onTap: () => Navigator.of(context).push(
                 CustomMaterialPageRoute(
                   builder: (context) => ShopDunkWebView(
-                    url: item.seName,
+                    url: 'app-${item.seName}',
                   ),
                 ),
               ),
@@ -355,10 +351,10 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                                 item.name ?? '',
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: CommonStyles.size14W700Black1D(context)
+                                style: CommonStyles.size16W700Black1D(context)
                                     .copyWith(
                                   letterSpacing: 0.3,
-                                  height: 1.5,
+                                  height: 1.3,
                                 ),
                               ),
                             ),
@@ -408,7 +404,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
           maxCrossAxisExtent: Responsive.isMobile(context) ? 200 : 300,
           mainAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
           crossAxisSpacing: Responsive.isMobile(context) ? 10 : 20,
-          mainAxisExtent: Platform.isIOS ? 330 : 310,
+          mainAxisExtent: Platform.isIOS ? 320 : 300,
         ),
       ),
     );

@@ -31,6 +31,7 @@ class _UserAddressState extends State<UserAddress> {
   late ScrollController _hideButtonController;
   int? customerId;
   int _indexDeleted = -1;
+  bool _isShow = false;
 
   bool _isVisible = false;
 
@@ -84,15 +85,18 @@ class _UserAddressState extends State<UserAddress> {
         builder: (context, state) => _userAddressUI(),
         listener: (context, state) {
           if (state is CustomerAddressLoading) {
+            _isShow = false;
             EasyLoading.show();
           } else if (state is CustomerAddressLoaded) {
             _listAddress =
                 state.customerModel?.customers?.first.addresses ?? [];
             print(_listAddress);
 
+            _isShow = true;
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is CustomerAddressLoadError) {
             AlertUtils.displayErrorAlert(context, state.message);
+            _isShow = true;
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is DeleteAddressLoading) {
             EasyLoading.show();
@@ -137,12 +141,20 @@ class _UserAddressState extends State<UserAddress> {
             const CommonAppbar(title: 'Địa chỉ nhận hàng'),
             _listAddress.isNotEmpty
                 ? _buildListAddress()
-                : const SliverToBoxAdapter(
+                : SliverToBoxAdapter(
                     child: SizedBox(
                       height: 300,
+                      child: Center(
+                        child: Text(
+                          _isShow
+                              ? 'Bạn hiện chưa có địa chỉ nào\n Vui lòng thêm địa chỉ mới!'
+                              : '',
+                          style: CommonStyles.size16W400Black1D(context),
+                        ),
+                      ),
                     ),
                   ),
-            _addButton(),
+            if (_isShow) _addButton(),
             SliverList(
                 delegate: SliverChildBuilderDelegate(
                     childCount: 1, (context, index) => const CommonFooter())),

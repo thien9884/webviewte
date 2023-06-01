@@ -26,4 +26,8 @@ class ApiConstant {
   static const String mySystem = '/api/customers/filter-system?level=';
   static const String recovery = '/api/customers/password-recovery';
   static const String changePassword = '/api/customers/change-password';
+  static const String rewardPoint = '/api/customers/reward-points-history';
+  static const String listCoupon = '/api/customers/list-coupon';
+  static const String exchangeCoupon = '/api/customers/coupon';
+  static const String avatar = '/api/customers/avatar';
 }

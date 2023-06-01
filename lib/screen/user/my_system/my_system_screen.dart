@@ -35,6 +35,7 @@ class _MySystemScreenState extends State<MySystemScreen>
   String _phoneCode = '';
   String _userNameCode = '';
   String _codeSelected = 'none';
+  String _messageError = '';
   InfoModel? _infoModel = InfoModel();
   final List<MySystemModel> _listMySystem = [];
   int _indexSelected = 0;
@@ -110,9 +111,12 @@ class _MySystemScreenState extends State<MySystemScreen>
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is MySystemLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
 
-            if (EasyLoading.isShow) EasyLoading.dismiss();
+              if (EasyLoading.isShow) EasyLoading.dismiss();
+            }
           }
         });
   }

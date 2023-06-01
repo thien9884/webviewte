@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -13,6 +14,27 @@ class MyPointScreen extends StatefulWidget {
 }
 
 class _MyPointScreenState extends State<MyPointScreen> {
+  int _point = 0;
+  String _myRankTittle = '';
+
+  _getMyRank() {
+    if (_point >= 2000) {
+      _myRankTittle = 'Bạn đang ở mức Rank Kim Cương';
+    } else if (_point >= 1000 && _point < 2000) {
+      _myRankTittle = 'Bạn đang ở mức Rank Vàng';
+    } else if (_point >= 500 && _point < 1000) {
+      _myRankTittle = 'Bạn đang ở mức Rank Bạc';
+    } else {
+      _myRankTittle = 'Bạn hiện tại chưa có Rank';
+    }
+  }
+
+  @override
+  void initState() {
+    _getMyRank();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return CommonNavigateBar(
@@ -48,37 +70,139 @@ class _MyPointScreenState extends State<MyPointScreen> {
 
   // my point background
   Widget _myPointBackground() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              Center(
-                child:
-                    SvgPicture.asset('assets/icons/ic_silver_background.svg'),
-              ),
-              Center(
-                child: SvgPicture.asset('assets/icons/ic_cup_silver.svg'),
-              ),
-            ],
-          ),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
-              decoration: BoxDecoration(
-                color: const Color(0xffE1EBF4),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                '2001 điểm',
-                style: CommonStyles.size24W700Grey79(context),
+    if (_point >= 2000) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Center(
+                  child: SvgPicture.asset(
+                      'assets/icons/ic_diamond_background.svg'),
+                ),
+                Center(
+                  child: SvgPicture.asset('assets/icons/ic_cup_diamond.svg'),
+                ),
+              ],
+            ),
+            Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xffE0D8F9),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$_point điểm',
+                  style: CommonStyles.size24W700Purple35(context),
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    } else if (_point >= 1000 && _point < 2000) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Center(
+                  child:
+                      SvgPicture.asset('assets/icons/ic_gold_background.svg'),
+                ),
+                Center(
+                  child: SvgPicture.asset('assets/icons/ic_cup_gold.svg'),
+                ),
+              ],
+            ),
+            Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xffFFFAE6),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$_point điểm',
+                  style: CommonStyles.size24W700YellowFF(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else if (_point >= 500 && _point < 1000) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Center(
+                  child:
+                      SvgPicture.asset('assets/icons/ic_silver_background.svg'),
+                ),
+                Center(
+                  child: SvgPicture.asset('assets/icons/ic_cup_silver.svg'),
+                ),
+              ],
+            ),
+            Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xffE1EBF4),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$_point điểm',
+                  style: CommonStyles.size24W700Grey79(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Center(
+                  child:
+                      SvgPicture.asset('assets/icons/ic_background_norank.svg'),
+                ),
+                Center(
+                  child: SvgPicture.asset('assets/icons/ic_cup_norank.svg'),
+                ),
+              ],
+            ),
+            Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xff86868B).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$_point điểm',
+                  style: CommonStyles.size24W700Grey86(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   // rank level
@@ -228,7 +352,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                     ),
                   ),
                   Text(
-                    'Bạn đang ở mức Rank Kim Cương',
+                    _myRankTittle,
                     style: CommonStyles.size14W400Grey86(context),
                   ),
                 ],
@@ -260,12 +384,15 @@ class _MyPointScreenState extends State<MyPointScreen> {
   }
 
   Widget _dataTable() {
+    String formattedDate =
+        DateFormat("dd/MM/yyyy").add_jms().format(DateTime.now());
+    print(formattedDate);
+
     return SliverToBoxAdapter(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.fromLTRB(20, 16, 0, 16),
         color: const Color(0xffF5F5F7),
         child: Container(
-          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
@@ -273,11 +400,12 @@ class _MyPointScreenState extends State<MyPointScreen> {
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(
+              columnSpacing: 16,
               columns: <DataColumn>[
                 DataColumn(
                   label: Expanded(
                     child: Text(
-                      'Ngày',
+                      'Ngày nhận',
                       style: CommonStyles.size14W700Black1D(context),
                     ),
                   ),
@@ -293,7 +421,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                 DataColumn(
                   label: Expanded(
                     child: Text(
-                      'Chú thích',
+                      'Ghi chú',
                       style: CommonStyles.size14W700Black1D(context),
                     ),
                   ),
@@ -308,31 +436,79 @@ class _MyPointScreenState extends State<MyPointScreen> {
                 ),
               ],
               rows: List.generate(
-                20,
+                10,
                 (index) => DataRow(
                   cells: <DataCell>[
                     DataCell(
-                      Text(
-                        '20/05/2023',
-                        style: CommonStyles.size12W400Black1D(context),
+                      SizedBox(
+                        width: 80,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    formattedDate,
+                                    style:
+                                        CommonStyles.size12W400Black1D(context),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     DataCell(
                       Text(
-                        '10.000',
+                        '1000',
                         style: CommonStyles.size12W400Black1D(context),
                       ),
                     ),
                     DataCell(
-                      Text(
-                        'Admin cho',
-                        style: CommonStyles.size12W400Black1D(context),
+                      SizedBox(
+                        width: 200,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Điểm cộng cho đơn hàng 8848 từ tài khoản 4580001 > 4579799',
+                                    style:
+                                        CommonStyles.size12W400Black1D(context),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     DataCell(
-                      Text(
-                        '20/05/2023',
-                        style: CommonStyles.size12W400Black1D(context),
+                      SizedBox(
+                        width: 80,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    formattedDate,
+                                    style:
+                                        CommonStyles.size12W400Black1D(context),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],

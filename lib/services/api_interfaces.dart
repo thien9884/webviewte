@@ -2,12 +2,14 @@ import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/category_model/category_group_model.dart';
+import 'package:webviewtest/model/coupon/coupon_model.dart';
 import 'package:webviewtest/model/customer/customer_model.dart';
 import 'package:webviewtest/model/customer/info_model.dart';
 import 'package:webviewtest/model/customer/product_rating_model.dart';
 import 'package:webviewtest/model/customer/rating_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
+import 'package:webviewtest/model/my_rank/my_rank_model.dart';
 import 'package:webviewtest/model/my_system/my_system_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/news_category/news_category_model.dart';
@@ -69,6 +71,15 @@ abstract class ApiInterface {
 
   // get info
   Future<InfoModel?> requestGetInfo();
+
+  // get my rank
+  Future<MyRankModel?> requestGetMyRank(int page);
+
+  // get point exchange
+  Future<CouponModel?> requestGetPointExchange(int point);
+
+  // get avatar
+  Future<String?> requestGetAvatar();
 
   // get state
   Future<List<StateModel>?> requestGetState();

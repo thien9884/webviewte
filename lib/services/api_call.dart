@@ -3,12 +3,14 @@ import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/category_model/category_group_model.dart';
+import 'package:webviewtest/model/coupon/coupon_model.dart';
 import 'package:webviewtest/model/customer/customer_model.dart';
 import 'package:webviewtest/model/customer/info_model.dart';
 import 'package:webviewtest/model/customer/product_rating_model.dart';
 import 'package:webviewtest/model/customer/rating_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/login/user_model.dart';
+import 'package:webviewtest/model/my_rank/my_rank_model.dart';
 import 'package:webviewtest/model/my_system/my_system_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/news_category/news_category_model.dart';
@@ -194,8 +196,36 @@ class ApiCall implements ApiInterface {
   }
 
   @override
+  Future<MyRankModel?> requestGetMyRank(
+    int? page,
+  ) async {
+    var response = await DioClient().get('${ApiConstant.rewardPoint}$page');
+    if (response == null) return null;
+    final data = response;
+    return MyRankModel.fromJson(data);
+  }
+
+  @override
+  Future<CouponModel?> requestGetPointExchange(
+    int? point,
+  ) async {
+    var response = await DioClient().get('${ApiConstant.exchangeCoupon}$point');
+    if (response == null) return null;
+    final data = response;
+    return CouponModel.fromJson(data);
+  }
+
+  @override
   Future<String?> requestPutAddress(PutAddress? putAddress) async {
     var response = await DioClient().put(ApiConstant.address, putAddress);
+    if (response == null) return null;
+    final data = response;
+    return data;
+  }
+
+  @override
+  Future<String?> requestGetAvatar() async {
+    var response = await DioClient().get(ApiConstant.avatar);
     if (response == null) return null;
     final data = response;
     return data;

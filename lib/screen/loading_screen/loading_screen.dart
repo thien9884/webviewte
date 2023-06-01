@@ -12,6 +12,7 @@ import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
@@ -41,6 +42,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   String _topBanner = '';
   String _messageError = '';
   final List<TopBanner> _listTopBannerImg = [];
+  List<Topics> _listTopics = [];
 
   String _homeBanner = '';
   final List<TopBanner> _listHomeBannerImg = [];
@@ -105,6 +107,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetHomeBanner(6));
   }
 
+  _getTopics() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetFooterBanner());
+  }
+
   _getListProduct() async {
     await _getListIpad();
     await _getListIphone();
@@ -115,6 +121,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     await _getNews();
     await _getTopBanner();
     await _getHomeBanner();
+    await _getTopics();
   }
 
   _clearData() async {
@@ -131,6 +138,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     sPref.remove(SharedPrefKeys.listLatestNews);
     sPref.remove(SharedPrefKeys.listTopBanner);
     sPref.remove(SharedPrefKeys.listHomeBanner);
+    sPref.remove(SharedPrefKeys.listTopics);
   }
 
   _saveData() async {
@@ -147,7 +155,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
         _listTopBannerImg.isNotEmpty &&
         _listHomeBannerImg.isNotEmpty &&
         _newsGroup.isNotEmpty &&
-        _latestNews.isNotEmpty
+        _latestNews.isNotEmpty &&
+        _listTopics.isNotEmpty
     ) {
       String listCategories = jsonEncode(_listCategories);
       String listIpad = jsonEncode(_listIpad);
@@ -160,6 +169,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       String listLatestNews = jsonEncode(_latestNews);
       String listTopBanner = jsonEncode(_listTopBannerImg);
       String listHomeBanner = jsonEncode(_listHomeBannerImg);
+      String listTopics = jsonEncode(_listTopics);
       await sPref.setListCategories(listCategories);
       await sPref.setListIpad(listIpad);
       await sPref.setListIphone(listIphone);
@@ -171,6 +181,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       await sPref.setListLatestNews(listLatestNews);
       await sPref.setListTopBanner(listTopBanner);
       await sPref.setListHomeBanner(listHomeBanner);
+      await sPref.setListTopics(listTopics);
 
       if (context.mounted) {
         Navigator.of(context).push(
@@ -417,6 +428,18 @@ class _LoadingScreenState extends State<LoadingScreen> {
               AlertUtils.displayErrorAlert(context, _messageError);
             }
             if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is FooterLoading) {
+          } else if (state is FooterLoaded) {
+            _listTopics = state.listTopics.topics ?? [];
+          } else if (state is FooterLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+
+              if (EasyLoading.isShow) EasyLoading.dismiss();
+            }
           }
         });
   }

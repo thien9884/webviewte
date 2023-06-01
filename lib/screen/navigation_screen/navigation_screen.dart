@@ -70,7 +70,7 @@ class _NavigationScreenState extends State<NavigationScreen>
     const LoginScreen(),
     // const StoreScreen(),
     const ShopDunkWebView(
-      url: 'find-store',
+      url: 'app-find-store',
       hideBottom: false,
     )
   ];
@@ -331,6 +331,10 @@ class _NavigationScreenState extends State<NavigationScreen>
             },
             child: SvgPicture.asset(
               'assets/icons/ic_search_home.svg',
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
             ),
           ),
         ],

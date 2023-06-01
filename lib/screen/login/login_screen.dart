@@ -173,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 5),
           child: Text(
-            'User name, Số điện thoại',
+            'Username:',
             style: CommonStyles.size14W400Black1D(context),
           ),
         ),
@@ -215,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 10, bottom: 5),
           child: Text(
-            'Mật khẩu',
+            'Mật khẩu:',
             style: CommonStyles.size14W400Black1D(context),
           ),
         ),

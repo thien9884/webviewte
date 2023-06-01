@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:webviewtest/blocs/avatar/avatar_bloc.dart';
 import 'package:webviewtest/blocs/change_password/change_password_bloc.dart';
 import 'package:webviewtest/blocs/customer/customer_bloc.dart';
+import 'package:webviewtest/blocs/exchange_coupon/exchange_bloc.dart';
 import 'package:webviewtest/blocs/forgot_password/forgot_password_bloc.dart';
 import 'package:webviewtest/blocs/login/login_bloc.dart';
+import 'package:webviewtest/blocs/my_rank/my_rank_bloc.dart';
 import 'package:webviewtest/blocs/news/news_bloc.dart';
 import 'package:webviewtest/blocs/news_category/news_category_bloc.dart';
 import 'package:webviewtest/blocs/order/order_bloc.dart';
@@ -28,13 +31,18 @@ class MainBloc {
             create: (BuildContext context) => NewsCategoryBloc()),
         BlocProvider<RegisterBloc>(
             create: (BuildContext context) => RegisterBloc()),
-        BlocProvider<OrderBloc>(
-            create: (BuildContext context) => OrderBloc()),
+        BlocProvider<OrderBloc>(create: (BuildContext context) => OrderBloc()),
         BlocProvider<CustomerBloc>(
             create: (BuildContext context) => CustomerBloc()),
         BlocProvider<ForgotPasswordBloc>(
             create: (BuildContext context) => ForgotPasswordBloc()),
         BlocProvider<ChangePasswordBloc>(
             create: (BuildContext context) => ChangePasswordBloc()),
+        BlocProvider<MyRankBloc>(
+            create: (BuildContext context) => MyRankBloc()),
+        BlocProvider<ExchangeBloc>(
+            create: (BuildContext context) => ExchangeBloc()),
+        BlocProvider<AvatarBloc>(
+            create: (BuildContext context) => AvatarBloc()),
       ];
 }

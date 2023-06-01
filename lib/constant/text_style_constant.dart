@@ -136,6 +136,15 @@ class CommonStyles {
     );
   }
 
+  static TextStyle size13W400Blue4D(BuildContext context) {
+    return const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w400,
+      color: Color(0xff4D94DB),
+      wordSpacing: 1.2,
+    );
+  }
+
   static TextStyle size13W700Blue00(BuildContext context) {
     return const TextStyle(
       fontSize: 13,
@@ -204,6 +213,15 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xff798B9B),
+      wordSpacing: 1.2,
+    );
+  }
+
+  static TextStyle size14W700Grey33(BuildContext context) {
+    return const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w700,
+      color: Color(0xff333333),
       wordSpacing: 1.2,
     );
   }
@@ -433,6 +451,24 @@ class CommonStyles {
     );
   }
 
+  static TextStyle size16W700Black1D(BuildContext context) {
+    return const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w700,
+      color: Color(0xff1D1D1D),
+      wordSpacing: 1.2,
+    );
+  }
+
+  static TextStyle size16W400Black1D(BuildContext context) {
+    return const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      color: Color(0xff1D1D1D),
+      wordSpacing: 1.2,
+    );
+  }
+
   static TextStyle size16W700Green33(BuildContext context) {
     return const TextStyle(
       fontSize: 16,
@@ -577,11 +613,38 @@ class CommonStyles {
     );
   }
 
+  static TextStyle size24W700Grey86(BuildContext context) {
+    return const TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      color: Color(0xff86868B),
+      wordSpacing: 1.2,
+    );
+  }
+
   static TextStyle size24W700Grey79(BuildContext context) {
     return const TextStyle(
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xff798B9B),
+      wordSpacing: 1.2,
+    );
+  }
+
+  static TextStyle size24W700YellowFF(BuildContext context) {
+    return const TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      color: Color(0xffFFBB0C),
+      wordSpacing: 1.2,
+    );
+  }
+
+  static TextStyle size24W700Purple35(BuildContext context) {
+    return const TextStyle(
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+      color: Color(0xff350994),
       wordSpacing: 1.2,
     );
   }

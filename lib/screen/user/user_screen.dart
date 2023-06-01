@@ -168,53 +168,53 @@ class _UserScreenState extends State<UserScreen> {
                 color: Color(0xffEBEBEB),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    SvgPicture.asset('assets/icons/ic_language.svg'),
-                    const SizedBox(
-                      width: 14,
-                    ),
-                    Text(
-                      'Ngôn ngữ',
-                      style: CommonStyles.size14W400Black1D(context),
-                    ),
-                  ],
-                ),
-                DropdownButtonHideUnderline(
-                  child: ButtonTheme(
-                    alignedDropdown: true,
-                    child: DropdownButton<String>(
-                      value: _language,
-                      menuMaxHeight: 300,
-                      icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                      elevation: 16,
-                      isDense: true,
-                      style: CommonStyles.size14W400Grey86(context),
-                      onChanged: (String? value) {
-                        // This is called when the user selects an item.
-                        setState(() {
-                          _language = value!;
-                        });
-                      },
-                      items: List.generate(1, (index) {
-                        return DropdownMenuItem<String>(
-                          value: 'Tiếng Việt',
-                          child: Text(
-                            'Tiếng Việt',
-                            style: CommonStyles.size14W400Black1D(context),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Row(
+            //       children: [
+            //         SvgPicture.asset('assets/icons/ic_language.svg'),
+            //         const SizedBox(
+            //           width: 14,
+            //         ),
+            //         Text(
+            //           'Ngôn ngữ',
+            //           style: CommonStyles.size14W400Black1D(context),
+            //         ),
+            //       ],
+            //     ),
+            //     DropdownButtonHideUnderline(
+            //       child: ButtonTheme(
+            //         alignedDropdown: true,
+            //         child: DropdownButton<String>(
+            //           value: _language,
+            //           menuMaxHeight: 300,
+            //           icon: const Icon(Icons.keyboard_arrow_down_rounded),
+            //           elevation: 16,
+            //           isDense: true,
+            //           style: CommonStyles.size14W400Grey86(context),
+            //           onChanged: (String? value) {
+            //             // This is called when the user selects an item.
+            //             setState(() {
+            //               _language = value!;
+            //             });
+            //           },
+            //           items: List.generate(1, (index) {
+            //             return DropdownMenuItem<String>(
+            //               value: 'Tiếng Việt',
+            //               child: Text(
+            //                 'Tiếng Việt',
+            //                 style: CommonStyles.size14W400Black1D(context),
+            //               ),
+            //             );
+            //           }).toList(),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
             Padding(
-              padding: const EdgeInsets.only(top: 40),
+              padding: const EdgeInsets.only(top: 10),
               child: GestureDetector(
                 onTap: () async {
                   setState(() {

@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
-import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
-import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/responsive.dart';
-import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/screen/load_html/load_html_screen.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
+import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class Footer {
   String? name;
@@ -32,134 +28,118 @@ class CommonFooter extends StatefulWidget {
 
 class _CommonFooterState extends State<CommonFooter> {
   final List<Footer> _listFooter = [];
-  String _messageError = '';
+  List<Topics> _listTopics = [];
   final TextEditingController _emailController = TextEditingController();
 
-  _getCategories() async {
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetFooterBanner());
+  _getListTopics() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    _listFooter.clear();
+
+    _listTopics = Topics.decode(sPref.listTopics);
+    _listFooter.add(
+      Footer(
+        name: 'Thông tin',
+        listFooter: _listTopics
+            .where((element) => element.includeInFooterColumn1 == true)
+            .toList(),
+      ),
+    );
+    _listFooter.add(
+      Footer(
+        name: 'Chính sách',
+        listFooter: _listTopics
+            .where((element) => element.includeInFooterColumn2 == true)
+            .toList(),
+      ),
+    );
+    _listFooter.add(
+      Footer(
+        name: 'Địa chỉ & liên hệ',
+        listFooter: _listTopics
+            .where((element) => element.includeInFooterColumn3 == true)
+            .toList(),
+      ),
+    );
+    setState(() {});
   }
 
   @override
   void initState() {
-    _getCategories();
+    _getListTopics();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ShopdunkBloc, ShopdunkState>(
-        builder: (context, state) => _footerUI(),
-        listener: (context, state) {
-          if (state is FooterLoading) {
-          } else if (state is FooterLoaded) {
-            _listFooter.clear();
-            _listFooter.add(Footer(
-              name: 'Thông tin',
-              listFooter: state.listTopics.topics
-                  ?.where((element) => element.includeInFooterColumn1 == true)
-                  .toList(),
-            ));
-            _listFooter.add(Footer(
-              name: 'Chính sách',
-              listFooter: state.listTopics.topics
-                  ?.where((element) => element.includeInFooterColumn2 == true)
-                  .toList(),
-            ));
-            _listFooter.add(Footer(
-              name: 'Địa chỉ & liên hệ',
-              listFooter: state.listTopics.topics
-                  ?.where((element) => element.includeInFooterColumn3 == true)
-                  .toList(),
-            ));
-
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          } else if (state is FooterLoadError) {
-            if (_messageError.isEmpty) {
-              _messageError = state.message;
-              AlertUtils.displayErrorAlert(context, _messageError);
-
-              if (EasyLoading.isShow) EasyLoading.dismiss();
-            }
-          }
-        });
-  }
-
-  // footer UI
-  Widget _footerUI() {
-    return _listFooter.isNotEmpty
-        ? Column(
+    return Column(
+      children: [
+        Container(
+          color: const Color(0xffF2F2F2),
+          padding: const EdgeInsets.only(top: 60, bottom: 40),
+          margin: EdgeInsets.only(
+            left: Responsive.isMobile(context) ? 0 : 150,
+            right: Responsive.isMobile(context) ? 0 : 150,
+          ),
+          child: Column(
             children: [
-              Container(
-                color: const Color(0xffF2F2F2),
-                padding: const EdgeInsets.only(top: 60, bottom: 40),
-                margin: EdgeInsets.only(
-                  left: Responsive.isMobile(context) ? 0 : 150,
-                  right: Responsive.isMobile(context) ? 0 : 150,
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      'Đăng ký nhận tin từ ShopDunk',
-                      style: CommonStyles.size24W700Black1D(context),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Text(
-                        'Thông tin sản phẩm mới nhất và chương trình khuyến mãi',
-                        style: CommonStyles.size13W400Grey86(context),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 20),
-                      child: TextFormField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                            fillColor: Colors.white,
-                            filled: true,
-                            hintText: 'Email của bạn',
-                            contentPadding:
-                                const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                            suffixIcon: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 30),
-                              decoration: BoxDecoration(
-                                  color: const Color(0xff0066CC),
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Đăng ký',
-                                    style:
-                                        CommonStyles.size12W400White(context),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(30))),
-                      ),
-                    ),
-                  ],
+              Text(
+                'Đăng ký nhận tin từ ShopDunk',
+                style: CommonStyles.size24W700Black1D(context),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Text(
+                  'Thông tin sản phẩm mới nhất và chương trình khuyến mãi',
+                  style: CommonStyles.size13W400Grey86(context),
                 ),
               ),
-              Container(
-                color: Colors.black,
-                child: CustomScrollView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  slivers: [
-                    _footerShop(),
-                    _listFooterExpand(),
-                    _infoShop(),
-                  ],
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                child: TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                      fillColor: Colors.white,
+                      filled: true,
+                      hintText: 'Email của bạn',
+                      contentPadding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      suffixIcon: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 30),
+                        decoration: BoxDecoration(
+                            color: const Color(0xff0066CC),
+                            borderRadius: BorderRadius.circular(30)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Đăng ký',
+                              style: CommonStyles.size12W400White(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(30))),
                 ),
               ),
             ],
-          )
-        : Container();
+          ),
+        ),
+        Container(
+          color: Colors.black,
+          child: CustomScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            slivers: [
+              _footerShop(),
+              _listFooterExpand(),
+              _infoShop(),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   // footer web
@@ -194,9 +174,19 @@ class _CommonFooterState extends State<CommonFooter> {
                       scale: Responsive.isMobile(context) ? 1 : 0.6,
                     ),
                   ),
-                  Image.asset(
-                    'assets/icons/ic_tiktok.png',
-                    scale: Responsive.isMobile(context) ? 1 : 0.6,
+                  GestureDetector(
+                    // onTap: () {
+                    //   Navigator.of(context).push(MaterialPageRoute(
+                    //       builder: (context) => const ShopDunkWebView(
+                    //             hideBottom: false,
+                    //             baseUrl:
+                    //                 'https://www.tiktok.com/@shopdunk_apple',
+                    //           )));
+                    // },
+                    child: Image.asset(
+                      'assets/icons/ic_tiktok.png',
+                      scale: Responsive.isMobile(context) ? 1 : 0.6,
+                    ),
                   ),
                   Image.asset(
                     'assets/icons/ic_zalo.png',
@@ -273,10 +263,20 @@ class _CommonFooterState extends State<CommonFooter> {
                           final item = items.listFooter![i];
 
                           return GestureDetector(
-                            onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
+                            onTap: () {
+                              if (item.title.toString().toLowerCase() ==
+                                  'hệ thống cửa hàng') {
+                                Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) =>
-                                        LoadHtmlScreen(data: item.body ?? ''))),
+                                        const NavigationScreen(
+                                          isSelected: 3,
+                                        )));
+                              } else {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        LoadHtmlScreen(data: item.body ?? '')));
+                              }
+                            },
                             child: Container(
                               height: 40,
                               margin:

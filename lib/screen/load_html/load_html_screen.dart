@@ -57,30 +57,30 @@ class _LoadHtmlScreenState extends State<LoadHtmlScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ShopdunkBloc, ShopdunkState>(
-        builder: (context, state) =>
-            CommonNavigateBar(child: _buildBody(context)),
+        builder: (context, state) => CommonNavigateBar(
+              index: 0,
+              child: _buildBody(context),
+            ),
         listener: (context, state) {});
   }
 
   Widget _buildBody(BuildContext context) {
-    return SafeArea(
-      child: GestureDetector(
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: CustomScrollView(
-          controller: _hideButtonController,
-          slivers: [
-            SliverToBoxAdapter(
-              child: HtmlWidget(
-                widget.data.replaceAll('src="', 'src="http://shopdunk.com'),
-                textStyle: const TextStyle(fontSize: 16),
-              ),
+    return CustomScrollView(
+      controller: _hideButtonController,
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: HtmlWidget(
+              widget.data.replaceAll('src="', 'src="http://shopdunk.com'),
+              textStyle: const TextStyle(fontSize: 16),
             ),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1, (context, index) => const CommonFooter())),
-          ],
+          ),
         ),
-      ),
+        SliverList(
+            delegate: SliverChildBuilderDelegate(
+                childCount: 1, (context, index) => const CommonFooter())),
+      ],
     );
   }
 }

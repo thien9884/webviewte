@@ -120,10 +120,27 @@ class _ShopDunkWebViewState extends State<ShopDunkWebView> {
             debugPrint('WebView is loading (progress : $progress%)');
           },
           onPageStarted: (String url) {
+            if(widget.baseUrl == null) {
+              if (url != 'https://shopdunk.com/${widget.url}') {
+                _controller.goBack();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ShopDunkWebView(
+                      url: url.replaceAll('https://shopdunk.com/', ''),
+                    )));
+              }
+            } else {
+              if (url != widget.baseUrl) {
+                _controller.goBack();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => ShopDunkWebView(
+                      url: url,
+                    )));
+              }
+            }
             debugPrint('Page started loading: $url');
           },
           onPageFinished: (String url) async {
-            if(EasyLoading.isShow) EasyLoading.dismiss();
+            if (EasyLoading.isShow) EasyLoading.dismiss();
             _controller.clearCache();
             debugPrint('Page finished loading: $url');
           },
@@ -154,8 +171,8 @@ Page resource error:
           );
         },
       )
-      ..loadRequest(Uri.parse((widget.baseUrl ?? 'https://shopdunk.com/app-') +
-          (widget.url ?? '')));
+      ..loadRequest(Uri.parse(
+          (widget.baseUrl ?? 'https://shopdunk.com/') + (widget.url ?? '')));
 
     // #docregion platform_features
     if (controller.platform is AndroidWebViewController) {
@@ -173,15 +190,8 @@ Page resource error:
     return CommonNavigateBar(
         index: widget.index,
         showNavigation: widget.hideBottom,
-        child: WillPopScope(
-            onWillPop: () async {
-              if(await _controller.canGoBack()) {
-                _controller.goBack();
-                return false;
-              } else {
-                return true;
-              }
-            },
-            child: WebViewWidget(controller: _controller)));
+        child: WebViewWidget(
+          controller: _controller,
+        ));
   }
 }
