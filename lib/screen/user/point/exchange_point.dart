@@ -67,7 +67,7 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                   actionsAlignment: MainAxisAlignment.center,
                   content: _couponModel?.fetchStatus == 'COMPLETED'
                       ? SizedBox(
-                          height: 160,
+                          height: 180,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Card(
@@ -210,6 +210,8 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                             style: CommonStyles.size14W700Blue00(context),
                           ),
                           onPressed: () {
+                            BlocProvider.of<ExchangeBloc>(context)
+                                .add(const RequestGetListCoupon(0, 10));
                             Navigator.of(context).pop();
                           },
                         ),

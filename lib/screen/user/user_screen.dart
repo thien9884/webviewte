@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,18 +34,7 @@ class _UserScreenState extends State<UserScreen> {
   String _avatar = '';
 
   _getData() async {
-    SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    final infoCustomer = sPref.infoCustomer;
-
-    if (infoCustomer.isNotEmpty) {
-      setState(() {
-        _infoModel = InfoModel.fromJson(jsonDecode(infoCustomer));
-      });
-    } else {
-      if (context.mounted) {
-        BlocProvider.of<CustomerBloc>(context).add(const RequestGetInfo());
-      }
-    }
+    BlocProvider.of<CustomerBloc>(context).add(const RequestGetInfo());
   }
 
   _getAvatar() async {

@@ -95,7 +95,9 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   if (_myRankModel != null &&
                       _myRankModel!.rewardPoints!.isNotEmpty)
                     _dataTable(),
-                  if (_myRankModel != null && _myRankModel?.pagerModel != null)
+                  if (_myRankModel != null &&
+                      _myRankModel?.pagerModel != null &&
+                      _myRankModel!.pagerModel!.totalPages! > 1)
                     _pagesNumber(),
                   SliverList(
                       delegate: SliverChildBuilderDelegate(
