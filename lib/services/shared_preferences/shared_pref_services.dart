@@ -8,6 +8,7 @@ class SharedPrefKeys {
   static const String customerId = 'customerId';
   static const String password = 'password';
   static const String rememberMe = 'rememberMe';
+  static const String checkBox = 'checkBox';
   static const String isLogin = 'isLogin';
   static const String listCategories = 'listCategory';
   static const String listIphone= 'listIphone';
@@ -23,6 +24,7 @@ class SharedPrefKeys {
   static const String listTopics = 'listTopics';
   static const String infoCustomer = 'infoCustomer';
   static const String state = 'state';
+  static const String avatar = 'avatar';
 }
 
 class SharedPreferencesService {
@@ -166,6 +168,13 @@ class SharedPreferencesService {
   // Get state
   String get state => _preferences.getString(SharedPrefKeys.state) ?? '';
 
+  // Set avatar
+  Future<void> setAvatar(String avatar) async =>
+      await _preferences.setString(SharedPrefKeys.avatar, avatar);
+
+  // Get avatar
+  String get avatar => _preferences.getString(SharedPrefKeys.avatar) ?? '';
+
   // Set password
   Future<void> setPassword(String password) async =>
       await _preferences.setString(SharedPrefKeys.password, password);
@@ -180,6 +189,14 @@ class SharedPreferencesService {
   // Get remember me
   bool get rememberMe =>
       _preferences.getBool(SharedPrefKeys.rememberMe) ?? false;
+
+  // Set check box
+  Future<void> setCheckBox(bool checkBox) async =>
+      await _preferences.setBool(SharedPrefKeys.checkBox, checkBox);
+
+  // Get check box
+  bool get checkBox =>
+      _preferences.getBool(SharedPrefKeys.checkBox) ?? false;
 
   // Set is login
   Future<void> setIsLogin(bool isLogin) async =>

@@ -71,13 +71,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _setLogin() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-
     sPref.setIsLogin(true);
+    if (_savePassword) {
+      sPref.setUserName(_emailController.text);
+      sPref.setPassword(_passwordController.text);
+      sPref.setCheckBox(_savePassword);
+    } else {
+      sPref.remove(SharedPrefKeys.userName);
+      sPref.remove(SharedPrefKeys.password);
+      sPref.remove(SharedPrefKeys.checkBox);
+    }
+  }
+
+  _getData() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    final userName = sPref.userName;
+    final password = sPref.password;
+    final saveAccount = sPref.checkBox;
+    if (userName.isNotEmpty && password.isNotEmpty) {
+      setState(() {
+        _emailController.text = userName;
+        _passwordController.text = password;
+        _savePassword = saveAccount;
+      });
+    }
   }
 
   @override
   void initState() {
     _getHideBottomValue();
+    _getData();
     _userFocusNode.addListener(() {
       if (_userFocusNode.hasFocus) {
         BlocProvider.of<ShopdunkBloc>(context)
@@ -318,9 +341,11 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: const EdgeInsets.symmetric(vertical: 30),
       child: CommonButton(
         onTap: () async {
-          FocusScope.of(context).unfocus();
-          BlocProvider.of<ShopdunkBloc>(context)
-              .add(const RequestGetHideBottom(true));
+          if (context.mounted) {
+            FocusScope.of(context).unfocus();
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(const RequestGetHideBottom(true));
+          }
           setState(() {
             _messageError = '';
           });
@@ -330,8 +355,10 @@ class _LoginScreenState extends State<LoginScreen> {
             password: _passwordController.text,
             rememberMe: _savePassword,
           );
-          BlocProvider.of<LoginBloc>(context)
-              .add(RequestPostLogin(loginModel: login));
+          if (context.mounted) {
+            BlocProvider.of<LoginBloc>(context)
+                .add(RequestPostLogin(loginModel: login));
+          }
         },
         title: 'Đăng nhập',
       ),

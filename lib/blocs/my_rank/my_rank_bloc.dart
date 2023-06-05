@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webviewtest/blocs/base_blocs.dart';
 import 'package:webviewtest/blocs/my_rank/my_rank_event.dart';
 import 'package:webviewtest/blocs/my_rank/my_rank_state.dart';
+import 'package:webviewtest/model/my_rank/my_rank_model.dart';
 import 'package:webviewtest/services/api_call.dart';
 
 class MyRankBloc extends BaseBloc<MyRankEvent, MyRankState> {
@@ -24,7 +25,7 @@ class MyRankBloc extends BaseBloc<MyRankEvent, MyRankState> {
     try {
       final data = await ApiCall().requestGetMyRank(pageNumber);
       emit(
-        MyRankLoaded(),
+        MyRankLoaded(myRankModel: data ?? MyRankModel()),
       );
     } catch (e) {
       emit(

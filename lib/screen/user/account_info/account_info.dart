@@ -491,10 +491,10 @@ class _AccountInfoState extends State<AccountInfo> {
                 });
               },
               items: List.generate(
-                  50,
+                  120,
                   (index) => DropdownMenuItem<String>(
-                        value: (index + 1990).toString(),
-                        child: Center(child: Text((index + 1990).toString())),
+                        value: (index + 1920).toString(),
+                        child: Center(child: Text((index + 1920).toString())),
                       )).toList(),
             ),
           ),

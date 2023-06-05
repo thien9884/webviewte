@@ -11,6 +11,7 @@ import 'package:webviewtest/blocs/customer/customer_event.dart';
 import 'package:webviewtest/blocs/customer/customer_state.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
+import 'package:webviewtest/common/common_button.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
@@ -27,8 +28,11 @@ class UserScreen extends StatefulWidget {
 
 class _UserScreenState extends State<UserScreen> {
   InfoModel? _infoModel = InfoModel();
-  String _language = 'Tiếng Việt';
+  final String _language = 'Tiếng Việt';
+  String _messageError = '';
   XFile? _image;
+  bool _showButton = false;
+  String _avatar = '';
 
   _getData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
@@ -45,14 +49,15 @@ class _UserScreenState extends State<UserScreen> {
     }
   }
 
+  _getAvatar() async {
+    BlocProvider.of<CustomerBloc>(context).add(const RequestGetAvatar());
+  }
+
   _clearData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
 
     sPref.setRememberMe(false);
     sPref.setIsLogin(false);
-    sPref.remove(SharedPrefKeys.userName);
-    sPref.remove(SharedPrefKeys.password);
-    sPref.remove(SharedPrefKeys.infoCustomer);
 
     if (context.mounted) {
       Navigator.of(context).push(MaterialPageRoute(
@@ -65,6 +70,7 @@ class _UserScreenState extends State<UserScreen> {
   @override
   void initState() {
     _getData();
+    _getAvatar();
     super.initState();
   }
 
@@ -80,7 +86,57 @@ class _UserScreenState extends State<UserScreen> {
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is GetInfoLoadError) {
-            AlertUtils.displayErrorAlert(context, state.message);
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is GetAvatarLoading) {
+            EasyLoading.show();
+          } else if (state is GetAvatarLoaded) {
+            _avatar = state.avatar ?? '';
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is GetAvatarLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is UploadAvatarLoading) {
+            EasyLoading.show();
+          } else if (state is UploadAvatarLoaded) {
+            BlocProvider.of<CustomerBloc>(context)
+                .add(const RequestGetAvatar());
+            showCupertinoDialog(
+                context: context,
+                builder: (context) => CupertinoAlertDialog(
+                      content: Text(
+                        state.avatar.toString(),
+                        style: CommonStyles.size14W400Grey33(context),
+                      ),
+                      actions: [
+                        CupertinoDialogAction(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              'Đồng ý',
+                              style: CommonStyles.size14W700Blue007A(context),
+                            ))
+                      ],
+                    ));
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is UploadAvatarLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
         });
@@ -101,10 +157,11 @@ class _UserScreenState extends State<UserScreen> {
                     width: 72,
                     height: 72,
                     child: _image == null
-                        ? const CircleAvatar(
+                        ? CircleAvatar(
                             backgroundColor: Colors.white,
-                            backgroundImage: NetworkImage(
-                                'https://nhadepso.com/wp-content/uploads/2023/03/suu-tam-60-hinh-anh-avatar-trang-cho-facebook-dep-doc-dao_4.jpg'),
+                            backgroundImage: NetworkImage(_avatar.isNotEmpty
+                                ? _avatar
+                                : 'https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg'),
                           )
                         : CircleAvatar(
                             backgroundColor: Colors.white,
@@ -122,7 +179,10 @@ class _UserScreenState extends State<UserScreen> {
                         final XFile? image =
                             await picker.pickImage(source: ImageSource.gallery);
                         setState(() {
-                          _image = image;
+                          if (_image != image) {
+                            _image = image;
+                            _showButton = true;
+                          }
                         });
                       },
                       child: Container(
@@ -146,6 +206,30 @@ class _UserScreenState extends State<UserScreen> {
                 ],
               ),
             ),
+            if (_showButton)
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Column(
+                  children: [
+                    Text(
+                      'Hình đại diện phải ở định dạng GIF hoặc JPEG có kích thước tối đa là 20 KB',
+                      style: CommonStyles.size14W400Black1D(context),
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    CommonButton(
+                        title: 'upload',
+                        onTap: () {
+                          BlocProvider.of<CustomerBloc>(context).add(
+                              RequestUploadAvatar(file: File(_image!.path)));
+                          setState(() {
+                            _showButton = false;
+                          });
+                        }),
+                  ],
+                ),
+              ),
             _nameUser(),
             const SizedBox(
               height: 5,
@@ -214,7 +298,7 @@ class _UserScreenState extends State<UserScreen> {
             //   ],
             // ),
             Padding(
-              padding: const EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.only(top: 10, bottom: 40),
               child: GestureDetector(
                 onTap: () async {
                   setState(() {

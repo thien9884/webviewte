@@ -241,3 +241,46 @@ class MySystemLoadError extends CustomerState {
   @override
   List<Object?> get props => [message];
 }
+
+class GetAvatarLoading extends CustomerState {
+  const GetAvatarLoading();
+}
+
+class GetAvatarLoaded extends CustomerState {
+  final String? avatar;
+  const GetAvatarLoaded({required this.avatar});
+
+  @override
+  List<Object?> get props => [avatar];
+}
+
+class GetAvatarLoadError extends CustomerState {
+  final String message;
+
+  const GetAvatarLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class UploadAvatarLoading extends CustomerState {
+  const UploadAvatarLoading();
+}
+
+class UploadAvatarLoaded extends CustomerState {
+  final String? avatar;
+  const UploadAvatarLoaded({required this.avatar});
+
+  @override
+  List<Object?> get props => [avatar];
+}
+
+class UploadAvatarLoadError extends CustomerState {
+  final String message;
+
+  const UploadAvatarLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+

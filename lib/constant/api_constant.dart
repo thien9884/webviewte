@@ -23,11 +23,12 @@ class ApiConstant {
   static const String updateInfo = '/api/customers/update-info';
   static const String productRating = '/api/products/';
   static const String state = '/api/customers/states';
-  static const String mySystem = '/api/customers/filter-system?level=';
+  static const String mySystem = '/api/customers/filter-system';
   static const String recovery = '/api/customers/password-recovery';
   static const String changePassword = '/api/customers/change-password';
   static const String rewardPoint = '/api/customers/reward-points-history';
   static const String listCoupon = '/api/customers/list-coupon';
   static const String exchangeCoupon = '/api/customers/coupon';
-  static const String avatar = '/api/customers/avatar';
+  static const String avatar = '/api/customers/get-avatar';
+  static const String uploadAvatar = '/api/customers/upload-avatar';
 }

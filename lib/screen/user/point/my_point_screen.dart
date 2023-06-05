@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:webviewtest/blocs/my_rank/my_rank_bloc.dart';
+import 'package:webviewtest/blocs/my_rank/my_rank_event.dart';
+import 'package:webviewtest/blocs/my_rank/my_rank_state.dart';
 import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/my_rank/my_rank_model.dart';
 
 class MyPointScreen extends StatefulWidget {
   const MyPointScreen({Key? key}) : super(key: key);
@@ -15,7 +22,11 @@ class MyPointScreen extends StatefulWidget {
 
 class _MyPointScreenState extends State<MyPointScreen> {
   int _point = 0;
+  int _pagesSelected = 0;
   String _myRankTittle = '';
+  String _messageError = '';
+  MyRankModel? _myRankModel;
+  final ScrollController _pageScrollController = ScrollController();
 
   _getMyRank() {
     if (_point >= 2000) {
@@ -29,38 +40,71 @@ class _MyPointScreenState extends State<MyPointScreen> {
     }
   }
 
+  _getData() {
+    BlocProvider.of<MyRankBloc>(context).add(const RequestGetMyRank(1));
+  }
+
   @override
   void initState() {
-    _getMyRank();
+    _getData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<MyRankBloc, MyRankState>(
+        builder: (context, state) => _myRankUI(),
+        listener: (context, state) {
+          if (state is MyRankLoading) {
+            EasyLoading.show();
+          } else if (state is MyRankLoaded) {
+            _myRankModel = state.myRankModel;
+            _point = _myRankModel?.rewardPointsBalance ?? 0;
+            _getMyRank();
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is MyRankLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+        });
+  }
+
+  Widget _myRankUI() {
     return CommonNavigateBar(
       index: 2,
       showAppBar: false,
-      child: Container(
-        color: Colors.white,
-        child: CustomScrollView(
-          slivers: [
-            _myPointAppBar(),
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  _myPointBackground(),
-                  _rankLevel(),
-                  _myRank(),
+      child: _myRankModel != null
+          ? Container(
+              color: Colors.white,
+              child: CustomScrollView(
+                slivers: [
+                  _myPointAppBar(),
+                  SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        _myPointBackground(),
+                        _rankLevel(),
+                        _myRank(),
+                      ],
+                    ),
+                  ),
+                  if (_myRankModel != null &&
+                      _myRankModel!.rewardPoints!.isNotEmpty)
+                    _dataTable(),
+                  if (_myRankModel != null && _myRankModel?.pagerModel != null)
+                    _pagesNumber(),
+                  SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                          childCount: 1,
+                          (context, index) => const CommonFooter())),
                 ],
               ),
-            ),
-            _dataTable(),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1, (context, index) => const CommonFooter())),
-          ],
-        ),
-      ),
+            )
+          : const SizedBox(),
     );
   }
 
@@ -384,10 +428,6 @@ class _MyPointScreenState extends State<MyPointScreen> {
   }
 
   Widget _dataTable() {
-    String formattedDate =
-        DateFormat("dd/MM/yyyy").add_jms().format(DateTime.now());
-    print(formattedDate);
-
     return SliverToBoxAdapter(
       child: Container(
         padding: const EdgeInsets.fromLTRB(20, 16, 0, 16),
@@ -436,84 +476,231 @@ class _MyPointScreenState extends State<MyPointScreen> {
                 ),
               ],
               rows: List.generate(
-                10,
-                (index) => DataRow(
-                  cells: <DataCell>[
-                    DataCell(
-                      SizedBox(
-                        width: 80,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    formattedDate,
-                                    style:
-                                        CommonStyles.size12W400Black1D(context),
+                _myRankModel!.rewardPoints!.length,
+                (index) {
+                  final item = _myRankModel!.rewardPoints![index];
+                  String createOnDate = '';
+                  String endDateTime = '';
+                  if (item.createdOn != null && item.createdOn!.isNotEmpty) {
+                    var createOn = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+                        .parseUTC(item.createdOn ?? '')
+                        .toLocal();
+                    createOnDate =
+                        DateFormat("dd/MM/yyyy HH:mm").format(createOn);
+                  }
+                  if (item.endDate != null && item.endDate!.isNotEmpty) {
+                    var endDate = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
+                        .parseUTC(item.endDate ?? '')
+                        .toLocal();
+                    endDateTime =
+                        DateFormat("dd/MM/yyyy HH:mm").format(endDate);
+                  }
+
+                  return DataRow(
+                    cells: <DataCell>[
+                      DataCell(
+                        SizedBox(
+                          width: 80,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      createOnDate,
+                                      style: CommonStyles.size12W400Black1D(
+                                          context),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    DataCell(
-                      Text(
-                        '1000',
-                        style: CommonStyles.size12W400Black1D(context),
-                      ),
-                    ),
-                    DataCell(
-                      SizedBox(
-                        width: 200,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Điểm cộng cho đơn hàng 8848 từ tài khoản 4580001 > 4579799',
-                                    style:
-                                        CommonStyles.size12W400Black1D(context),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                      DataCell(
+                        Text(
+                          item.points.toString(),
+                          style: CommonStyles.size12W400Black1D(context),
                         ),
                       ),
-                    ),
-                    DataCell(
-                      SizedBox(
-                        width: 80,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    formattedDate,
-                                    style:
-                                        CommonStyles.size12W400Black1D(context),
+                      DataCell(
+                        SizedBox(
+                          width: 200,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      item.message ?? '',
+                                      style: CommonStyles.size12W400Black1D(
+                                          context),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                      DataCell(
+                        SizedBox(
+                          width: 80,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      endDateTime,
+                                      style: CommonStyles.size12W400Black1D(
+                                          context),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // pages number
+  Widget _pagesNumber() {
+    return SliverToBoxAdapter(
+      child: Container(
+        color: const Color(0xffF5F5F7),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+        child: Center(
+          child: SizedBox(
+            height: 35,
+            width: _myRankModel!.pagerModel!.totalPages! > 6
+                ? double.infinity
+                : 35 * (_myRankModel!.pagerModel!.totalPages! + 1) + 25,
+            child: Row(
+              children: [
+                if (_myRankModel!.pagerModel!.totalPages! > 6 &&
+                    _pagesSelected >= 5)
+                  GestureDetector(
+                    onTap: () {
+                      if (_pagesSelected != 0) {
+                        setState(() {
+                          _pagesSelected = 0;
+                          BlocProvider.of<MyRankBloc>(context)
+                              .add(const RequestGetMyRank(1));
+                          _pageScrollController.animateTo(
+                            _pageScrollController.position.minScrollExtent,
+                            duration: const Duration(seconds: 2),
+                            curve: Curves.fastOutSlowIn,
+                          );
+                        });
+                      }
+                    },
+                    child: Container(
+                      height: 35,
+                      width: 35,
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_outlined,
+                        size: 14,
+                        color: Color(0xff1D1D1D),
+                      ),
+                    ),
+                  ),
+                Expanded(
+                  child: Center(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      controller: _pageScrollController,
+                      itemCount: _myRankModel!.pagerModel!.totalPages!,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) => GestureDetector(
+                        onTap: () => setState(() {
+                          _pagesSelected = index;
+                          BlocProvider.of<MyRankBloc>(context)
+                              .add(RequestGetMyRank(index + 1));
+                        }),
+                        child: Container(
+                          height: 35,
+                          width: 35,
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            color: _pagesSelected == index
+                                ? Colors.blueAccent
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            (index + 1).toString(),
+                            style: _pagesSelected == index
+                                ? CommonStyles.size14W400White(context)
+                                : CommonStyles.size14W400Black1D(context),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                if (_myRankModel!.pagerModel!.totalPages! > 6 &&
+                    _pagesSelected <=
+                        (_myRankModel!.pagerModel!.totalPages! - 5))
+                  GestureDetector(
+                    onTap: () {
+                      if (_pagesSelected !=
+                          _myRankModel!.pagerModel!.totalPages! - 1) {
+                        setState(() {
+                          _pagesSelected =
+                              _myRankModel!.pagerModel!.totalPages! - 1;
+                          BlocProvider.of<MyRankBloc>(context).add(
+                              RequestGetMyRank(
+                                  _myRankModel!.pagerModel!.totalPages!));
+                          _pageScrollController.animateTo(
+                            _pageScrollController.position.maxScrollExtent,
+                            duration: const Duration(seconds: 2),
+                            curve: Curves.fastOutSlowIn,
+                          );
+                        });
+                      }
+                    },
+                    child: Container(
+                      height: 35,
+                      width: 35,
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14,
+                        color: Color(0xff1D1D1D),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

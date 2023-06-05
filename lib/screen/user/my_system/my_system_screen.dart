@@ -82,9 +82,10 @@ class _MySystemScreenState extends State<MySystemScreen>
     }
 
     if (context.mounted) {
-      BlocProvider.of<CustomerBloc>(context).add(const RequestGetMySystem(1));
-      BlocProvider.of<CustomerBloc>(context).add(const RequestGetMySystem(2));
-      BlocProvider.of<CustomerBloc>(context).add(const RequestGetMySystem(3));
+      BlocProvider.of<CustomerBloc>(context)
+          .add(const RequestGetMySystem(1, 0, 8));
+      BlocProvider.of<CustomerBloc>(context)
+          .add(const RequestGetMySystem(2, 0, 8));
     }
   }
 
@@ -114,9 +115,8 @@ class _MySystemScreenState extends State<MySystemScreen>
             if (_messageError.isEmpty) {
               _messageError = state.message;
               AlertUtils.displayErrorAlert(context, _messageError);
-
-              if (EasyLoading.isShow) EasyLoading.dismiss();
             }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
           }
         });
   }
@@ -125,7 +125,7 @@ class _MySystemScreenState extends State<MySystemScreen>
     return CommonNavigateBar(
         index: 2,
         showAppBar: false,
-        child: _listMySystem.isNotEmpty && _listMySystem.length == 3
+        child: _listMySystem.isNotEmpty && _listMySystem.length == 2
             ? Container(
                 color: Colors.white,
                 child: CustomScrollView(

@@ -156,8 +156,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
         _listHomeBannerImg.isNotEmpty &&
         _newsGroup.isNotEmpty &&
         _latestNews.isNotEmpty &&
-        _listTopics.isNotEmpty
-    ) {
+        _listTopics.isNotEmpty) {
       String listCategories = jsonEncode(_listCategories);
       String listIpad = jsonEncode(_listIpad);
       String listIphone = jsonEncode(_listIphone);
@@ -193,26 +192,18 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   _getToken() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    bool rememberMe = sPref.rememberMe;
     String? userName = sPref.userName;
     String? password = sPref.password;
-    sPref.setIsLogin(rememberMe ? true : false);
+    sPref.setIsLogin(false);
 
     if (context.mounted) {
       BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
-        loginModel: rememberMe
-            ? LoginModel(
-                rememberMe: true,
-                guest: false,
-                username: userName,
-                password: password,
-              )
-            : LoginModel(
-                rememberMe: false,
-                guest: true,
-                username: 'shopdunk',
-                password: 'shopdunk',
-              ),
+        loginModel: LoginModel(
+          rememberMe: true,
+          guest: false,
+          username: userName,
+          password: password,
+        ),
       ));
     }
   }
@@ -360,9 +351,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
           } else if (state is TopBannerLoaded) {
             _topBanner = state.listTopics.topics?.first.body ?? '';
             var document = parse(
-              _topBanner
-                  .replaceAll('src="', 'src="http://shopdunk.com')
-            );
+                _topBanner.replaceAll('src="', 'src="http://shopdunk.com'));
             var imgList = document.querySelectorAll("img");
             var linkList = document.querySelectorAll("a");
             List<String> imageList = [];
@@ -397,9 +386,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
           } else if (state is HomeBannerLoaded) {
             _homeBanner = state.listTopics.topics?.first.body ?? '';
             var document = parse(
-              _homeBanner
-                  .replaceAll('src="', 'src="http://shopdunk.com')
-            );
+                _homeBanner.replaceAll('src="', 'src="http://shopdunk.com'));
             var imgList = document.querySelectorAll("img");
             var linkList = document.querySelectorAll("a");
             List<String> imageList = [];
@@ -473,7 +460,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
                       });
                     },
                   ),
-                 ),
+                ),
               ],
             )
           : const SizedBox(),

@@ -36,3 +36,25 @@ class ExchangePointLoadError extends ExchangeState {
   @override
   List<Object?> get props => [message];
 }
+
+class ListCouponLoading extends ExchangeState {
+  const ListCouponLoading();
+}
+
+class ListCouponLoaded extends ExchangeState {
+  final List<CouponModel> listCoupon;
+
+  const ListCouponLoaded({required this.listCoupon});
+
+  @override
+  List<Object?> get props => [listCoupon];
+}
+
+class ListCouponLoadError extends ExchangeState {
+  final String message;
+
+  const ListCouponLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}

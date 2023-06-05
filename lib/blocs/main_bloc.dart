@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:webviewtest/blocs/avatar/avatar_bloc.dart';
 import 'package:webviewtest/blocs/change_password/change_password_bloc.dart';
 import 'package:webviewtest/blocs/customer/customer_bloc.dart';
 import 'package:webviewtest/blocs/exchange_coupon/exchange_bloc.dart';
@@ -42,7 +41,5 @@ class MainBloc {
             create: (BuildContext context) => MyRankBloc()),
         BlocProvider<ExchangeBloc>(
             create: (BuildContext context) => ExchangeBloc()),
-        BlocProvider<AvatarBloc>(
-            create: (BuildContext context) => AvatarBloc()),
       ];
 }

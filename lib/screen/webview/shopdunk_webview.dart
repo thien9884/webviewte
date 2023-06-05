@@ -141,6 +141,15 @@ class _ShopDunkWebViewState extends State<ShopDunkWebView> {
           },
           onPageFinished: (String url) async {
             if (EasyLoading.isShow) EasyLoading.dismiss();
+            if(widget.baseUrl == null) {
+              if (url != 'https://shopdunk.com/${widget.url}') {
+                _controller.goBack();
+              }
+            } else {
+              if (url != widget.baseUrl) {
+                _controller.goBack();
+              }
+            }
             _controller.clearCache();
             debugPrint('Page finished loading: $url');
           },

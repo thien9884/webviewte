@@ -97,6 +97,7 @@ class DioClient {
       ..options.receiveTimeout = timeOutDuration
       ..options.headers = {
         'Accept': 'application/json',
+        "content-type":"application/json"
       };
     if (kDebugMode) {
       _dio.interceptors.add(CustomLogInterceptor());
@@ -200,6 +201,34 @@ class DioClient {
     var payload = jsonEncode(payloadObj);
     try {
       var response = await _dio.post(ApiConstant.baseUrl + api, data: payload);
+      return _processResponse(response);
+    } on DioError catch (e) {
+      if (DioErrorType.receiveTimeout == e.type ||
+          DioErrorType.connectTimeout == e.type) {
+        throw ApiNotRespondingException('API not responded in time', api);
+      } else if (DioErrorType.sendTimeout == e.type) {
+        throw FetchDataException('No Internet connection', api);
+      } else if (DioErrorType.response == e.type) {
+        // 4xx 5xx response
+        throw ResponseException(e.response?.data);
+      } else if (DioErrorType.other == e.type) {
+        if (e.message.contains('SocketException')) {
+          throw 'No internet connection';
+        } else if (e.message.contains('Unhandled Exception')) {
+          throw NotFoundException('${e.error} : ${e.response?.data}', api);
+        }
+      } else if (DioErrorType.cancel == e.type) {
+        throw CancelRequestException('Cancel Request', api);
+      } else {
+        throw Exception('Problem connecting to the server. Please try again.');
+      }
+    }
+  }
+
+  //POST
+  Future<dynamic> postAvatar(String api, dynamic payloadObj) async {
+    try {
+      var response = await _dio.post(ApiConstant.baseUrl + api, data: payloadObj);
       return _processResponse(response);
     } on DioError catch (e) {
       if (DioErrorType.receiveTimeout == e.type ||

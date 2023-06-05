@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:webviewtest/model/my_rank/my_rank_model.dart';
 
 abstract class MyRankState extends Equatable {
   const MyRankState();
@@ -19,11 +20,12 @@ class MyRankLoading extends MyRankState {
 }
 
 class MyRankLoaded extends MyRankState {
+  final MyRankModel myRankModel;
 
-  const MyRankLoaded();
+  const MyRankLoaded({required this.myRankModel});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [myRankModel];
 }
 
 class MyRankLoadError extends MyRankState {

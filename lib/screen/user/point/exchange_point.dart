@@ -1,11 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:webviewtest/blocs/exchange_coupon/exchange_bloc.dart';
+import 'package:webviewtest/blocs/exchange_coupon/exchange_event.dart';
+import 'package:webviewtest/blocs/exchange_coupon/exchange_state.dart';
 import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/coupon/coupon_model.dart';
 
 class ExchangePointScreen extends StatefulWidget {
   const ExchangePointScreen({Key? key}) : super(key: key);
@@ -16,9 +22,229 @@ class ExchangePointScreen extends StatefulWidget {
 
 class _ExchangePointScreenState extends State<ExchangePointScreen> {
   var formatter = NumberFormat.decimalPattern('vi_VN');
+  String _messageError = '';
+  List<CouponModel> _listCoupon = [];
+  CouponModel? _couponModel;
+
+  _getData() {
+    BlocProvider.of<ExchangeBloc>(context)
+        .add(const RequestGetListCoupon(0, 10));
+  }
+
+  @override
+  void initState() {
+    _getData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<ExchangeBloc, ExchangeState>(
+        builder: (context, state) => _exchangePointUI(),
+        listener: (context, state) {
+          if (state is ExchangePointLoading) {
+            EasyLoading.show();
+          } else if (state is ExchangePointLoaded) {
+            if (_couponModel == null) {
+              _couponModel = state.couponModel;
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Center(
+                    child: Text(
+                      _couponModel?.fetchStatus == 'COMPLETED'
+                          ? 'Bạn vừa đổi thưởng thành công'
+                          : 'Số điểm của bạn không đủ',
+                    ),
+                  ),
+                  titleTextStyle: CommonStyles.size14W700Grey33(context),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                  actionsPadding: EdgeInsets.zero,
+                  actionsAlignment: MainAxisAlignment.center,
+                  content: _couponModel?.fetchStatus == 'COMPLETED'
+                      ? SizedBox(
+                          height: 160,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  FittedBox(
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(10),
+                                            topRight: Radius.circular(10),
+                                          ),
+                                          child: SvgPicture.asset(
+                                            'assets/images/img_background_exchange.svg',
+                                            fit: BoxFit.fill,
+                                          ),
+                                        ),
+                                        Positioned(
+                                            top: 16,
+                                            left: 16,
+                                            child: SvgPicture.asset(
+                                                'assets/icons/ic_logo_point.svg')),
+                                        Positioned(
+                                          top: 20,
+                                          right: 16,
+                                          child: Text(
+                                            'Giảm ${formatter.format(_couponModel?.value)}VND',
+                                            style: CommonStyles.size18W700White(
+                                                context),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  FittedBox(
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(16),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  SvgPicture.asset(
+                                                      'assets/icons/ic_clock.svg'),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  Text(
+                                                    'Vô thời hạn',
+                                                    style: CommonStyles
+                                                        .size14W400Black1D(
+                                                            context),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                height: 12,
+                                              ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                      'assets/icons/ic_info_circle.svg'),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  Text(
+                                                    'Áp dụng cho đơn hàng từ 2 triệu đồng',
+                                                    style: CommonStyles
+                                                        .size14W400Black1D(
+                                                            context),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                height: 12,
+                                              ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  SvgPicture.asset(
+                                                      'assets/icons/ic_ticket.svg'),
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  RichText(
+                                                    text: TextSpan(
+                                                        text: 'Mã Coupon: ',
+                                                        style: CommonStyles
+                                                            .size14W400Black1D(
+                                                                context),
+                                                        children: [
+                                                          TextSpan(
+                                                            text: _couponModel
+                                                                ?.coupon,
+                                                            style: CommonStyles
+                                                                .size14W700Blue00(
+                                                                    context),
+                                                          ),
+                                                        ]),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
+                  actions: <Widget>[
+                    Column(
+                      children: [
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                        ),
+                        TextButton(
+                          child: Text(
+                            'Đồng ý',
+                            style: CommonStyles.size14W700Blue00(context),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is ExchangePointLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+          if (state is ListCouponLoading) {
+            EasyLoading.show();
+          } else if (state is ListCouponLoaded) {
+            _listCoupon = state.listCoupon;
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is ListCouponLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+        });
+  }
+
+  Widget _exchangePointUI() {
     return CommonNavigateBar(
       index: 2,
       showAppBar: false,
@@ -110,7 +336,7 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                 top: 20,
                 right: 16,
                 child: Text(
-                  'Giảm ${formatter.format(500000)}VND',
+                  'Giảm ${formatter.format(200000)}VND',
                   style: CommonStyles.size18W700White(context),
                 ),
               ),
@@ -140,13 +366,13 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SvgPicture.asset('assets/icons/ic_clock.svg'),
+                        SvgPicture.asset('assets/icons/ic_info_circle.svg'),
                         const SizedBox(
                           width: 8,
                         ),
                         Expanded(
                           child: Text(
-                            'Áp dụng cho đơn hàng từ 2 triệu đồng\n500.000VND = 500 điểm thưởng',
+                            'Áp dụng cho đơn hàng từ 2 triệu đồng\n200.000VND = 20000 điểm thưởng',
                             style: CommonStyles.size14W400Black1D(context),
                             maxLines: 2,
                           ),
@@ -164,165 +390,11 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                           borderRadius: BorderRadius.circular(8),
                           child: InkWell(
                             onTap: () {
-                              showCupertinoDialog(
-                                  context: context,
-                                  builder: (context) => CupertinoAlertDialog(
-                                        title: Text(
-                                          'Bạn vừa đổi thưởng thành công',
-                                          style: CommonStyles.size14W700Grey33(
-                                              context),
-                                        ),
-                                        content: Card(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              FittedBox(
-                                                child: Stack(
-                                                  clipBehavior: Clip.none,
-                                                  children: [
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          const BorderRadius
-                                                              .only(
-                                                        topLeft:
-                                                            Radius.circular(10),
-                                                        topRight:
-                                                            Radius.circular(10),
-                                                      ),
-                                                      child: SvgPicture.asset(
-                                                        'assets/images/img_background_exchange.svg',
-                                                        fit: BoxFit.fill,
-                                                      ),
-                                                    ),
-                                                    Positioned(
-                                                        top: 16,
-                                                        left: 16,
-                                                        child: SvgPicture.asset(
-                                                            'assets/icons/ic_logo_point.svg')),
-                                                    Positioned(
-                                                      top: 20,
-                                                      right: 16,
-                                                      child: Text(
-                                                        'Giảm ${formatter.format(500000)}VND',
-                                                        style: CommonStyles
-                                                            .size18W700White(
-                                                                context),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              FittedBox(
-                                                child: Stack(
-                                                  children: [
-                                                    Container(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              16),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              SvgPicture.asset(
-                                                                  'assets/icons/ic_clock.svg'),
-                                                              const SizedBox(
-                                                                width: 8,
-                                                              ),
-                                                              Text(
-                                                                'Vô thời hạn',
-                                                                style: CommonStyles
-                                                                    .size14W400Black1D(
-                                                                        context),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 12,
-                                                          ),
-                                                          Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              SvgPicture.asset(
-                                                                  'assets/icons/ic_info_circle.svg'),
-                                                              const SizedBox(
-                                                                width: 8,
-                                                              ),
-                                                              Text(
-                                                                'Áp dụng cho đơn hàng từ 2 triệu đồng',
-                                                                style: CommonStyles
-                                                                    .size14W400Black1D(
-                                                                        context),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 12,
-                                                          ),
-                                                          Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              SvgPicture.asset(
-                                                                  'assets/icons/ic_ticket.svg'),
-                                                              const SizedBox(
-                                                                width: 8,
-                                                              ),
-                                                              RichText(
-                                                                text: TextSpan(
-                                                                    text:
-                                                                        'Mã Coupon: ',
-                                                                    style: CommonStyles
-                                                                        .size14W400Black1D(
-                                                                            context),
-                                                                    children: [
-                                                                      TextSpan(
-                                                                        text:
-                                                                            'KM200AB0YF6D8JL',
-                                                                        style: CommonStyles.size14W700Blue00(
-                                                                            context),
-                                                                      ),
-                                                                    ]),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        actions: [
-                                          CupertinoDialogAction(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text(
-                                                'Đồng ý',
-                                                style: CommonStyles
-                                                    .size14W700Blue007A(
-                                                        context),
-                                              ))
-                                        ],
-                                      ));
+                              BlocProvider.of<ExchangeBloc>(context)
+                                  .add(const RequestGetExchangePoint(200));
+                              setState(() {
+                                _couponModel = null;
+                              });
                             },
                             borderRadius: BorderRadius.circular(8),
                             child: Container(
@@ -381,21 +453,38 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _myCouponTittle(),
-            Column(
-              children: List.generate(
-                4,
-                (index) {
-                  return _myCouponItem(
-                    isActive: index == 0,
-                    status: index == 1 ? 'Đã sử dụng' : 'Vô hiệu hoá',
-                    coupon: index != 1 || index == 0
-                        ? '***************'
-                        : 'KM200AB0YF6D8JL',
-                    showEye: index == 1 ? false : true,
-                  );
-                },
-              ),
-            ),
+            CustomScrollView(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              slivers: [
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: _listCoupon.length,
+                    (context, index) {
+                      final item = _listCoupon[index];
+
+                      return _myCouponItem(
+                        isActive: item.active ?? false,
+                        status: '',
+                        value: item.value ?? 0,
+                        coupon: item.active != null && item.active!
+                            ? item.showCoupon
+                                ? (item.coupon ?? '')
+                                : '***************'
+                            : (item.coupon ?? ''),
+                        showEye: item.active == true,
+                        onEyeTap: () {
+                          setState(() {
+                            item.showCoupon = !item.showCoupon;
+                            print(item.showCoupon);
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -417,171 +506,174 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
   Widget _myCouponItem({
     required bool isActive,
     required String coupon,
+    required int value,
     required bool showEye,
+    required VoidCallback onEyeTap,
     String? status,
   }) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                  ),
+                  child: isActive
+                      ? SvgPicture.asset(
+                          'assets/images/img_background_exchange.svg',
+                          fit: BoxFit.fill,
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/img_bgec_grey.svg',
+                          fit: BoxFit.fill,
+                        ),
                 ),
-                child: isActive
-                    ? SvgPicture.asset(
-                        'assets/images/img_background_exchange.svg',
-                        fit: BoxFit.fill,
-                      )
-                    : SvgPicture.asset(
-                        'assets/images/img_bgec_grey.svg',
-                        fit: BoxFit.fill,
-                      ),
-              ),
-              Positioned(
-                  top: 16,
-                  left: 16,
-                  child: SvgPicture.asset('assets/icons/ic_logo_point.svg')),
-              Positioned(
-                top: 20,
-                right: 16,
-                child: Text(
-                  'Giảm ${formatter.format(500000)}VND',
-                  style: CommonStyles.size18W700White(context),
-                ),
-              ),
-              if (!isActive)
                 Positioned(
-                  right: 0,
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(10),
-                    ),
-                    child: status == 'Đã sử dụng'
-                        ? SvgPicture.asset('assets/images/img_bg_status.svg')
-                        : SvgPicture.asset('assets/images/img_bg_disable.svg'),
+                    top: 16,
+                    left: 16,
+                    child: SvgPicture.asset('assets/icons/ic_logo_point.svg')),
+                Positioned(
+                  top: 20,
+                  right: 16,
+                  child: Text(
+                    'Giảm ${formatter.format(value)}VND',
+                    style: CommonStyles.size18W700White(context),
                   ),
                 ),
-            ],
-          ),
-          Stack(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        isActive
-                            ? SvgPicture.asset('assets/icons/ic_clock.svg')
-                            : SvgPicture.asset(
-                                'assets/icons/ic_clock_grey.svg'),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          'Vô thời hạn',
-                          style: isActive
-                              ? CommonStyles.size14W400Black1D(context)
-                              : CommonStyles.size14W400Grey86(context),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        isActive
-                            ? SvgPicture.asset(
-                                'assets/icons/ic_info_circle.svg')
-                            : SvgPicture.asset(
-                                'assets/icons/ic_info_circle_grey.svg'),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          'Áp dụng cho đơn hàng từ 2 triệu đồng',
-                          style: isActive
-                              ? CommonStyles.size14W400Black1D(context)
-                              : CommonStyles.size14W400Grey86(context),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        isActive
-                            ? SvgPicture.asset('assets/icons/ic_ticket.svg')
-                            : SvgPicture.asset(
-                                'assets/icons/ic_ticket_grey.svg'),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        RichText(
-                          text: TextSpan(
-                              text: 'Mã Coupon: ',
-                              style: isActive
-                                  ? CommonStyles.size14W400Black1D(context)
-                                  : CommonStyles.size14W400Grey86(context),
-                              children: [
-                                TextSpan(
-                                  text: coupon,
-                                  style: isActive
-                                      ? CommonStyles.size14W700Blue00(context)
-                                      : CommonStyles.size14W400Grey86(context),
-                                ),
-                              ]),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              if (showEye)
-                Positioned(
-                  bottom: 12,
-                  right: 12,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {});
-                    },
-                    child: Container(
-                      height: 32,
-                      width: 32,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 1,
-                          color: isActive
-                              ? const Color(0xff0066CC).withOpacity(0.2)
-                              : const Color(0xffC0C0C0),
-                        ),
-                        borderRadius: BorderRadius.circular(6),
+                if (!isActive)
+                  Positioned(
+                    right: 0,
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(10),
                       ),
-                      child: isActive
-                          ? SvgPicture.asset('assets/icons/ic_blue_eye.svg')
-                          : SvgPicture.asset('assets/icons/ic_grey_eye.svg'),
+                      child:
+                          SvgPicture.asset('assets/images/img_bg_status.svg'),
                     ),
                   ),
+              ],
+            ),
+            Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          isActive
+                              ? SvgPicture.asset('assets/icons/ic_clock.svg')
+                              : SvgPicture.asset(
+                                  'assets/icons/ic_clock_grey.svg'),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            'Vô thời hạn',
+                            style: isActive
+                                ? CommonStyles.size14W400Black1D(context)
+                                : CommonStyles.size14W400Grey86(context),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          isActive
+                              ? SvgPicture.asset(
+                                  'assets/icons/ic_info_circle.svg')
+                              : SvgPicture.asset(
+                                  'assets/icons/ic_info_circle_grey.svg'),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            'Áp dụng cho đơn hàng từ 2 triệu đồng',
+                            style: isActive
+                                ? CommonStyles.size14W400Black1D(context)
+                                : CommonStyles.size14W400Grey86(context),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          isActive
+                              ? SvgPicture.asset('assets/icons/ic_ticket.svg')
+                              : SvgPicture.asset(
+                                  'assets/icons/ic_ticket_grey.svg'),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          RichText(
+                            text: TextSpan(
+                                text: 'Mã Coupon: ',
+                                style: isActive
+                                    ? CommonStyles.size14W400Black1D(context)
+                                    : CommonStyles.size14W400Grey86(context),
+                                children: [
+                                  TextSpan(
+                                    text: coupon,
+                                    style: isActive
+                                        ? CommonStyles.size14W700Blue00(context)
+                                        : CommonStyles.size14W400Grey86(
+                                            context),
+                                  ),
+                                ]),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-            ],
-          ),
-        ],
+                if (showEye)
+                  Positioned(
+                    bottom: 12,
+                    right: 12,
+                    child: GestureDetector(
+                      onTap: onEyeTap,
+                      child: Container(
+                        height: 32,
+                        width: 32,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            width: 1,
+                            color: isActive
+                                ? const Color(0xff0066CC).withOpacity(0.2)
+                                : const Color(0xffC0C0C0),
+                          ),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: isActive
+                            ? SvgPicture.asset('assets/icons/ic_blue_eye.svg')
+                            : SvgPicture.asset('assets/icons/ic_grey_eye.svg'),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

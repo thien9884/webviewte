@@ -9,18 +9,21 @@ class CouponModel {
   int? totalMoneyOfBillTo;
   String? fetchStatus;
   int? id;
+  bool showCoupon = false;
 
-  CouponModel(
-      {this.coupon,
-      this.usedTime,
-      this.limitedUse,
-      this.active,
-      this.value,
-      this.valueType,
-      this.totalMoneyOfBillFrom,
-      this.totalMoneyOfBillTo,
-      this.fetchStatus,
-      this.id});
+  CouponModel({
+    this.coupon,
+    this.usedTime,
+    this.limitedUse,
+    this.active,
+    this.value,
+    this.valueType,
+    this.totalMoneyOfBillFrom,
+    this.totalMoneyOfBillTo,
+    this.fetchStatus,
+    this.id,
+    this.showCoupon = false,
+  });
 
   CouponModel.fromJson(Map<String, dynamic> json) {
     coupon = json['Coupon'];

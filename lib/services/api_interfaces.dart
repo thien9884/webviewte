@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
@@ -58,7 +59,7 @@ abstract class ApiInterface {
   Future<CustomerModel?> requestGetCustomerAddress(int? id);
 
   // get customer address
-  Future<MySystemModel?> requestGetMySystem(int? id);
+  Future<MySystemModel?> requestGetMySystem(int? id, int? page, int? size);
 
   // get customer address
   Future<List<RatingHistoryModel>?> requestGetRatingHistory(int? id);
@@ -78,8 +79,14 @@ abstract class ApiInterface {
   // get point exchange
   Future<CouponModel?> requestGetPointExchange(int point);
 
+  // get point exchange
+  Future<List<CouponModel>> requestGetListCoupon(int index, int size);
+
   // get avatar
   Future<String?> requestGetAvatar();
+
+  // change avatar
+  Future<String?> requestChangeAvatar(File? file);
 
   // get state
   Future<List<StateModel>?> requestGetState();

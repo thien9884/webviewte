@@ -17,3 +17,16 @@ class RequestGetExchangePoint extends ExchangeEvent {
   @override
   List<Object?> get props => [];
 }
+
+class RequestGetListCoupon extends ExchangeEvent {
+  final int index;
+  final int size;
+
+  const RequestGetListCoupon(
+    this.index,
+    this.size,
+  );
+
+  @override
+  List<Object?> get props => [];
+}

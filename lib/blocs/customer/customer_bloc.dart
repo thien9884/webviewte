@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webviewtest/blocs/base_blocs.dart';
 import 'package:webviewtest/blocs/customer/customer_event.dart';
@@ -51,7 +52,19 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     });
     on<RequestGetMySystem>((event, emit) {
       int? levelId = event.levelId;
-      return _handleGetMySystem(emit, levelId);
+      int? page = event.page;
+      int? size = event.size;
+      return _handleGetMySystem(emit, levelId, page, size);
+    });
+    on<RequestGetAvatar>((event, emit) {
+      return _handleGetAvatar(
+        event,
+        emit,
+      );
+    });
+    on<RequestUploadAvatar>((event, emit) {
+      File? avatar = event.file;
+      return _handleUploadAvatar(emit, avatar);
     });
   }
 
@@ -220,10 +233,29 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     }
   }
 
-  _handleGetMySystem(Emitter<CustomerState> emit, int? levelId) async {
+  _handleGetAvatar(
+      RequestGetAvatar event,
+      Emitter emit,
+      ) async {
+    emit(const GetAvatarLoading());
+    try {
+      final data = await ApiCall().requestGetAvatar();
+      emit(
+        GetAvatarLoaded(avatar: data ?? ''),
+      );
+    } catch (e) {
+      emit(
+        GetAvatarLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleGetMySystem(Emitter<CustomerState> emit, int? levelId, int? page, int? size) async {
     emit(const MySystemLoading());
     try {
-      final data = await ApiCall().requestGetMySystem(levelId);
+      final data = await ApiCall().requestGetMySystem(levelId, page, size);
       emit(
         MySystemLoaded(
           mySystemModel: data ?? MySystemModel(),
@@ -232,6 +264,24 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     } catch (e) {
       emit(
         MySystemLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleUploadAvatar(Emitter<CustomerState> emit, File? avatar) async {
+    emit(const UploadAvatarLoading());
+    try {
+      final data = await ApiCall().requestChangeAvatar(avatar);
+      emit(
+        UploadAvatarLoaded(
+          avatar: data ?? '',
+        ),
+      );
+    } catch (e) {
+      emit(
+        UploadAvatarLoadError(
           message: handleError(e),
         ),
       );

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/customer/customer_model.dart';
@@ -90,8 +92,25 @@ class RequestGetProductRating extends CustomerEvent {
 
 class RequestGetMySystem extends CustomerEvent {
   final int? levelId;
+  final int? page;
+  final int? size;
 
-  const RequestGetMySystem(this.levelId);
+  const RequestGetMySystem(this.levelId, this.page, this.size);
+
+  @override
+  List<Object?> get props => [];
+}
+
+class RequestGetAvatar extends CustomerEvent {
+  const RequestGetAvatar();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class RequestUploadAvatar extends CustomerEvent {
+  final File? file;
+  const RequestUploadAvatar({required this.file});
 
   @override
   List<Object?> get props => [];

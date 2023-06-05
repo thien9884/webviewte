@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:webviewtest/constant/api_constant.dart';
 import 'package:webviewtest/model/address/address.dart';
 import 'package:webviewtest/model/banner/banner_model.dart';
@@ -120,10 +124,11 @@ class ApiCall implements ApiInterface {
   }
 
   @override
-  Future<MySystemModel?> requestGetMySystem(int? id) async {
-    var response = await DioClient().get('${ApiConstant.mySystem}$id');
-    if (response['Data'] == null) return null;
-    final data = response['Data'];
+  Future<MySystemModel?> requestGetMySystem(int? id, int? page, int? size) async {
+    var response = await DioClient()
+        .get('${ApiConstant.mySystem}?level=$id&pageIndex=0&pageSize=8');
+    if (response == null) return null;
+    final data = response;
     return MySystemModel.fromJson(data);
   }
 
@@ -199,7 +204,8 @@ class ApiCall implements ApiInterface {
   Future<MyRankModel?> requestGetMyRank(
     int? page,
   ) async {
-    var response = await DioClient().get('${ApiConstant.rewardPoint}$page');
+    var response =
+        await DioClient().get('${ApiConstant.rewardPoint}?pageNumber=$page');
     if (response == null) return null;
     final data = response;
     return MyRankModel.fromJson(data);
@@ -209,10 +215,20 @@ class ApiCall implements ApiInterface {
   Future<CouponModel?> requestGetPointExchange(
     int? point,
   ) async {
-    var response = await DioClient().get('${ApiConstant.exchangeCoupon}$point');
+    var response = await DioClient()
+        .get('${ApiConstant.exchangeCoupon}?pointExchange=$point');
     if (response == null) return null;
     final data = response;
     return CouponModel.fromJson(data);
+  }
+
+  @override
+  Future<List<CouponModel>> requestGetListCoupon(int index, int size) async {
+    var response = await DioClient()
+        .get('${ApiConstant.listCoupon}?pageIndex=$index&pageSize=$size');
+    if (response == null) return [];
+    Iterable list = response;
+    return list.map((e) => CouponModel.fromJson(e)).toList();
   }
 
   @override
@@ -227,7 +243,35 @@ class ApiCall implements ApiInterface {
   Future<String?> requestGetAvatar() async {
     var response = await DioClient().get(ApiConstant.avatar);
     if (response == null) return null;
-    final data = response;
+    final data = response["AvatarUrl"];
+    return data;
+  }
+
+  @override
+  Future<String?> requestChangeAvatar(File? file) async {
+    String fileName = file!.path.split('/').last;
+    String fileType = file.path.split('.').last;
+    FormData formData = FormData.fromMap({
+      "uploadedFile": await MultipartFile.fromFile(
+        file.path,
+        filename: fileName,
+        contentType: MediaType("image", fileType),
+      ),
+    });
+    var response =
+        await DioClient().postAvatar(ApiConstant.uploadAvatar, formData);
+    if (response == null) return null;
+    String data = '';
+    try {
+      data = response[""]["Errors"][0]["ErrorMessage"];
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+    if (data.isEmpty) {
+      data = response["AvatarUrl"];
+    }
     return data;
   }
 
@@ -270,7 +314,9 @@ class ApiCall implements ApiInterface {
   ) async {
     var value = keyValue?.replaceAll(RegExp(r"\s+"), " ");
     final key = value?.replaceAll(" ", "%20");
-    print(key);
+    if (kDebugMode) {
+      print(key);
+    }
     var response = await DioClient()
         .get('${ApiConstant.searchProducts}?pagenumber=$pageNumber&q=$key');
     if (response == null) return null;
