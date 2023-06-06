@@ -1,3 +1,29 @@
+class TotalCoupon {
+  List<CouponModel>? coupons;
+  int? totalCoupons;
+
+  TotalCoupon({this.coupons, this.totalCoupons});
+
+  TotalCoupon.fromJson(Map<String, dynamic> json) {
+    if (json['Coupons'] != null) {
+      coupons = <CouponModel>[];
+      json['Coupons'].forEach((v) {
+        coupons!.add(CouponModel.fromJson(v));
+      });
+    }
+    totalCoupons = json['TotalCoupons'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (coupons != null) {
+      data['Coupons'] = coupons!.map((v) => v.toJson()).toList();
+    }
+    data['TotalCoupons'] = totalCoupons;
+    return data;
+  }
+}
+
 class CouponModel {
   String? coupon;
   int? usedTime;

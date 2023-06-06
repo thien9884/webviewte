@@ -80,7 +80,7 @@ abstract class ApiInterface {
   Future<CouponModel?> requestGetPointExchange(int point);
 
   // get point exchange
-  Future<List<CouponModel>> requestGetListCoupon(int index, int size);
+  Future<TotalCoupon?> requestGetListCoupon(int index, int size);
 
   // get avatar
   Future<String?> requestGetAvatar();

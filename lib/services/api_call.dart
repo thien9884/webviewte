@@ -223,12 +223,12 @@ class ApiCall implements ApiInterface {
   }
 
   @override
-  Future<List<CouponModel>> requestGetListCoupon(int index, int size) async {
+  Future<TotalCoupon?> requestGetListCoupon(int index, int size) async {
     var response = await DioClient()
         .get('${ApiConstant.listCoupon}?pageIndex=$index&pageSize=$size');
-    if (response == null) return [];
-    Iterable list = response;
-    return list.map((e) => CouponModel.fromJson(e)).toList();
+    if (response == null) return null;
+    final data = response;
+    return TotalCoupon.fromJson(data);
   }
 
   @override

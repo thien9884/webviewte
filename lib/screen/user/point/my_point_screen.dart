@@ -141,7 +141,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '$_point điểm',
+                  '${NumberFormat.decimalPattern().format(_point)} điểm',
                   style: CommonStyles.size24W700Purple35(context),
                 ),
               ),
@@ -174,7 +174,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '$_point điểm',
+                  '${NumberFormat.decimalPattern().format(_point)} điểm',
                   style: CommonStyles.size24W700YellowFF(context),
                 ),
               ),
@@ -207,7 +207,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '$_point điểm',
+                  '${NumberFormat.decimalPattern().format(_point)} điểm',
                   style: CommonStyles.size24W700Grey79(context),
                 ),
               ),
@@ -240,7 +240,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '$_point điểm',
+                  '${NumberFormat.decimalPattern().format(_point)} điểm',
                   style: CommonStyles.size24W700Grey86(context),
                 ),
               ),
@@ -524,7 +524,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                       ),
                       DataCell(
                         Text(
-                          item.points.toString(),
+                          NumberFormat.decimalPattern().format(item.points),
                           style: CommonStyles.size12W400Black1D(context),
                         ),
                       ),

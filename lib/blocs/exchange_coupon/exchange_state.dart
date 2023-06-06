@@ -42,7 +42,7 @@ class ListCouponLoading extends ExchangeState {
 }
 
 class ListCouponLoaded extends ExchangeState {
-  final List<CouponModel> listCoupon;
+  final TotalCoupon? listCoupon;
 
   const ListCouponLoaded({required this.listCoupon});
 

@@ -40,6 +40,8 @@ class _MySystemScreenState extends State<MySystemScreen>
   final List<MySystemModel> _listMySystem = [];
   int _indexSelected = 0;
   bool _isVisible = false;
+  int _pagesSelected = 0;
+  final ScrollController _pageScrollController = ScrollController();
 
   _getHideBottomValue() {
     _isVisible = true;
@@ -296,12 +298,16 @@ class _MySystemScreenState extends State<MySystemScreen>
               ),
             ),
             _tableViewData(_indexSelected),
+            if (_listMySystem[_indexSelected].totalRecords != null &&
+                _listMySystem[_indexSelected].totalRecords! > 8)
+              _pagesNumber(_indexSelected),
           ],
         ),
       ),
     );
   }
 
+  // table data
   Widget _tableViewData(int index) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -408,6 +414,134 @@ class _MySystemScreenState extends State<MySystemScreen>
               ],
             )
           : const SizedBox(),
+    );
+  }
+
+  // pages number
+  Widget _pagesNumber(int indexSelected) {
+    var totalPage = (_listMySystem[indexSelected].totalRecords! / 8).ceil();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      child: Center(
+        child: SizedBox(
+          height: 35,
+          width: totalPage > 6 ? double.infinity : 35 * (totalPage + 1) + 25,
+          child: Row(
+            children: [
+              if (totalPage > 6 && _pagesSelected >= 5)
+                GestureDetector(
+                  onTap: () {
+                    if (_pagesSelected != 0) {
+                      setState(() {
+                        _listMySystem.clear();
+                        _pagesSelected = 0;
+                        BlocProvider.of<CustomerBloc>(context)
+                            .add(const RequestGetMySystem(1, 0, 8));
+                        BlocProvider.of<CustomerBloc>(context)
+                            .add(const RequestGetMySystem(2, 0, 8));
+                        _pageScrollController.animateTo(
+                          _pageScrollController.position.minScrollExtent,
+                          duration: const Duration(seconds: 2),
+                          curve: Curves.fastOutSlowIn,
+                        );
+                      });
+                    }
+                  },
+                  child: Container(
+                    height: 35,
+                    width: 35,
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF5F5F7),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back_ios_outlined,
+                      size: 14,
+                      color: Color(0xff1D1D1D),
+                    ),
+                  ),
+                ),
+              Expanded(
+                child: Center(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    controller: _pageScrollController,
+                    itemCount: totalPage,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) => GestureDetector(
+                      onTap: () => setState(() {
+                        _pagesSelected = index;
+                        _listMySystem.clear();
+                        BlocProvider.of<CustomerBloc>(context)
+                            .add(RequestGetMySystem(1, index, 8));
+                        BlocProvider.of<CustomerBloc>(context)
+                            .add(RequestGetMySystem(2, index, 8));
+                      }),
+                      child: Container(
+                        height: 35,
+                        width: 35,
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        decoration: BoxDecoration(
+                          color: _pagesSelected == index
+                              ? Colors.blueAccent
+                              : const Color(0xffF5F5F7),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          (index + 1).toString(),
+                          style: _pagesSelected == index
+                              ? CommonStyles.size14W400White(context)
+                              : CommonStyles.size14W400Black1D(context),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (totalPage > 6 && _pagesSelected <= totalPage - 5)
+                GestureDetector(
+                  onTap: () {
+                    if (_listMySystem[indexSelected].totalRecords != null &&
+                        _pagesSelected != totalPage - 1) {
+                      setState(() {
+                        _listMySystem.clear();
+                        _pagesSelected = totalPage - 1;
+                        BlocProvider.of<CustomerBloc>(context)
+                            .add(RequestGetMySystem(1, totalPage, 8));
+                        BlocProvider.of<CustomerBloc>(context)
+                            .add(RequestGetMySystem(2, totalPage, 8));
+                        _pageScrollController.animateTo(
+                          _pageScrollController.position.maxScrollExtent,
+                          duration: const Duration(seconds: 2),
+                          curve: Curves.fastOutSlowIn,
+                        );
+                      });
+                    }
+                  },
+                  child: Container(
+                    height: 35,
+                    width: 35,
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xffF5F5F7),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14,
+                      color: Color(0xff1D1D1D),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

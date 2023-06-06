@@ -23,8 +23,11 @@ class ExchangePointScreen extends StatefulWidget {
 class _ExchangePointScreenState extends State<ExchangePointScreen> {
   var formatter = NumberFormat.decimalPattern('vi_VN');
   String _messageError = '';
-  List<CouponModel> _listCoupon = [];
+  TotalCoupon _totalCoupon = TotalCoupon();
   CouponModel? _couponModel;
+  int _pagesSelected = 0;
+  final ScrollController _pageScrollController = ScrollController();
+  final dataKey = GlobalKey();
 
   _getData() {
     BlocProvider.of<ExchangeBloc>(context)
@@ -233,7 +236,7 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
           if (state is ListCouponLoading) {
             EasyLoading.show();
           } else if (state is ListCouponLoaded) {
-            _listCoupon = state.listCoupon;
+            _totalCoupon = state.listCoupon ?? TotalCoupon();
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
           } else if (state is ListCouponLoadError) {
@@ -257,6 +260,9 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
             const CommonAppbar(title: 'Điểm thưởng'),
             _couponSuggest(),
             _myCoupon(),
+            if (_totalCoupon.totalCoupons != null &&
+                _totalCoupon.totalCoupons! > 8)
+              _pagesNumber(),
             SliverList(
                 delegate: SliverChildBuilderDelegate(
                     childCount: 1, (context, index) => const CommonFooter())),
@@ -447,6 +453,8 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
 
   // my coupon
   Widget _myCoupon() {
+    List<CouponModel> listCoupon = _totalCoupon.coupons ?? [];
+
     return SliverToBoxAdapter(
       child: Container(
         color: const Color(0xffF5F5F7),
@@ -461,9 +469,9 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
               slivers: [
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    childCount: _listCoupon.length,
+                    childCount: listCoupon.length,
                     (context, index) {
-                      final item = _listCoupon[index];
+                      final item = listCoupon[index];
 
                       return _myCouponItem(
                         isActive: item.active ?? false,
@@ -478,7 +486,6 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                         onEyeTap: () {
                           setState(() {
                             item.showCoupon = !item.showCoupon;
-                            print(item.showCoupon);
                           });
                         },
                       );
@@ -493,9 +500,135 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
     );
   }
 
+  // pages number
+  Widget _pagesNumber() {
+    var totalPage = (_totalCoupon.totalCoupons! / 8).ceil();
+
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+        color: const Color(0xffF5F5F7),
+        child: Center(
+          child: SizedBox(
+            height: 35,
+            width: totalPage > 6 ? double.infinity : 35 * (totalPage + 1) + 25,
+            child: Row(
+              children: [
+                if (totalPage > 6 && _pagesSelected >= 5)
+                  GestureDetector(
+                    onTap: () {
+                      if (_pagesSelected != 0) {
+                        setState(() {
+                          _pagesSelected = 0;
+                          BlocProvider.of<ExchangeBloc>(context)
+                              .add(const RequestGetListCoupon(0, 10));
+                          _pageScrollController.animateTo(
+                            _pageScrollController.position.minScrollExtent,
+                            duration: const Duration(seconds: 2),
+                            curve: Curves.fastOutSlowIn,
+                          );
+                        });
+                        Scrollable.ensureVisible(dataKey.currentContext!);
+                      }
+                    },
+                    child: Container(
+                      height: 35,
+                      width: 35,
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_ios_outlined,
+                        size: 14,
+                        color: Color(0xff1D1D1D),
+                      ),
+                    ),
+                  ),
+                Expanded(
+                  child: Center(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      controller: _pageScrollController,
+                      itemCount: totalPage,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) => GestureDetector(
+                        onTap: () => setState(() {
+                          _pagesSelected = index;
+                          BlocProvider.of<ExchangeBloc>(context)
+                              .add(RequestGetListCoupon(index, 10));
+                          Scrollable.ensureVisible(dataKey.currentContext!);
+                        }),
+                        child: Container(
+                          height: 35,
+                          width: 35,
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            color: _pagesSelected == index
+                                ? Colors.blueAccent
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            (index + 1).toString(),
+                            style: _pagesSelected == index
+                                ? CommonStyles.size14W400White(context)
+                                : CommonStyles.size14W400Black1D(context),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                if (totalPage > 6 && _pagesSelected <= totalPage - 5)
+                  GestureDetector(
+                    onTap: () {
+                      if (_totalCoupon.totalCoupons != null &&
+                          _pagesSelected != totalPage - 1) {
+                        setState(() {
+                          _pagesSelected = totalPage - 1;
+                          BlocProvider.of<ExchangeBloc>(context)
+                              .add(RequestGetListCoupon(totalPage, 10));
+                          _pageScrollController.animateTo(
+                            _pageScrollController.position.maxScrollExtent,
+                            duration: const Duration(seconds: 2),
+                            curve: Curves.fastOutSlowIn,
+                          );
+                        });
+                        Scrollable.ensureVisible(dataKey.currentContext!);
+                      }
+                    },
+                    child: Container(
+                      height: 35,
+                      width: 35,
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 14,
+                        color: Color(0xff1D1D1D),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   // my coupon tittle
   Widget _myCouponTittle() {
     return Padding(
+      key: dataKey,
       padding: const EdgeInsets.only(bottom: 8, top: 20),
       child: Text(
         'Coupon bạn đang sở hữu',

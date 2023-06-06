@@ -51,7 +51,7 @@ class ExchangeBloc extends BaseBloc<ExchangeEvent, ExchangeState> {
       final data = await ApiCall().requestGetListCoupon(index, size);
       emit(
         ListCouponLoaded(
-          listCoupon: data,
+          listCoupon: data ?? TotalCoupon(),
         ),
       );
     } catch (e) {
