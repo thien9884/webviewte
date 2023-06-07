@@ -800,7 +800,11 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: isActive
-                            ? SvgPicture.asset('assets/icons/ic_blue_eye.svg')
+                            ? coupon != '***************'
+                                ? SvgPicture.asset(
+                                    'assets/icons/ic_blue_eye.svg')
+                                : SvgPicture.asset(
+                                    'assets/icons/ic_eye_hide.svg')
                             : SvgPicture.asset('assets/icons/ic_grey_eye.svg'),
                       ),
                     ),
