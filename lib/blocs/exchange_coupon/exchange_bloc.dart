@@ -3,6 +3,7 @@ import 'package:webviewtest/blocs/base_blocs.dart';
 import 'package:webviewtest/blocs/exchange_coupon/exchange_event.dart';
 import 'package:webviewtest/blocs/exchange_coupon/exchange_state.dart';
 import 'package:webviewtest/model/coupon/coupon_model.dart';
+import 'package:webviewtest/model/my_rank/my_rank_model.dart';
 import 'package:webviewtest/services/api_call.dart';
 
 class ExchangeBloc extends BaseBloc<ExchangeEvent, ExchangeState> {
@@ -22,6 +23,13 @@ class ExchangeBloc extends BaseBloc<ExchangeEvent, ExchangeState> {
         emit,
         index,
         size,
+      );
+    });
+    on<RequestGetMyRank>((event, emit) {
+      int? pageNumber = event.pageNumber;
+      return _handleGetMyRank(
+        emit,
+        pageNumber,
       );
     });
   }
@@ -57,6 +65,25 @@ class ExchangeBloc extends BaseBloc<ExchangeEvent, ExchangeState> {
     } catch (e) {
       emit(
         ListCouponLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleGetMyRank(
+      Emitter<ExchangeState> emit,
+      int? pageNumber,
+      ) async {
+    emit(const MyRankLoading());
+    try {
+      final data = await ApiCall().requestGetMyRank(pageNumber);
+      emit(
+        MyRankLoaded(myRankModel: data ?? MyRankModel()),
+      );
+    } catch (e) {
+      emit(
+        MyRankLoadError(
           message: handleError(e),
         ),
       );

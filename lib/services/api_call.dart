@@ -126,7 +126,7 @@ class ApiCall implements ApiInterface {
   @override
   Future<MySystemModel?> requestGetMySystem(int? id, int? page, int? size) async {
     var response = await DioClient()
-        .get('${ApiConstant.mySystem}?level=$id&pageIndex=0&pageSize=8');
+        .get('${ApiConstant.mySystem}?level=$id&pageIndex=$page&pageSize=8');
     if (response == null) return null;
     final data = response;
     return MySystemModel.fromJson(data);

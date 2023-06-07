@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:webviewtest/model/coupon/coupon_model.dart';
+import 'package:webviewtest/model/my_rank/my_rank_model.dart';
 
 abstract class ExchangeState extends Equatable {
   const ExchangeState();
@@ -58,3 +59,26 @@ class ListCouponLoadError extends ExchangeState {
   @override
   List<Object?> get props => [message];
 }
+
+class MyRankLoading extends ExchangeState {
+  const MyRankLoading();
+}
+
+class MyRankLoaded extends ExchangeState {
+  final MyRankModel myRankModel;
+
+  const MyRankLoaded({required this.myRankModel});
+
+  @override
+  List<Object?> get props => [myRankModel];
+}
+
+class MyRankLoadError extends ExchangeState {
+  final String message;
+
+  const MyRankLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+

@@ -565,7 +565,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                 overflow: TextOverflow.ellipsis,
                                 style: CommonStyles.size16W700Black1D(context)
                                     .copyWith(
-                                  letterSpacing: 0.3,
                                   height: 1.3,
                                 ),
                               ),

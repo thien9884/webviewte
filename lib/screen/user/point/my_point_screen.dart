@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:webviewtest/blocs/my_rank/my_rank_bloc.dart';
-import 'package:webviewtest/blocs/my_rank/my_rank_event.dart';
-import 'package:webviewtest/blocs/my_rank/my_rank_state.dart';
+import 'package:webviewtest/blocs/exchange_coupon/exchange_bloc.dart';
+import 'package:webviewtest/blocs/exchange_coupon/exchange_event.dart';
+import 'package:webviewtest/blocs/exchange_coupon/exchange_state.dart';
 import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -41,7 +41,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
   }
 
   _getData() {
-    BlocProvider.of<MyRankBloc>(context).add(const RequestGetMyRank(1));
+    BlocProvider.of<ExchangeBloc>(context).add(const RequestGetMyRank(1));
   }
 
   @override
@@ -52,7 +52,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<MyRankBloc, MyRankState>(
+    return BlocConsumer<ExchangeBloc, ExchangeState>(
         builder: (context, state) => _myRankUI(),
         listener: (context, state) {
           if (state is MyRankLoading) {
@@ -141,7 +141,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '${NumberFormat.decimalPattern().format(_point)} điểm',
+                  '${NumberFormat.decimalPattern('vi_VN').format(_point)} điểm',
                   style: CommonStyles.size24W700Purple35(context),
                 ),
               ),
@@ -174,7 +174,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '${NumberFormat.decimalPattern().format(_point)} điểm',
+                  '${NumberFormat.decimalPattern('vi_VN').format(_point)} điểm',
                   style: CommonStyles.size24W700YellowFF(context),
                 ),
               ),
@@ -207,7 +207,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '${NumberFormat.decimalPattern().format(_point)} điểm',
+                  '${NumberFormat.decimalPattern('vi_VN').format(_point)} điểm',
                   style: CommonStyles.size24W700Grey79(context),
                 ),
               ),
@@ -240,7 +240,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '${NumberFormat.decimalPattern().format(_point)} điểm',
+                  '${NumberFormat.decimalPattern('vi_VN').format(_point)} điểm',
                   style: CommonStyles.size24W700Grey86(context),
                 ),
               ),
@@ -524,7 +524,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                       ),
                       DataCell(
                         Text(
-                          NumberFormat.decimalPattern().format(item.points),
+                          NumberFormat.decimalPattern('vi_VN').format(item.points),
                           style: CommonStyles.size12W400Black1D(context),
                         ),
                       ),
@@ -604,7 +604,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                       if (_pagesSelected != 0) {
                         setState(() {
                           _pagesSelected = 0;
-                          BlocProvider.of<MyRankBloc>(context)
+                          BlocProvider.of<ExchangeBloc>(context)
                               .add(const RequestGetMyRank(1));
                           _pageScrollController.animateTo(
                             _pageScrollController.position.minScrollExtent,
@@ -640,7 +640,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                       itemBuilder: (context, index) => GestureDetector(
                         onTap: () => setState(() {
                           _pagesSelected = index;
-                          BlocProvider.of<MyRankBloc>(context)
+                          BlocProvider.of<ExchangeBloc>(context)
                               .add(RequestGetMyRank(index + 1));
                         }),
                         child: Container(
@@ -675,7 +675,7 @@ class _MyPointScreenState extends State<MyPointScreen> {
                         setState(() {
                           _pagesSelected =
                               _myRankModel!.pagerModel!.totalPages! - 1;
-                          BlocProvider.of<MyRankBloc>(context).add(
+                          BlocProvider.of<ExchangeBloc>(context).add(
                               RequestGetMyRank(
                                   _myRankModel!.pagerModel!.totalPages!));
                           _pageScrollController.animateTo(

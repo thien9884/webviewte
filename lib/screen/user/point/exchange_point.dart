@@ -26,6 +26,7 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
   TotalCoupon _totalCoupon = TotalCoupon();
   CouponModel? _couponModel;
   int _pagesSelected = 0;
+  int? _myPoint;
   final ScrollController _pageScrollController = ScrollController();
   final dataKey = GlobalKey();
 
@@ -34,9 +35,19 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
         .add(const RequestGetListCoupon(0, 10));
   }
 
+  _getPoint() {
+    BlocProvider.of<ExchangeBloc>(context).add(const RequestGetMyRank(1));
+  }
+
+  _getMyPoint(int rewardPointsBalance) {
+    _myPoint = rewardPointsBalance ~/ 200;
+    print(_myPoint);
+  }
+
   @override
   void initState() {
     _getData();
+    _getPoint();
     super.initState();
   }
 
@@ -45,6 +56,20 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
     return BlocConsumer<ExchangeBloc, ExchangeState>(
         builder: (context, state) => _exchangePointUI(),
         listener: (context, state) {
+          if (state is MyRankLoading) {
+            EasyLoading.show();
+          } else if (state is MyRankLoaded) {
+            _getMyPoint(state.myRankModel.rewardPointsBalance ?? 0);
+
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          } else if (state is MyRankLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
           if (state is ExchangePointLoading) {
             EasyLoading.show();
           } else if (state is ExchangePointLoaded) {
@@ -213,6 +238,7 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                             style: CommonStyles.size14W700Blue00(context),
                           ),
                           onPressed: () {
+                            _getPoint();
                             BlocProvider.of<ExchangeBloc>(context)
                                 .add(const RequestGetListCoupon(0, 10));
                             Navigator.of(context).pop();
@@ -424,26 +450,27 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                   ],
                 ),
               ),
-              Positioned(
-                top: 8,
-                right: 12,
-                child: Container(
-                  height: 24,
-                  width: 24,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 1,
-                      color: const Color(0xff4D94DB),
+              if (_myPoint != null)
+                Positioned(
+                  top: 8,
+                  right: 12,
+                  child: Container(
+                    height: 24,
+                    width: 24,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        width: 1,
+                        color: const Color(0xff4D94DB),
+                      ),
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: Text(
-                    '2',
-                    style: CommonStyles.size13W400Blue4D(context),
+                    child: Text(
+                      _myPoint.toString(),
+                      style: CommonStyles.size13W400Blue4D(context),
+                    ),
                   ),
                 ),
-              )
             ],
           ),
         ],

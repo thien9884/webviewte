@@ -30,3 +30,15 @@ class RequestGetListCoupon extends ExchangeEvent {
   @override
   List<Object?> get props => [];
 }
+
+class RequestGetMyRank extends ExchangeEvent {
+  final int? pageNumber;
+
+  const RequestGetMyRank(
+      this.pageNumber,
+      );
+
+  @override
+  List<Object?> get props => [];
+}
+

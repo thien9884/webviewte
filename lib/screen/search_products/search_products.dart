@@ -353,7 +353,6 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                                 overflow: TextOverflow.ellipsis,
                                 style: CommonStyles.size16W700Black1D(context)
                                     .copyWith(
-                                  letterSpacing: 0.3,
                                   height: 1.3,
                                 ),
                               ),

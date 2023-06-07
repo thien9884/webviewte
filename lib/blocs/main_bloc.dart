@@ -6,7 +6,6 @@ import 'package:webviewtest/blocs/customer/customer_bloc.dart';
 import 'package:webviewtest/blocs/exchange_coupon/exchange_bloc.dart';
 import 'package:webviewtest/blocs/forgot_password/forgot_password_bloc.dart';
 import 'package:webviewtest/blocs/login/login_bloc.dart';
-import 'package:webviewtest/blocs/my_rank/my_rank_bloc.dart';
 import 'package:webviewtest/blocs/news/news_bloc.dart';
 import 'package:webviewtest/blocs/news_category/news_category_bloc.dart';
 import 'package:webviewtest/blocs/order/order_bloc.dart';
@@ -37,8 +36,6 @@ class MainBloc {
             create: (BuildContext context) => ForgotPasswordBloc()),
         BlocProvider<ChangePasswordBloc>(
             create: (BuildContext context) => ChangePasswordBloc()),
-        BlocProvider<MyRankBloc>(
-            create: (BuildContext context) => MyRankBloc()),
         BlocProvider<ExchangeBloc>(
             create: (BuildContext context) => ExchangeBloc()),
       ];
