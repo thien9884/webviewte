@@ -18,6 +18,7 @@ import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/customer/info_model.dart';
+import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class AccountInfo extends StatefulWidget {
@@ -95,6 +96,47 @@ class _AccountInfoState extends State<AccountInfo> {
       }
     }
     setState(() {});
+  }
+
+  _deleteUser() {
+    return showCupertinoDialog(
+        context: context,
+        builder: (context) => CupertinoAlertDialog(
+              content: Text(
+                'Bạn có chắc muốn xoá tài khoản?\nHành vi này không thể khôi phục',
+                style: CommonStyles.size14W400Grey33(context),
+              ),
+              actions: [
+                CupertinoDialogAction(
+                  onPressed: () async {
+                    SharedPreferencesService sPref =
+                        await SharedPreferencesService.instance;
+                    setState(() {
+                      sPref.remove(SharedPrefKeys.isLogin);
+                      BlocProvider.of<CustomerBloc>(context)
+                          .add(const RequestDeleteAccount());
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const NavigationScreen(
+                                isSelected: 2,
+                              )));
+                    });
+                  },
+                  child: Text(
+                    'Đồng ý',
+                    style: CommonStyles.size14W700Blue007A(context),
+                  ),
+                ),
+                CupertinoDialogAction(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Huỷ',
+                    style: CommonStyles.size14W700RedFF(context),
+                  ),
+                ),
+              ],
+            ));
   }
 
   @override
@@ -186,6 +228,7 @@ class _AccountInfoState extends State<AccountInfo> {
                       ],
                     ),
                     _userNameField(),
+                    _deleteAccount(),
                     _buttonBuild(),
                   ],
                 ),
@@ -503,6 +546,7 @@ class _AccountInfoState extends State<AccountInfo> {
     );
   }
 
+  // save button
   Widget _buttonBuild() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -521,6 +565,37 @@ class _AccountInfoState extends State<AccountInfo> {
                 .add(RequestPutInfo(infoModel: _infoModel));
           });
         },
+      ),
+    );
+  }
+
+  // delete account
+  Widget _deleteAccount() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xffFF4127)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Material(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            onTap: () => _deleteUser(),
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+              child: Center(
+                child: Text(
+                  'Xoá tài khoản',
+                  style: CommonStyles.size14W700RedFF(context),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

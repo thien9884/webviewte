@@ -115,3 +115,10 @@ class RequestUploadAvatar extends CustomerEvent {
   @override
   List<Object?> get props => [];
 }
+
+class RequestDeleteAccount extends CustomerEvent {
+  const RequestDeleteAccount();
+
+  @override
+  List<Object?> get props => [];
+}

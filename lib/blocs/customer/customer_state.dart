@@ -284,3 +284,24 @@ class UploadAvatarLoadError extends CustomerState {
   List<Object?> get props => [message];
 }
 
+class DeleteAccountLoading extends CustomerState {
+  const DeleteAccountLoading();
+}
+
+class DeleteAccountLoaded extends CustomerState {
+  final String? avatar;
+  const DeleteAccountLoaded({required this.avatar});
+
+  @override
+  List<Object?> get props => [avatar];
+}
+
+class DeleteAccountLoadError extends CustomerState {
+  final String message;
+
+  const DeleteAccountLoadError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+

@@ -42,6 +42,9 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     on<RequestGetState>((event, emit) {
       return _handleGetState(event, emit);
     });
+    on<RequestDeleteAccount>((event, emit) {
+      return _handleDeleteAccount(event, emit);
+    });
     on<RequestGetRatingHistory>((event, emit) {
       int? customerId = event.customerId;
       return _handleGetRatingHistory(emit, customerId);
@@ -234,9 +237,9 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
   }
 
   _handleGetAvatar(
-      RequestGetAvatar event,
-      Emitter emit,
-      ) async {
+    RequestGetAvatar event,
+    Emitter emit,
+  ) async {
     emit(const GetAvatarLoading());
     try {
       final data = await ApiCall().requestGetAvatar();
@@ -252,7 +255,8 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     }
   }
 
-  _handleGetMySystem(Emitter<CustomerState> emit, int? levelId, int? page, int? size) async {
+  _handleGetMySystem(
+      Emitter<CustomerState> emit, int? levelId, int? page, int? size) async {
     emit(const MySystemLoading());
     try {
       final data = await ApiCall().requestGetMySystem(levelId, page, size);
@@ -282,6 +286,25 @@ class CustomerBloc extends BaseBloc<CustomerEvent, CustomerState> {
     } catch (e) {
       emit(
         UploadAvatarLoadError(
+          message: handleError(e),
+        ),
+      );
+    }
+  }
+
+  _handleDeleteAccount(
+      RequestDeleteAccount event, Emitter<CustomerState> emit) async {
+    emit(const DeleteAccountLoading());
+    try {
+      final data = await ApiCall().requestDeleteAccount();
+      emit(
+        DeleteAccountLoaded(
+          avatar: data,
+        ),
+      );
+    } catch (e) {
+      emit(
+        DeleteAccountLoadError(
           message: handleError(e),
         ),
       );

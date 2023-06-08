@@ -124,7 +124,8 @@ class ApiCall implements ApiInterface {
   }
 
   @override
-  Future<MySystemModel?> requestGetMySystem(int? id, int? page, int? size) async {
+  Future<MySystemModel?> requestGetMySystem(
+      int? id, int? page, int? size) async {
     var response = await DioClient()
         .get('${ApiConstant.mySystem}?level=$id&pageIndex=$page&pageSize=8');
     if (response == null) return null;
@@ -139,6 +140,14 @@ class ApiCall implements ApiInterface {
     if (response == null) return '';
     final data = response;
     return data;
+  }
+
+  @override
+  Future<String> requestDeleteAccount() async {
+    var response = await DioClient().delete(ApiConstant.customer);
+    if (response == null) return '';
+    final data = response;
+    return data.toString();
   }
 
   @override

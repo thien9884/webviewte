@@ -416,6 +416,25 @@ class _MyPointScreenState extends State<MyPointScreen> {
                 ),
                 Expanded(
                   child: Text(
+                    'Mỗi chi tiêu 250.000vnđ bạn sẽ được tích 1 điểm. Áp dụng với các đơn hàng từ 250.000vnđ trở lên',
+                    style: CommonStyles.size14W400Grey86(context),
+                    maxLines: 3,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Text(
+                    '•',
+                    style: CommonStyles.size14W400Grey86(context),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
                     'Hãy dùng điểm của mình mỗi khi mua sản phẩm tại ShopDunk bạn nhé',
                     style: CommonStyles.size14W400Grey86(context),
                     maxLines: 2,
@@ -524,7 +543,8 @@ class _MyPointScreenState extends State<MyPointScreen> {
                       ),
                       DataCell(
                         Text(
-                          NumberFormat.decimalPattern('vi_VN').format(item.points),
+                          NumberFormat.decimalPattern('vi_VN')
+                              .format(item.points),
                           style: CommonStyles.size12W400Black1D(context),
                         ),
                       ),

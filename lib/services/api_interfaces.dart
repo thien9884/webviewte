@@ -85,6 +85,8 @@ abstract class ApiInterface {
   // get avatar
   Future<String?> requestGetAvatar();
 
+  Future<String?> requestDeleteAccount();
+
   // change avatar
   Future<String?> requestChangeAvatar(File? file);
 
