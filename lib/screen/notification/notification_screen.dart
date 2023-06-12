@@ -22,6 +22,7 @@ class NotifScreen extends StatefulWidget {
 
 class _NotifScreenState extends State<NotifScreen> {
   int size = 5;
+  int? _totalSize;
   String _messageError = '';
   List<RewardPointsNoti> _listNoti = [];
   ScrollController _scrollController = ScrollController();
@@ -38,7 +39,9 @@ class _NotifScreenState extends State<NotifScreen> {
         _isLoading = true;
         size += 5;
       });
-      BlocProvider.of<NotiBloc>(context).add(RequestGetNoti(size));
+      if (_totalSize != null && _totalSize! + 5 >= size) {
+        BlocProvider.of<NotiBloc>(context).add(RequestGetNoti(size));
+      }
     }
   }
 
@@ -98,6 +101,7 @@ class _NotifScreenState extends State<NotifScreen> {
           } else if (state is NotiLoaded) {
             _isLoading = false;
             _listNoti = state.pointNotiModel.rewardPoints ?? [];
+            _totalSize = state.pointNotiModel.pagerModel?.totalRecords;
             print(_listNoti);
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
