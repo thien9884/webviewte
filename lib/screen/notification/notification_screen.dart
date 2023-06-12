@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/noti/noti_bloc.dart';
 import 'package:webviewtest/blocs/noti/noti_event.dart';
 import 'package:webviewtest/blocs/noti/noti_state.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
+import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/notification/noti_model.dart';
@@ -23,6 +26,7 @@ class _NotifScreenState extends State<NotifScreen> {
   List<RewardPointsNoti> _listNoti = [];
   ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
+  bool _isVisible = false;
 
   _getData() {
     BlocProvider.of<NotiBloc>(context).add(RequestGetNoti(size));
@@ -38,9 +42,37 @@ class _NotifScreenState extends State<NotifScreen> {
     }
   }
 
+  _getHideBottomValue() {
+    _isVisible = true;
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible) {
+          setState(() {
+            _isVisible = false;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_isVisible) {
+          setState(() {
+            _isVisible = true;
+            BlocProvider.of<ShopdunkBloc>(context)
+                .add(RequestGetHideBottom(_isVisible));
+          });
+        }
+      }
+    });
+  }
+
   @override
   void initState() {
     _getData();
+    _getHideBottomValue();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
