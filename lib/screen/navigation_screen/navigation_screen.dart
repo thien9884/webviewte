@@ -6,19 +6,23 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
+import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
+import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/screen/category/category_screen.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
+import 'package:webviewtest/screen/load_html/load_html_screen.dart';
 import 'package:webviewtest/screen/login/login_screen.dart';
 import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/news/news_screen.dart';
+import 'package:webviewtest/screen/notification/notification_screen.dart';
 import 'package:webviewtest/screen/search_products/search_products.dart';
 import 'package:webviewtest/screen/user/user_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
@@ -50,6 +54,41 @@ class _NavigationScreenState extends State<NavigationScreen>
   bool _isLogin = false;
   bool _accountExpand = false;
   NewsGroup _newsGroup = NewsGroup();
+  final List<Footer> _listFooter = [];
+  List<Topics> _listTopics = [];
+
+  _getListTopics() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    _listFooter.clear();
+
+    _listTopics = Topics.decode(sPref.listTopics);
+    _listFooter.add(
+      Footer(
+        name: 'Thông tin',
+        listFooter: _listTopics
+            .where((element) => element.includeInFooterColumn1 == true)
+            .toList(),
+      ),
+    );
+    _listFooter.add(
+      Footer(
+        name: 'Chính sách',
+        listFooter: _listTopics
+            .where((element) => element.includeInFooterColumn2 == true)
+            .toList(),
+      ),
+    );
+    _listFooter.add(
+      Footer(
+        name: 'Địa chỉ & liên hệ',
+        listFooter: _listTopics
+            .where((element) => element.includeInFooterColumn3 == true)
+            .toList(),
+      ),
+    );
+    setState(() {});
+  }
+
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 500),
     reverseDuration: const Duration(milliseconds: 500),
@@ -66,9 +105,8 @@ class _NavigationScreenState extends State<NavigationScreen>
     // const FlashSaleScreen(),
     const HomePageScreen(),
     const NewsScreen(),
-    // const LoginScreen(),
     const LoginScreen(),
-    // const StoreScreen(),
+    const NotifScreen(),
     const ShopDunkWebView(
       url: 'app-find-store',
       hideBottom: false,
@@ -95,6 +133,7 @@ class _NavigationScreenState extends State<NavigationScreen>
   void initState() {
     _isSelected = widget.isSelected;
     _getListNavigationBar();
+    _getListTopics();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         BlocProvider.of<ShopdunkBloc>(context)
@@ -125,22 +164,173 @@ class _NavigationScreenState extends State<NavigationScreen>
 
   // buildNavigation
   Widget _buildNavigationUI() {
-    return Scaffold(
-      body: WillPopScope(
-        onWillPop: () async => false,
-        child: GestureDetector(
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
-            BlocProvider.of<ShopdunkBloc>(context)
-                .add(const RequestGetHideBottom(true));
-          },
-          child: SafeArea(
-            bottom: false,
+    return SafeArea(
+      bottom: false,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color(0xff515154),
+          title: Text(
+            _isSelected == 0
+                ? 'Trang chủ'
+                : _isSelected == 1
+                    ? 'Tin tức'
+                    : _isSelected == 2
+                        ? 'Tài khoản'
+                        : _isSelected == 3
+                            ? 'Thông báo'
+                            : 'Cửa hàng',
+            style: CommonStyles.size18W700White(context),
+          ),
+          centerTitle: true,
+          actions: [
+            !_showSearch
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _showSearch = true;
+                        });
+                      },
+                      child: SvgPicture.asset(
+                        'assets/icons/ic_search_home.svg',
+                        colorFilter: const ColorFilter.mode(
+                          Colors.white,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox(),
+          ],
+        ),
+        drawer: Drawer(
+          child: Column(
+            children: [
+              DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                ),
+                child: Center(
+                  child: Image.asset('assets/icons/ic_sd_white.png'),
+                ),
+              ),
+              Expanded(
+                  child: ListView.builder(
+                      itemCount: _listFooter.length,
+                      itemBuilder: (context, index) {
+                        final items = _listFooter[index];
+
+                        return Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  items.expand = !items.expand;
+                                });
+                              },
+                              child: Container(
+                                height: 40,
+                                width: double.infinity,
+                                alignment: Alignment.centerLeft,
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 5),
+                                decoration: const BoxDecoration(
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            width: 1,
+                                            color: Color(0xff424245)))),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        items.name ?? '',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: CommonStyles.size15W400Black1D(
+                                            context),
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      size: 30,
+                                      color: Color(0xff424245),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 500),
+                              height: items.expand
+                                  ? 40 * items.listFooter!.length.toDouble()
+                                  : 0,
+                              child: items.expand
+                                  ? ListView.builder(
+                                      itemCount: items.listFooter?.length,
+                                      itemBuilder: (context, i) {
+                                        final item = items.listFooter![i];
+
+                                        return GestureDetector(
+                                          onTap: () {
+                                            if (item.title
+                                                    .toString()
+                                                    .toLowerCase() ==
+                                                'hệ thống cửa hàng') {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const NavigationScreen(
+                                                            isSelected: 3,
+                                                          )));
+                                            } else {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          LoadHtmlScreen(
+                                                              data: item.body ??
+                                                                  '')));
+                                            }
+                                          },
+                                          child: Container(
+                                            height: 40,
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 40),
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              item.title,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style:
+                                                  CommonStyles.size13W400Grey86(
+                                                      context),
+                                            ),
+                                          ),
+                                        );
+                                      })
+                                  : const SizedBox(),
+                            ),
+                          ],
+                        );
+                      }))
+            ],
+          ),
+        ),
+        body: WillPopScope(
+          onWillPop: () async => false,
+          child: GestureDetector(
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              BlocProvider.of<ShopdunkBloc>(context)
+                  .add(const RequestGetHideBottom(true));
+            },
             child: Stack(
               children: [
                 Column(
                   children: [
-                    _buildAppbar(),
                     _buildCategoryBar(),
                     Expanded(
                       child: Stack(
@@ -618,6 +808,9 @@ class _NavigationScreenState extends State<NavigationScreen>
                           _isSelected == item.id
                               ? item.img.toString()
                               : item.imgUnselect.toString(),
+                          color: _isSelected == item.id
+                              ? const Color(0xff0066CC)
+                              : const Color(0xff86868B),
                           width: 25,
                           height: 25,
                         ),

@@ -7,7 +7,6 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
@@ -134,7 +133,7 @@ class _NewsDetailState extends State<NewsDetail> {
 
   // news detail UI
   Widget _newsDetailUI(BuildContext context) {
-    return CommonNavigateBar(index: 1, child: _buildBody());
+    return CommonNavigateBar(index: 1, showAppBar: false, child: _buildBody());
   }
 
   Widget _buildBody() {
@@ -145,7 +144,6 @@ class _NewsDetailState extends State<NewsDetail> {
         child: CustomScrollView(
           controller: _hideButtonController,
           slivers: [
-            _newsAppBar(),
             _newsDetail(context),
             _newsDivider(context),
             if (_relatedNewsData.productOverviewModels != null &&
@@ -160,9 +158,6 @@ class _NewsDetailState extends State<NewsDetail> {
                 _relatedNewsData.newsItemModels!.isNotEmpty)
               _relatedNewsTittle(context),
             if (_relatedNewsData.newsItemModels != null) _relatedNews(context),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1, (context, index) => const CommonFooter())),
           ],
         ),
       ),

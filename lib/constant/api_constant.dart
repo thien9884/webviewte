@@ -31,4 +31,5 @@ class ApiConstant {
   static const String exchangeCoupon = '/api/customers/coupon';
   static const String avatar = '/api/customers/get-avatar';
   static const String uploadAvatar = '/api/customers/upload-avatar';
+  static const String noti = '/api/customers/reward-points-noti';
 }

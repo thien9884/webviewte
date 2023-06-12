@@ -7,7 +7,6 @@ import 'package:webviewtest/blocs/exchange_coupon/exchange_bloc.dart';
 import 'package:webviewtest/blocs/exchange_coupon/exchange_event.dart';
 import 'package:webviewtest/blocs/exchange_coupon/exchange_state.dart';
 import 'package:webviewtest/common/common_appbar.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
@@ -99,10 +98,6 @@ class _MyPointScreenState extends State<MyPointScreen> {
                       _myRankModel?.pagerModel != null &&
                       _myRankModel!.pagerModel!.totalPages! > 1)
                     _pagesNumber(),
-                  SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                          childCount: 1,
-                          (context, index) => const CommonFooter())),
                 ],
               ),
             )

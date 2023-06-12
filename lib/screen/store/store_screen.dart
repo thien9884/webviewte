@@ -4,7 +4,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:webviewtest/blocs/news/news_bloc.dart';
 import 'package:webviewtest/blocs/news/news_state.dart';
 import 'package:webviewtest/common/common_button.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 
@@ -47,9 +46,6 @@ class _StoreScreenState extends State<StoreScreen> {
         slivers: [
           _tittleStore(),
           _findStore(),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  childCount: 1, (context, index) => const CommonFooter())),
         ],
       ),
     );

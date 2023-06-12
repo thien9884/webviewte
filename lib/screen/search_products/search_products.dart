@@ -6,7 +6,6 @@ import 'package:webviewtest/blocs/search_products/search_products_bloc.dart';
 import 'package:webviewtest/blocs/search_products/search_products_event.dart';
 import 'package:webviewtest/blocs/search_products/search_products_state.dart';
 import 'package:webviewtest/common/common_button.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
@@ -93,6 +92,7 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
   Widget _buildUI() {
     return CommonNavigateBar(
       index: 0,
+      showAppBar: false,
       child: _listAllProduct.isEmpty
           ? _widget ?? Container()
           : Container(
@@ -104,10 +104,6 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
             _listProduct(_listAllProduct),
             if (catalogProductsModel.totalPages != null)
               _pagesNumber(),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1,
-                        (context, index) => const CommonFooter())),
           ],
         ),
       ),
@@ -361,30 +357,25 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Flexible(
-                                  child: FittedBox(
-                                    child: Text(
-                                      '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
-                                      style: CommonStyles.size16W700Blue00(
-                                          context),
-                                    ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Text(
+                                    '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
+                                    style:
+                                    CommonStyles.size13W700Blue00(context),
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
                                 Flexible(
-                                  child: FittedBox(
-                                    child: Text(
-                                      '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                      style:
-                                      CommonStyles.size11W400Grey86(context)
-                                          .copyWith(
-                                          decoration: TextDecoration
-                                              .lineThrough),
-                                    ),
+                                  flex: 3,
+                                  child: Text(
+                                    '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
+                                    style:
+                                    CommonStyles.size10W400Grey86(context)
+                                        .copyWith(
+                                        decoration:
+                                        TextDecoration.lineThrough),
                                   ),
                                 ),
                               ],

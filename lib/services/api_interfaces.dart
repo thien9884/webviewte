@@ -14,6 +14,7 @@ import 'package:webviewtest/model/my_rank/my_rank_model.dart';
 import 'package:webviewtest/model/my_system/my_system_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/news_category/news_category_model.dart';
+import 'package:webviewtest/model/notification/noti_model.dart';
 import 'package:webviewtest/model/order/order_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/register/register_model.dart';
@@ -81,6 +82,9 @@ abstract class ApiInterface {
 
   // get point exchange
   Future<TotalCoupon?> requestGetListCoupon(int index, int size);
+
+  // get point exchange
+  Future<PointNotiModel?> requestGetNoti(int size);
 
   // get avatar
   Future<String?> requestGetAvatar();

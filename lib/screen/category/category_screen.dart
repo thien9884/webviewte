@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
@@ -261,6 +260,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget _buildCategoryUI() {
     return CommonNavigateBar(
         index: 0,
+        showAppBar: false,
         child: _categoryGroupModel.productModel != null
             ? Container(
                 color: const Color(0xfff5f5f7),
@@ -280,10 +280,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         ? _relatedProducts()
                         : const SliverToBoxAdapter(),
                     _description(),
-                    SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                            childCount: 1,
-                            (context, index) => const CommonFooter())),
                   ],
                 ),
               )
@@ -573,30 +569,25 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Flexible(
-                                  child: FittedBox(
-                                    child: Text(
-                                      '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
-                                      style: CommonStyles.size16W700Blue00(
-                                          context),
-                                    ),
+                                Expanded(
+                                  flex: 4,
+                                  child: Text(
+                                    '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
+                                    style:
+                                        CommonStyles.size13W700Blue00(context),
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
                                 Flexible(
-                                  child: FittedBox(
-                                    child: Text(
-                                      '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                      style:
-                                          CommonStyles.size11W400Grey86(context)
-                                              .copyWith(
-                                                  decoration: TextDecoration
-                                                      .lineThrough),
-                                    ),
+                                  flex: 3,
+                                  child: Text(
+                                    '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
+                                    style:
+                                        CommonStyles.size10W400Grey86(context)
+                                            .copyWith(
+                                                decoration:
+                                                    TextDecoration.lineThrough),
                                   ),
                                 ),
                               ],

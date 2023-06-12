@@ -8,7 +8,6 @@ import 'package:webviewtest/blocs/order/order_event.dart';
 import 'package:webviewtest/blocs/order/order_state.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
@@ -123,9 +122,6 @@ class _AccountOrderState extends State<AccountOrder> {
                       ),
                     ),
                   ),
-            SliverList(
-                delegate: SliverChildBuilderDelegate(
-                    childCount: 1, (context, index) => const CommonFooter())),
           ],
         ));
   }

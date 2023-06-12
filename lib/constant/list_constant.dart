@@ -82,6 +82,11 @@ class ListCustom {
         imgUnselect: 'assets/icons/ic_user_uns.png'),
     Resource(
         id: 3,
+        name: 'Thông báo',
+        img: 'assets/icons/ic_notice_sel.png',
+        imgUnselect: 'assets/icons/ic_notice_uns.png'),
+    Resource(
+        id: 4,
         name: 'Cửa hàng',
         img: 'assets/icons/ic_shop_sel.png',
         imgUnselect: 'assets/icons/ic_shop_uns.png'),

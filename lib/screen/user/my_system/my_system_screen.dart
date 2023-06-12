@@ -12,7 +12,6 @@ import 'package:webviewtest/blocs/customer/customer_state.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_appbar.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_constant.dart';
@@ -163,10 +162,6 @@ class _MySystemScreenState extends State<MySystemScreen>
                       }),
                     ),
                     _dataTableMySystem(),
-                    SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                            childCount: 1,
-                            (context, index) => const CommonFooter())),
                   ],
                 ),
               )

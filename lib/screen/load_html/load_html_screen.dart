@@ -5,7 +5,6 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 
 class LoadHtmlScreen extends StatefulWidget {
@@ -59,6 +58,7 @@ class _LoadHtmlScreenState extends State<LoadHtmlScreen> {
     return BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => CommonNavigateBar(
               index: 0,
+              showAppBar: false,
               child: _buildBody(context),
             ),
         listener: (context, state) {});
@@ -77,9 +77,6 @@ class _LoadHtmlScreenState extends State<LoadHtmlScreen> {
             ),
           ),
         ),
-        SliverList(
-            delegate: SliverChildBuilderDelegate(
-                childCount: 1, (context, index) => const CommonFooter())),
       ],
     );
   }

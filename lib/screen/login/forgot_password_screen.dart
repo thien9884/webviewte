@@ -9,7 +9,6 @@ import 'package:webviewtest/blocs/forgot_password/forgot_password_state.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_button.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
@@ -141,6 +140,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget _buildLoginUI(BuildContext context) {
     return CommonNavigateBar(
       index: 2,
+      showAppBar: false,
       child: Form(
         key: _formKey,
         child: Container(
@@ -160,9 +160,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
               ),
-              SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                      childCount: 1, (context, index) => const CommonFooter())),
             ],
           ),
         ),

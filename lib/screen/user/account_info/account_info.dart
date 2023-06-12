@@ -12,7 +12,6 @@ import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/common/common_appbar.dart';
 import 'package:webviewtest/common/common_button.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
@@ -235,9 +234,6 @@ class _AccountInfoState extends State<AccountInfo> {
               ),
             ),
           ),
-          SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  childCount: 1, (context, index) => const CommonFooter())),
         ],
       ),
     );

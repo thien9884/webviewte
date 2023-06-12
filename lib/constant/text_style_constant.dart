@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
 class CommonStyles {
+  static TextStyle size10W400Grey86(BuildContext context) {
+    return const TextStyle(
+      fontSize: 10,
+      fontWeight: FontWeight.w400,
+      color: Color(0xff86868B),
+    );
+  }
+
   static TextStyle size11W400Grey86(BuildContext context) {
     return const TextStyle(
       fontSize: 11,
       fontWeight: FontWeight.w400,
       color: Color(0xff86868B),
-      wordSpacing: 1.2,
     );
   }
 
@@ -15,7 +22,6 @@ class CommonStyles {
       fontSize: 11,
       fontWeight: FontWeight.w400,
       color: Color(0xff1D1D1F),
-      wordSpacing: 1.2,
     );
   }
 
@@ -24,7 +30,6 @@ class CommonStyles {
       fontSize: 11,
       fontWeight: FontWeight.w400,
       color: Color(0xff888888),
-      wordSpacing: 1.2,
     );
   }
 
@@ -33,7 +38,6 @@ class CommonStyles {
       fontSize: 12,
       fontWeight: FontWeight.w400,
       color: Color(0xff515154),
-      wordSpacing: 1.2,
     );
   }
 
@@ -42,7 +46,6 @@ class CommonStyles {
       fontSize: 12,
       fontWeight: FontWeight.w400,
       color: Color(0xff1D1D1F),
-      wordSpacing: 1.2,
     );
   }
 
@@ -51,7 +54,6 @@ class CommonStyles {
       fontSize: 12,
       fontWeight: FontWeight.w400,
       color: Color(0xff0066CC),
-      wordSpacing: 1.2,
     );
   }
 
@@ -60,7 +62,6 @@ class CommonStyles {
       fontSize: 12,
       fontWeight: FontWeight.w400,
       color: Color(0xff666666),
-      wordSpacing: 1.2,
     );
   }
 
@@ -69,7 +70,6 @@ class CommonStyles {
       fontSize: 12,
       fontWeight: FontWeight.w400,
       color: Colors.white,
-      wordSpacing: 1.2,
     );
   }
 
@@ -78,7 +78,6 @@ class CommonStyles {
       fontSize: 12,
       fontWeight: FontWeight.w400,
       color: Color(0xff86868B),
-      wordSpacing: 1.2,
     );
   }
 
@@ -87,7 +86,6 @@ class CommonStyles {
       fontSize: 13,
       fontWeight: FontWeight.w400,
       color: Color(0xff86868B),
-      wordSpacing: 1.2,
     );
   }
 
@@ -96,7 +94,6 @@ class CommonStyles {
       fontSize: 13,
       fontWeight: FontWeight.w400,
       color: Color(0xff888888),
-      wordSpacing: 1.2,
     );
   }
 
@@ -105,7 +102,6 @@ class CommonStyles {
       fontSize: 13,
       fontWeight: FontWeight.w400,
       color: Color(0xff444444),
-      wordSpacing: 1.2,
     );
   }
 
@@ -114,7 +110,6 @@ class CommonStyles {
       fontSize: 13,
       fontWeight: FontWeight.w400,
       color: Color(0xff1D1D1F),
-      wordSpacing: 1.2,
     );
   }
 
@@ -123,7 +118,6 @@ class CommonStyles {
       fontSize: 13,
       fontWeight: FontWeight.w400,
       color: Colors.white,
-      wordSpacing: 1.2,
     );
   }
 
@@ -132,7 +126,6 @@ class CommonStyles {
       fontSize: 13,
       fontWeight: FontWeight.w400,
       color: Color(0xff0066CC),
-      wordSpacing: 1.2,
     );
   }
 
@@ -141,7 +134,6 @@ class CommonStyles {
       fontSize: 13,
       fontWeight: FontWeight.w400,
       color: Color(0xff4D94DB),
-      wordSpacing: 1.2,
     );
   }
 
@@ -150,7 +142,6 @@ class CommonStyles {
       fontSize: 13,
       fontWeight: FontWeight.w700,
       color: Color(0xff0066CC),
-      wordSpacing: 1.2,
     );
   }
 
@@ -159,7 +150,6 @@ class CommonStyles {
       fontSize: 13,
       fontWeight: FontWeight.w400,
       color: Color(0xff515154),
-      wordSpacing: 1.2,
     );
   }
 
@@ -168,7 +158,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff666666),
-      wordSpacing: 1.2,
     );
   }
 
@@ -177,7 +166,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Colors.white,
-      wordSpacing: 1.2,
     );
   }
 
@@ -186,7 +174,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xffFEB700),
-      wordSpacing: 1.2,
     );
   }
 
@@ -195,7 +182,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xffFF4127),
-      wordSpacing: 1.2,
     );
   }
 
@@ -204,7 +190,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xff339901),
-      wordSpacing: 1.2,
     );
   }
 
@@ -213,7 +198,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xff798B9B),
-      wordSpacing: 1.2,
     );
   }
 
@@ -222,7 +206,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xff333333),
-      wordSpacing: 1.2,
     );
   }
 
@@ -231,7 +214,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xffFFBB0C),
-      wordSpacing: 1.2,
     );
   }
 
@@ -240,7 +222,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xff350994),
-      wordSpacing: 1.2,
     );
   }
 
@@ -249,7 +230,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff333333),
-      wordSpacing: 1.2,
     );
   }
 
@@ -258,7 +238,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff1D1D1D),
-      wordSpacing: 1.2,
     );
   }
 
@@ -267,7 +246,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff669900),
-      wordSpacing: 1.2,
     );
   }
 
@@ -276,7 +254,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff339901),
-      wordSpacing: 1.2,
     );
   }
 
@@ -285,7 +262,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xffFF4127),
-      wordSpacing: 1.2,
     );
   }
 
@@ -294,7 +270,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xff1D1D1D),
-      wordSpacing: 1.2,
     );
   }
 
@@ -303,7 +278,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff86868B),
-      wordSpacing: 1.2,
     );
   }
 
@@ -312,7 +286,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff515154),
-      wordSpacing: 1.2,
     );
   }
 
@@ -321,7 +294,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff777777),
-      wordSpacing: 1.2,
     );
   }
 
@@ -330,7 +302,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff444444),
-      wordSpacing: 1.2,
     );
   }
 
@@ -339,7 +310,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: Color(0xff0066CC),
-      wordSpacing: 1.2,
     );
   }
 
@@ -348,7 +318,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xff0066CC),
-      wordSpacing: 1.2,
     );
   }
 
@@ -357,7 +326,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Colors.white,
-      wordSpacing: 1.2,
     );
   }
 
@@ -366,7 +334,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xff0066CC),
-      wordSpacing: 1.2,
     );
   }
 
@@ -375,7 +342,6 @@ class CommonStyles {
       fontSize: 14,
       fontWeight: FontWeight.w700,
       color: Color(0xff007AFF),
-      wordSpacing: 1.2,
     );
   }
 
@@ -384,7 +350,6 @@ class CommonStyles {
       fontSize: 15,
       fontWeight: FontWeight.w400,
       color: Color(0xffD2D2D7),
-      wordSpacing: 1.2,
     );
   }
 
@@ -393,7 +358,6 @@ class CommonStyles {
       fontSize: 15,
       fontWeight: FontWeight.w700,
       color: Colors.white,
-      wordSpacing: 1.2,
     );
   }
 
@@ -402,7 +366,6 @@ class CommonStyles {
       fontSize: 15,
       fontWeight: FontWeight.w400,
       color: Color(0xff1D1D1D),
-      wordSpacing: 1.2,
     );
   }
 
@@ -411,7 +374,6 @@ class CommonStyles {
       fontSize: 15,
       fontWeight: FontWeight.w700,
       color: Color(0xff1D1D1D),
-      wordSpacing: 1.2,
     );
   }
 
@@ -420,7 +382,6 @@ class CommonStyles {
       fontSize: 15,
       fontWeight: FontWeight.w700,
       color: Color(0xff444444),
-      wordSpacing: 1.2,
     );
   }
 
@@ -429,7 +390,6 @@ class CommonStyles {
       fontSize: 15,
       fontWeight: FontWeight.w400,
       color: Color(0xff515154),
-      wordSpacing: 1.2,
     );
   }
 
@@ -438,7 +398,6 @@ class CommonStyles {
       fontSize: 15,
       fontWeight: FontWeight.w400,
       color: Color(0xff86868B),
-      wordSpacing: 1.2,
     );
   }
 
@@ -447,7 +406,6 @@ class CommonStyles {
       fontSize: 16,
       fontWeight: FontWeight.w700,
       color: Color(0xff333333),
-      wordSpacing: 1.2,
     );
   }
 
@@ -456,7 +414,6 @@ class CommonStyles {
       fontSize: 16,
       fontWeight: FontWeight.w700,
       color: Color(0xff1D1D1D),
-      wordSpacing: 1.2,
     );
   }
 
@@ -465,7 +422,6 @@ class CommonStyles {
       fontSize: 16,
       fontWeight: FontWeight.w400,
       color: Color(0xff1D1D1D),
-      wordSpacing: 1.2,
     );
   }
 
@@ -474,7 +430,6 @@ class CommonStyles {
       fontSize: 16,
       fontWeight: FontWeight.w700,
       color: Color(0xff339901),
-      wordSpacing: 1.2,
     );
   }
 
@@ -483,7 +438,6 @@ class CommonStyles {
       fontSize: 16,
       fontWeight: FontWeight.w700,
       color: Color(0xff444444),
-      wordSpacing: 1.2,
     );
   }
 
@@ -492,7 +446,6 @@ class CommonStyles {
       fontSize: 16,
       fontWeight: FontWeight.w700,
       color: Color(0xff3A3A3A),
-      wordSpacing: 1.2,
     );
   }
 
@@ -501,7 +454,6 @@ class CommonStyles {
       fontSize: 16,
       fontWeight: FontWeight.w400,
       color: Color(0xff0066CC),
-      wordSpacing: 1.2,
     );
   }
 
@@ -510,7 +462,6 @@ class CommonStyles {
       fontSize: 16,
       fontWeight: FontWeight.w700,
       color: Color(0xff0066CC),
-      wordSpacing: 1.2,
     );
   }
 
@@ -519,7 +470,6 @@ class CommonStyles {
       fontSize: 17,
       fontWeight: FontWeight.w700,
       color: Color(0xff1D1D1F),
-      wordSpacing: 1.2,
     );
   }
 
@@ -528,7 +478,6 @@ class CommonStyles {
       fontSize: 18,
       fontWeight: FontWeight.w700,
       color: Color(0xff1D1D1F),
-      wordSpacing: 1.2,
     );
   }
 
@@ -537,7 +486,6 @@ class CommonStyles {
       fontSize: 18,
       fontWeight: FontWeight.w700,
       color: Colors.white,
-      wordSpacing: 1.2,
     );
   }
 
@@ -546,7 +494,6 @@ class CommonStyles {
       fontSize: 20,
       fontWeight: FontWeight.w700,
       color: Colors.black,
-      wordSpacing: 1.2,
     );
   }
 
@@ -555,7 +502,6 @@ class CommonStyles {
       fontSize: 20,
       fontWeight: FontWeight.w400,
       color: Color(0xff444444),
-      wordSpacing: 1.2,
     );
   }
 
@@ -564,7 +510,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xff1D1D1F),
-      wordSpacing: 1.2,
     );
   }
 
@@ -573,7 +518,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w400,
       color: Color(0xff1D1D1F),
-      wordSpacing: 1.2,
     );
   }
 
@@ -582,7 +526,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xff4B4B4B),
-      wordSpacing: 1.2,
     );
   }
 
@@ -591,7 +534,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xff0066CC),
-      wordSpacing: 1.2,
     );
   }
 
@@ -600,7 +542,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Colors.white,
-      wordSpacing: 1.2,
     );
   }
 
@@ -609,7 +550,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xff393939),
-      wordSpacing: 1.2,
     );
   }
 
@@ -618,7 +558,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xff86868B),
-      wordSpacing: 1.2,
     );
   }
 
@@ -627,7 +566,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xff798B9B),
-      wordSpacing: 1.2,
     );
   }
 
@@ -636,7 +574,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xffFFBB0C),
-      wordSpacing: 1.2,
     );
   }
 
@@ -645,7 +582,6 @@ class CommonStyles {
       fontSize: 24,
       fontWeight: FontWeight.w700,
       color: Color(0xff350994),
-      wordSpacing: 1.2,
     );
   }
 
@@ -654,7 +590,6 @@ class CommonStyles {
       fontSize: 35,
       fontWeight: FontWeight.w700,
       color: Color(0xff1D1D1F),
-      wordSpacing: 1.2,
     );
   }
 }

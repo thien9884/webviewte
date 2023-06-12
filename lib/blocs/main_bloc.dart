@@ -8,6 +8,7 @@ import 'package:webviewtest/blocs/forgot_password/forgot_password_bloc.dart';
 import 'package:webviewtest/blocs/login/login_bloc.dart';
 import 'package:webviewtest/blocs/news/news_bloc.dart';
 import 'package:webviewtest/blocs/news_category/news_category_bloc.dart';
+import 'package:webviewtest/blocs/noti/noti_bloc.dart';
 import 'package:webviewtest/blocs/order/order_bloc.dart';
 import 'package:webviewtest/blocs/register/register_bloc.dart';
 import 'package:webviewtest/blocs/related_news/related_news_bloc.dart';
@@ -38,5 +39,7 @@ class MainBloc {
             create: (BuildContext context) => ChangePasswordBloc()),
         BlocProvider<ExchangeBloc>(
             create: (BuildContext context) => ExchangeBloc()),
+        BlocProvider<NotiBloc>(
+            create: (BuildContext context) => NotiBloc()),
       ];
 }

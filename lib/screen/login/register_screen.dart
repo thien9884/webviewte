@@ -9,7 +9,6 @@ import 'package:webviewtest/blocs/register/register_event.dart';
 import 'package:webviewtest/blocs/register/register_state.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
@@ -192,6 +191,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _registerUI() {
     return CommonNavigateBar(
       index: 2,
+      showAppBar: false,
       child: Form(
         key: _formKey,
         child: Container(
@@ -241,9 +241,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
               _formRegister(),
-              SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                      childCount: 1, (context, index) => const CommonFooter())),
             ],
           ),
         ),

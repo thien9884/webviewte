@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
 import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
@@ -94,6 +93,7 @@ class _NewsCategoryState extends State<NewsCategory> {
   Widget _buildNewsGroup(BuildContext context) {
     return CommonNavigateBar(
       index: 1,
+      showAppBar: false,
       child: _newsCategoryModel.newsCategoryData != null
           ? Container(
               color: const Color(0xfff5f5f7),
@@ -103,10 +103,6 @@ class _NewsCategoryState extends State<NewsCategory> {
                   _newsTittleCategory(context, widget.newsGroup.name ?? ''),
                   _listNewsCategory(_newsCategoryModel.newsCategoryData ?? []),
                   if (_newsCategoryModel.total != null) _pagesNumber(),
-                  SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                          childCount: 1,
-                          (context, index) => const CommonFooter())),
                 ],
               ),
             )

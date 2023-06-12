@@ -18,6 +18,7 @@ import 'package:webviewtest/model/my_rank/my_rank_model.dart';
 import 'package:webviewtest/model/my_system/my_system_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/model/news_category/news_category_model.dart';
+import 'package:webviewtest/model/notification/noti_model.dart';
 import 'package:webviewtest/model/order/order_model.dart';
 import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/register/register_model.dart';
@@ -131,6 +132,15 @@ class ApiCall implements ApiInterface {
     if (response == null) return null;
     final data = response;
     return MySystemModel.fromJson(data);
+  }
+
+  @override
+  Future<PointNotiModel?> requestGetNoti(int? size) async {
+    var response =
+        await DioClient().get('${ApiConstant.noti}?numberRecord=$size');
+    if (response == null) return null;
+    final data = response;
+    return PointNotiModel.fromJson(data);
   }
 
   @override

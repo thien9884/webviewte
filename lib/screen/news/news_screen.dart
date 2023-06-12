@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
-import 'package:webviewtest/common/common_footer.dart';
 import 'package:webviewtest/common/responsive.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/news/news_model.dart';
@@ -93,10 +92,6 @@ class _NewsScreenState extends State<NewsScreen> {
                 _newsScrollBar(),
                 _customListNews(),
                 // _newsVideo(),
-                SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                        childCount: 1,
-                        (context, index) => const CommonFooter())),
               ],
             ),
           );

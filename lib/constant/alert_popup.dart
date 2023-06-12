@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AlertUtils {
-  static displayErrorAlert(BuildContext context, String message) {
+  static displayErrorAlert(BuildContext context, String message,
+      {VoidCallback? onPress}) {
     showDialog(
         context: context,
         builder: (_) {
@@ -15,9 +16,10 @@ class AlertUtils {
             actions: <CupertinoDialogAction>[
               CupertinoDialogAction(
                 isDestructiveAction: false,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                onPressed: onPress ??
+                    () {
+                      Navigator.pop(context);
+                    },
                 child: const Text('Đồng ý'),
               ),
             ],
