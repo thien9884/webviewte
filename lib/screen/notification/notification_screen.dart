@@ -62,9 +62,7 @@ class _NotifScreenState extends State<NotifScreen> {
         builder: (context, state) => _notificationUI(),
         listener: (context, state) {
           if (state is NotiLoading) {
-            if (!_isLoading) {
-              EasyLoading.show();
-            }
+            EasyLoading.show();
           } else if (state is NotiLoaded) {
             _isLoading = false;
             _listNoti = state.pointNotiModel.rewardPoints ?? [];
@@ -88,13 +86,14 @@ class _NotifScreenState extends State<NotifScreen> {
   Widget _notificationUI() {
     return ListView.builder(
         controller: _scrollController,
-        itemCount: _listNoti.length + 1,
+        itemCount: _listNoti.length,
         itemBuilder: (context, index) {
+          final item = _listNoti[index];
           DateTime dateValue;
           String? formattedDate;
           try {
             dateValue = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                .parseUTC(_listNoti[index].createdOn ?? '')
+                .parseUTC(item.createdOn ?? '')
                 .toLocal();
             formattedDate = DateFormat("dd/MM/yyyy").add_jm().format(dateValue);
           } catch (e) {}
@@ -121,18 +120,18 @@ class _NotifScreenState extends State<NotifScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Text(
-                      _listNoti[index].message ?? '',
+                      item.message ?? '',
                       style: CommonStyles.size14W400Black1D(context),
                     ),
                   ),
                   Text(
-                    'Số điểm của bạn ${_listNoti[index].points.toString().startsWith('-') ? _listNoti[index].points : '+${_listNoti[index].points}'}',
+                    'Số điểm của bạn ${item.points.toString().startsWith('-') ? item.points : '+${item.points}'}',
                     style: CommonStyles.size14W400Black1D(context),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Text(
-                      'Tổng số điểm đang có: ${_listNoti[index].pointsBalance}',
+                      'Tổng số điểm đang có: ${item.pointsBalance}',
                       style: CommonStyles.size14W400Black1D(context),
                     ),
                   ),

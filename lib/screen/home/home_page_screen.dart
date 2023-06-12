@@ -645,7 +645,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   // all news
   Widget _allNews() {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.only(top: 20, bottom: 60),
       sliver: SliverToBoxAdapter(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
