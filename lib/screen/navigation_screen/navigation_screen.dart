@@ -216,9 +216,81 @@ class _NavigationScreenState extends State<NavigationScreen>
                   child: Image.asset('assets/icons/ic_sd_white.png'),
                 ),
               ),
+              GestureDetector(
+                onTap: () {
+                  final cIndex = _listCategories
+                      .indexWhere((element) => element.seName == 'phu-kien');
+
+                  setState(() {
+                    _showDrawer = false;
+                    _controller.reverse();
+                  });
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => CategoryScreen(
+                            title: _listCategories[cIndex].name ?? '',
+                            desc: _listCategories[cIndex].description ?? '',
+                            descAccessories:
+                                _listCategories[cIndex].description ?? '',
+                            seName: _listCategories[cIndex].seName ?? '',
+                            groupId: _listCategories[cIndex].id,
+                          )));
+                },
+                child: Container(
+                  height: 56,
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  alignment: Alignment.centerLeft,
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        width: 1,
+                        color: Color(0xffEBEBEB),
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Phụ kiện',
+                    style: CommonStyles.size15W400Black1D(context),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _showDrawer = false;
+                    _controller.reverse();
+                  });
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) =>
+                          NewsCategory(newsGroup: _newsGroup)));
+                },
+                child: Container(
+                  height: 56,
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: const BorderSide(
+                        width: 1,
+                        color: Color(0xffEBEBEB),
+                      ),
+                      top: BorderSide(
+                        width: 1,
+                        color: _accountExpand
+                            ? Colors.grey.withOpacity(0.5)
+                            : Colors.transparent,
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Khuyến mãi',
+                    style: CommonStyles.size15W400Black1D(context),
+                  ),
+                ),
+              ),
               Expanded(
                   child: ListView.builder(
                       itemCount: _listFooter.length,
+                      shrinkWrap: true,
                       itemBuilder: (context, index) {
                         final items = _listFooter[index];
 
@@ -272,6 +344,9 @@ class _NavigationScreenState extends State<NavigationScreen>
                               child: items.expand
                                   ? ListView.builder(
                                       itemCount: items.listFooter?.length,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
                                       itemBuilder: (context, i) {
                                         final item = items.listFooter![i];
 
@@ -385,76 +460,7 @@ class _NavigationScreenState extends State<NavigationScreen>
           padding: const EdgeInsets.only(left: 20),
           child: ListView(
             physics: const NeverScrollableScrollPhysics(),
-            children: [
-              GestureDetector(
-                onTap: () {
-                  final cIndex = _listCategories
-                      .indexWhere((element) => element.seName == 'phu-kien');
-
-                  setState(() {
-                    _showDrawer = false;
-                    _controller.reverse();
-                  });
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => CategoryScreen(
-                            title: _listCategories[cIndex].name ?? '',
-                            desc: _listCategories[cIndex].description ?? '',
-                            descAccessories:
-                                _listCategories[cIndex].description ?? '',
-                            seName: _listCategories[cIndex].seName ?? '',
-                            groupId: _listCategories[cIndex].id,
-                          )));
-                },
-                child: Container(
-                  height: 56,
-                  alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        width: 1,
-                        color: Colors.grey.withOpacity(0.5),
-                      ),
-                      top: BorderSide(
-                        width: 1,
-                        color: _accountExpand
-                            ? Colors.grey.withOpacity(0.5)
-                            : Colors.transparent,
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    'Phụ kiện',
-                    style: CommonStyles.size15W400Black1D(context),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _showDrawer = false;
-                    _controller.reverse();
-                  });
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          NewsCategory(newsGroup: _newsGroup)));
-                },
-                child: Container(
-                  height: 56,
-                  alignment: Alignment.centerLeft,
-                  decoration: _isLogin
-                      ? BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                                  width: 1,
-                                  color: Colors.grey.withOpacity(0.5))))
-                      : null,
-                  child: Text(
-                    'Khuyến mãi',
-                    style: CommonStyles.size15W400Black1D(context),
-                  ),
-                ),
-              ),
-            ],
+            children: [],
           ),
         ),
       ),
