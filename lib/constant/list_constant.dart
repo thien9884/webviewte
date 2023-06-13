@@ -83,8 +83,8 @@ class ListCustom {
     Resource(
         id: 3,
         name: 'Thông báo',
-        img: 'assets/icons/ic_notice_sel.png',
-        imgUnselect: 'assets/icons/ic_notice_uns.png'),
+        img: 'assets/icons/ic_noti_sel.png',
+        imgUnselect: 'assets/icons/ic_noti_uns.png'),
     Resource(
         id: 4,
         name: 'Cửa hàng',

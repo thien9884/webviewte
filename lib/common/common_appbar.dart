@@ -12,6 +12,7 @@ class CommonAppbar extends StatelessWidget {
       pinned: true,
       backgroundColor: Colors.white,
       leadingWidth: 90,
+      elevation: 0,
       leading: GestureDetector(
         onTap: () => Navigator.pop(context),
         child: Padding(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -209,7 +210,7 @@ class _NavigationScreenState extends State<NavigationScreen>
             children: [
               DrawerHeader(
                 decoration: const BoxDecoration(
-                  color: Colors.black,
+                  color: Color(0xff515154),
                 ),
                 child: Center(
                   child: Image.asset('assets/icons/ic_sd_white.png'),
@@ -239,7 +240,7 @@ class _NavigationScreenState extends State<NavigationScreen>
                                     border: Border(
                                         bottom: BorderSide(
                                             width: 1,
-                                            color: Color(0xff424245)))),
+                                            color: Color(0xffEBEBEB)))),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -342,7 +343,11 @@ class _NavigationScreenState extends State<NavigationScreen>
                     ),
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 500),
-                      height: _isVisible ? 65 : 0,
+                      height: _isVisible
+                          ? Platform.isIOS
+                              ? 76
+                              : 60
+                          : 0,
                       child: _isVisible
                           ? SingleChildScrollView(child: _buildBottomBar())
                           : Container(),
@@ -758,12 +763,12 @@ class _NavigationScreenState extends State<NavigationScreen>
   // bottom bar
   Widget _buildBottomBar() {
     return Container(
-      height: 65,
+      height: Platform.isIOS ? 76 : 60,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withOpacity(0.3),
             blurRadius: 25,
             offset: const Offset(0, -20),
           ),

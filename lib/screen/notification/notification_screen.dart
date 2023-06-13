@@ -143,7 +143,7 @@ class _NotifScreenState extends State<NotifScreen> {
                 border: Border(
                     bottom: BorderSide(
                   width: 1,
-                  color: Color(0xff86868B),
+                  color: Color(0xffEBEBEB),
                 )),
               ),
               child: Column(
