@@ -93,7 +93,6 @@ class _NewsCategoryState extends State<NewsCategory> {
   Widget _buildNewsGroup(BuildContext context) {
     return CommonNavigateBar(
       index: 1,
-      showAppBar: false,
       child: _newsCategoryModel.newsCategoryData != null
           ? Container(
               color: const Color(0xfff5f5f7),

@@ -58,7 +58,6 @@ class _LoadHtmlScreenState extends State<LoadHtmlScreen> {
     return BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => CommonNavigateBar(
               index: 0,
-              showAppBar: false,
               child: _buildBody(context),
             ),
         listener: (context, state) {});

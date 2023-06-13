@@ -92,7 +92,6 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
   Widget _buildUI() {
     return CommonNavigateBar(
       index: 0,
-      showAppBar: false,
       child: _listAllProduct.isEmpty
           ? _widget ?? Container()
           : Container(

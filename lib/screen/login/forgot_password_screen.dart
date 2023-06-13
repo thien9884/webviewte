@@ -140,7 +140,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget _buildLoginUI(BuildContext context) {
     return CommonNavigateBar(
       index: 2,
-      showAppBar: false,
       child: Form(
         key: _formKey,
         child: Container(

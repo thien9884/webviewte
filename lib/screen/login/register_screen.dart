@@ -191,7 +191,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _registerUI() {
     return CommonNavigateBar(
       index: 2,
-      showAppBar: false,
       child: Form(
         key: _formKey,
         child: Container(

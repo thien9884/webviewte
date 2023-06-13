@@ -133,7 +133,7 @@ class _NewsDetailState extends State<NewsDetail> {
 
   // news detail UI
   Widget _newsDetailUI(BuildContext context) {
-    return CommonNavigateBar(index: 1, showAppBar: false, child: _buildBody());
+    return CommonNavigateBar(index: 1, child: _buildBody());
   }
 
   Widget _buildBody() {

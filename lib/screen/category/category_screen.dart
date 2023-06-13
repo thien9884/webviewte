@@ -260,7 +260,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget _buildCategoryUI() {
     return CommonNavigateBar(
         index: 0,
-        showAppBar: false,
         child: _categoryGroupModel.productModel != null
             ? Container(
                 color: const Color(0xfff5f5f7),
