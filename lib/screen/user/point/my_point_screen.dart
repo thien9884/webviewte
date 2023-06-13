@@ -499,15 +499,13 @@ class _MyPointScreenState extends State<MyPointScreen> {
                   String endDateTime = '';
                   if (item.createdOn != null && item.createdOn!.isNotEmpty) {
                     var createOn = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                        .parseUTC(item.createdOn ?? '')
-                        .toLocal();
+                        .parseUTC(item.createdOn ?? '');
                     createOnDate =
                         DateFormat("dd/MM/yyyy HH:mm").format(createOn);
                   }
                   if (item.endDate != null && item.endDate!.isNotEmpty) {
                     var endDate = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                        .parseUTC(item.endDate ?? '')
-                        .toLocal();
+                        .parseUTC(item.endDate ?? '');
                     endDateTime =
                         DateFormat("dd/MM/yyyy HH:mm").format(endDate);
                   }

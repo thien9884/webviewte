@@ -29,7 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   int _selectGender = 0;
   String _day = '1';
   String _month = '1';
-  String _year = '1990';
+  String _year = DateTime.now().year.toString();
   bool _showPassword = false;
   bool _showConfirmPassword = false;
   final TextEditingController _nameController = TextEditingController();
@@ -370,10 +370,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 });
               },
               items: List.generate(
-                  50,
+                  120,
                   (index) => DropdownMenuItem<String>(
-                        value: (index + 1990).toString(),
-                        child: Center(child: Text((index + 1990).toString())),
+                        value: (DateTime.now().year - index).toString(),
+                        child: Center(
+                            child:
+                                Text((DateTime.now().year - index).toString())),
                       )).toList(),
             ),
           ),

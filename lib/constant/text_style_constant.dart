@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CommonStyles {
   static TextStyle size10W400Grey86(BuildContext context) {
     return const TextStyle(
-      fontSize: 10,
+      fontSize: 11,
       fontWeight: FontWeight.w400,
       color: Color(0xff86868B),
     );

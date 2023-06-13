@@ -318,7 +318,7 @@ class _NewsScreenState extends State<NewsScreen> {
                             children: [
                               Text(
                                 item.title ?? '',
-                                style: CommonStyles.size18W700Black1D(context)
+                                style: CommonStyles.size16W700Black1D(context)
                                     .copyWith(height: 1.5),
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,

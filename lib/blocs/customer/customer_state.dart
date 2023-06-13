@@ -225,7 +225,7 @@ class MySystemLoading extends CustomerState {
 }
 
 class MySystemLoaded extends CustomerState {
-  final MySystemModel mySystemModel;
+  final MySystemModel? mySystemModel;
 
   const MySystemLoaded({required this.mySystemModel});
 

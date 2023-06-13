@@ -462,7 +462,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Expanded(
-                                  flex: 4,
+                                  flex: 9,
                                   child: Text(
                                     '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
                                     style:
@@ -470,7 +470,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                                   ),
                                 ),
                                 Flexible(
-                                  flex: 3,
+                                  flex: 8,
                                   child: Text(
                                     '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
                                     style:

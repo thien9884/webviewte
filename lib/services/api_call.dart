@@ -131,7 +131,9 @@ class ApiCall implements ApiInterface {
         .get('${ApiConstant.mySystem}?level=$id&pageIndex=$page&pageSize=8');
     if (response == null) return null;
     final data = response;
-    return MySystemModel.fromJson(data);
+    return response == 'Không có dữ liệu'
+        ? null
+        : MySystemModel.fromJson(data);
   }
 
   @override

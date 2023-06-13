@@ -257,7 +257,7 @@ class DioClient {
   static dynamic _processResponse(response) {
     switch (response.statusCode) {
       case 204:
-        return true;
+        return 'Không có dữ liệu';
       case 200:
       case 201:
         return response.data;

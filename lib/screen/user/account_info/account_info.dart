@@ -532,8 +532,10 @@ class _AccountInfoState extends State<AccountInfo> {
               items: List.generate(
                   120,
                   (index) => DropdownMenuItem<String>(
-                        value: (index + 1920).toString(),
-                        child: Center(child: Text((index + 1920).toString())),
+                        value: (DateTime.now().year - index).toString(),
+                        child: Center(
+                            child:
+                                Text((DateTime.now().year - index).toString())),
                       )).toList(),
             ),
           ),

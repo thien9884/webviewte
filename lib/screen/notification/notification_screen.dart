@@ -129,8 +129,7 @@ class _NotifScreenState extends State<NotifScreen> {
           String? formattedDate;
           try {
             dateValue = DateFormat("yyyy-MM-ddTHH:mm:ssZ")
-                .parseUTC(item.createdOn ?? '')
-                .toLocal();
+                .parseUTC(item.createdOn ?? '');
             formattedDate = DateFormat("dd/MM/yyyy").add_jm().format(dateValue);
           } catch (e) {}
 

@@ -105,7 +105,7 @@ class _MySystemScreenState extends State<MySystemScreen>
           if (state is MySystemLoading) {
             EasyLoading.show();
           } else if (state is MySystemLoaded) {
-            _listMySystem.add(state.mySystemModel);
+              _listMySystem.add(state.mySystemModel!);
             if (_listMySystem.every((element) => element.level != null)) {
               _listMySystem
                   .sort((a, b) => a.level!.compareTo(b.level!.toInt()));
@@ -258,7 +258,7 @@ class _MySystemScreenState extends State<MySystemScreen>
                             _indexSelected = index;
                           }),
                           child: Text(
-                            'Cấp ${index + 1} (${_listMySystem[index].totalRecords ?? 0})',
+                            'Cấp ${index + 1} (${_listMySystem.isNotEmpty ? _listMySystem[index].totalRecords ?? 0 : 0})',
                             style: _indexSelected == index
                                 ? CommonStyles.size14W400Blue00(context)
                                 : CommonStyles.size14W400Black1D(context),
@@ -292,8 +292,9 @@ class _MySystemScreenState extends State<MySystemScreen>
                 ),
               ),
             ),
-            _tableViewData(_indexSelected),
-            if (_listMySystem[_indexSelected].totalRecords != null &&
+            if (_listMySystem.isNotEmpty) _tableViewData(_indexSelected),
+            if (_listMySystem.isNotEmpty &&
+                _listMySystem[_indexSelected].totalRecords != null &&
                 _listMySystem[_indexSelected].totalRecords! > 8)
               _pagesNumber(_indexSelected),
           ],
