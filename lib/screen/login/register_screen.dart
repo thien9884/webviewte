@@ -545,6 +545,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 _showNavigationBar();
               },
             ),
+            Container(
+              padding: const EdgeInsets.all(8),
+              margin: const EdgeInsets.only(top: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xffF5F5F7),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                'Chúng tôi sẽ gửi một thông tin xác nhận tài khoản vào Email của bạn',
+                style: CommonStyles.size12W400Grey51(context),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 5),
               child: Text(
@@ -679,8 +691,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 _showNavigationBar();
               },
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              margin: const EdgeInsets.only(top: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xffF5F5F7),
+                borderRadius: BorderRadius.circular(4),
+              ),
               child: Text(
                 'Lưu ý: Mật khẩu phải có tối thiểu 8 ký tự bao gồm chữ, số và các ký tự đặc biệt',
                 style: CommonStyles.size12W400Grey51(context),

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/common_navigate_bar.dart';
@@ -18,6 +19,7 @@ import 'package:webviewtest/model/related_news_model/related_news_model.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/screen/news/news_category.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
+import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 import '../../blocs/shopdunk/shopdunk_event.dart';
 
@@ -47,6 +49,43 @@ class _NewsDetailState extends State<NewsDetail> {
 
   _getRelatedNewsData(int id) {
     BlocProvider.of<ShopdunkBloc>(context).add(RequestGetRelatedNews(id));
+  }
+
+  _sendComment(String newsComment, String newsDescription) async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    final customerId = sPref.customerId;
+    final userName = sPref.userName;
+
+    if (context.mounted) {
+      BlocProvider.of<ShopdunkBloc>(context).add(
+        RequestPostNewsComment(
+          widget.newsItems?.id,
+          NewsCommentModel(
+            id: 1,
+            customerId: customerId,
+            customerName: userName,
+            customerAvatarUrl: '',
+            allowViewingProfiles: true,
+            createOn: DateTime.now().toString(),
+            commentTitle: newsComment,
+            commentText: newsDescription,
+          ),
+        ),
+      );
+    }
+  }
+
+  _onLinkTap(String url) async {
+    final bool nativeAppLaunchSucceeded = await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalNonBrowserApplication,
+    );
+    if (!nativeAppLaunchSucceeded) {
+      await launchUrl(
+        Uri.parse(url),
+        mode: LaunchMode.inAppWebView,
+      );
+    }
   }
 
   _getHideBottomValue() {
@@ -262,8 +301,8 @@ class _NewsDetailState extends State<NewsDetail> {
                           'https://shopdunk.com/images/uploaded/') ??
                       '',
               textStyle: const TextStyle(fontSize: 16, height: 1.3),
-              onTapUrl: (st) {
-                print('object');
+              onTapUrl: (url) {
+                _onLinkTap(url);
                 return true;
               },
               customStylesBuilder: (element) {
@@ -467,21 +506,7 @@ class _NewsDetailState extends State<NewsDetail> {
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
-                        BlocProvider.of<ShopdunkBloc>(context).add(
-                          RequestPostNewsComment(
-                            widget.newsItems?.id,
-                            NewsCommentModel(
-                              id: 1,
-                              customerId: 0,
-                              customerName: 'thien@gmail.com',
-                              customerAvatarUrl: '',
-                              allowViewingProfiles: true,
-                              createOn: DateTime.now().toString(),
-                              commentTitle: 'thien',
-                              commentText: 'hi anh',
-                            ),
-                          ),
-                        );
+                        _sendComment(newsComment.text, newsDescription.text);
                       });
                     },
                     child: Container(

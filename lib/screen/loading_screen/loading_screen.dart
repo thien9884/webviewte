@@ -192,18 +192,31 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
   _getToken() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    sPref.setIsLogin(false);
-    sPref.remove(SharedPrefKeys.customerId);
+    final userName = sPref.userName;
+    final password = sPref.password;
 
-    if (context.mounted) {
-      BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
-        loginModel: LoginModel(
-          rememberMe: true,
-          guest: true,
-          username: 'userName',
-          password: 'password',
-        ),
-      ));
+    if (userName.isNotEmpty && password.isNotEmpty) {
+      if (context.mounted) {
+        BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
+          loginModel: LoginModel(
+            rememberMe: true,
+            guest: false,
+            username: userName,
+            password: password,
+          ),
+        ));
+      }
+    } else {
+      if (context.mounted) {
+        BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
+          loginModel: LoginModel(
+            rememberMe: true,
+            guest: true,
+            username: 'userName',
+            password: 'password',
+          ),
+        ));
+      }
     }
   }
 

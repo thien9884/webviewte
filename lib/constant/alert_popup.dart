@@ -8,7 +8,7 @@ class AlertUtils {
         context: context,
         builder: (_) {
           return CupertinoAlertDialog(
-            title: const Text('Lỗi'),
+            title: const Text('Thông báo'),
             content: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(message),

@@ -16,6 +16,7 @@ import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/customer/info_model.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
+import 'package:webviewtest/services/dio_client.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class UserScreen extends StatefulWidget {
@@ -43,7 +44,8 @@ class _UserScreenState extends State<UserScreen> {
 
   _clearData() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-
+    sPref.remove(SharedPrefKeys.customerId);
+    DioClient.logOut();
     sPref.setRememberMe(false);
     sPref.setIsLogin(false);
 
