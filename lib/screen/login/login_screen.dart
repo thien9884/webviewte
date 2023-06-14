@@ -135,6 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (state is LoginLoadError) {
             if (_messageError.isEmpty) {
               _messageError = state.message;
+              if (_messageError == 'Wrong username or password') {
+                _messageError = 'Sai tên tài khoản hoặc mật khẩu';
+              }
               AlertUtils.displayErrorAlert(context, _messageError);
             }
             if (EasyLoading.isShow) EasyLoading.dismiss();

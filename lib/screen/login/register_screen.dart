@@ -248,139 +248,102 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _listDropDownDay() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Text(
-            'Ngày',
-            style: CommonStyles.size14W400Black1D(context),
-          ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xffEBEBEB), width: 1),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _day,
+          menuMaxHeight: 300,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded),
+          elevation: 16,
+          isDense: true,
+          style: CommonStyles.size14W400Grey86(context),
+          onChanged: (String? value) {
+            // This is called when the user selects an item.
+            setState(() {
+              _day = value!;
+            });
+          },
+          items: List.generate(
+              31,
+              (index) => DropdownMenuItem<String>(
+                    value: (index + 1).toString(),
+                    child: Center(child: Text((index + 1).toString())),
+                  )).toList(),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          width: double.infinity,
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xffEBEBEB), width: 1),
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: _day,
-              menuMaxHeight: 300,
-              icon: const Icon(Icons.keyboard_arrow_down_rounded),
-              elevation: 16,
-              isDense: true,
-              style: CommonStyles.size14W400Grey86(context),
-              onChanged: (String? value) {
-                // This is called when the user selects an item.
-                setState(() {
-                  _day = value!;
-                });
-              },
-              items: List.generate(
-                  31,
-                  (index) => DropdownMenuItem<String>(
-                        value: (index + 1).toString(),
-                        child: Center(child: Text((index + 1).toString())),
-                      )).toList(),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   Widget _listDropDownMonth() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Text(
-            'Tháng',
-            style: CommonStyles.size14W400Black1D(context),
-          ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xffEBEBEB), width: 1),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _month,
+          menuMaxHeight: 300,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded),
+          elevation: 16,
+          isDense: true,
+          style: CommonStyles.size14W400Grey86(context),
+          onChanged: (String? value) {
+            // This is called when the user selects an item.
+            setState(() {
+              _month = value!;
+            });
+          },
+          items: List.generate(
+              12,
+              (index) => DropdownMenuItem<String>(
+                    value: (index + 1).toString(),
+                    child: Center(child: Text((index + 1).toString())),
+                  )).toList(),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          width: double.infinity,
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xffEBEBEB), width: 1),
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: _month,
-              menuMaxHeight: 300,
-              icon: const Icon(Icons.keyboard_arrow_down_rounded),
-              elevation: 16,
-              isDense: true,
-              style: CommonStyles.size14W400Grey86(context),
-              onChanged: (String? value) {
-                // This is called when the user selects an item.
-                setState(() {
-                  _month = value!;
-                });
-              },
-              items: List.generate(
-                  12,
-                  (index) => DropdownMenuItem<String>(
-                        value: (index + 1).toString(),
-                        child: Center(child: Text((index + 1).toString())),
-                      )).toList(),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   Widget _listDropDownYear() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Text(
-            'Năm',
-            style: CommonStyles.size14W400Black1D(context),
-          ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xffEBEBEB), width: 1),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _year,
+          menuMaxHeight: 300,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded),
+          elevation: 16,
+          isDense: true,
+          style: CommonStyles.size14W400Grey86(context),
+          onChanged: (String? value) {
+            // This is called when the user selects an item.
+            setState(() {
+              _year = value!;
+            });
+          },
+          items: List.generate(
+              120,
+              (index) => DropdownMenuItem<String>(
+                    value: (DateTime.now().year - index).toString(),
+                    child: Center(
+                        child: Text((DateTime.now().year - index).toString())),
+                  )).toList(),
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          width: double.infinity,
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xffEBEBEB), width: 1),
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: _year,
-              menuMaxHeight: 300,
-              icon: const Icon(Icons.keyboard_arrow_down_rounded),
-              elevation: 16,
-              isDense: true,
-              style: CommonStyles.size14W400Grey86(context),
-              onChanged: (String? value) {
-                // This is called when the user selects an item.
-                setState(() {
-                  _year = value!;
-                });
-              },
-              items: List.generate(
-                  120,
-                  (index) => DropdownMenuItem<String>(
-                        value: (DateTime.now().year - index).toString(),
-                        child: Center(
-                            child:
-                                Text((DateTime.now().year - index).toString())),
-                      )).toList(),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -490,6 +453,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 18),
+              child: Text(
+                'Ngày sinh:',
+                style: CommonStyles.size14W400Black1D(context),
               ),
             ),
             Row(
