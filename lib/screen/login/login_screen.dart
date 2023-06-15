@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 5),
           child: Text(
-            'Username:',
+            'Tên đăng nhập:',
             style: CommonStyles.size14W400Black1D(context),
           ),
         ),
@@ -213,8 +213,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                width: 1,
-                color: Color(0xffEBEBEB),
+                width: 2,
+                color: Color(0xff0066CC),
               ),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -262,8 +262,8 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                width: 1,
-                color: Color(0xffEBEBEB),
+                width: 2,
+                color: Color(0xff0066CC),
               ),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -323,8 +323,11 @@ class _LoginScreenState extends State<LoginScreen> {
           style: CommonStyles.size14W400Black1D(context),
         ),
         GestureDetector(
-          onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const RegisterScreen())),
+          onTap: () => Navigator.of(context)
+              .push(MaterialPageRoute(
+                  builder: (context) => const RegisterScreen()))
+              .then((value) => BlocProvider.of<ShopdunkBloc>(context)
+                  .add(const RequestGetHideBottom(true))),
           child: Text(
             'Tạo tài khoản ngay',
             style: CommonStyles.size14W400Blue00(context),

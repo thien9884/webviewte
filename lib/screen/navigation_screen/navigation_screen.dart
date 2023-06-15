@@ -170,6 +170,7 @@ class _NavigationScreenState extends State<NavigationScreen>
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xff515154),
+          elevation: 0,
           title: Text(
             _isSelected == 0
                 ? 'Trang chủ'
@@ -330,7 +331,7 @@ class _NavigationScreenState extends State<NavigationScreen>
                                     const Icon(
                                       Icons.keyboard_arrow_down_rounded,
                                       size: 30,
-                                      color: Color(0xff424245),
+                                      color: Color(0xff86868B),
                                     )
                                   ],
                                 ),
@@ -407,7 +408,7 @@ class _NavigationScreenState extends State<NavigationScreen>
               children: [
                 Column(
                   children: [
-                    _buildCategoryBar(),
+                    if (_isSelected == 0) _buildCategoryBar(),
                     Expanded(
                       child: Stack(
                         children: [
@@ -807,7 +808,8 @@ class _NavigationScreenState extends State<NavigationScreen>
                   Container(
                     decoration: _isSelected == item.id
                         ? BoxDecoration(
-                            border: Border.all(color: Colors.blue, width: 2),
+                            border: Border.all(
+                                color: const Color(0xff0066CC), width: 2),
                             borderRadius: BorderRadius.circular(8))
                         : null,
                   ),

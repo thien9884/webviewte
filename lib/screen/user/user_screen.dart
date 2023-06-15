@@ -225,114 +225,112 @@ class _UserScreenState extends State<UserScreen> {
               height: 5,
             ),
             _emailUser(),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Divider(
-                thickness: 1,
-                height: 1,
-                color: Color(0xffEBEBEB),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
               ),
-            ),
-            _settingComponent(),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Divider(
-                thickness: 1,
-                height: 1,
-                color: Color(0xffEBEBEB),
-              ),
-            ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Row(
-            //       children: [
-            //         SvgPicture.asset('assets/icons/ic_language.svg'),
-            //         const SizedBox(
-            //           width: 14,
-            //         ),
-            //         Text(
-            //           'Ngôn ngữ',
-            //           style: CommonStyles.size14W400Black1D(context),
-            //         ),
-            //       ],
-            //     ),
-            //     DropdownButtonHideUnderline(
-            //       child: ButtonTheme(
-            //         alignedDropdown: true,
-            //         child: DropdownButton<String>(
-            //           value: _language,
-            //           menuMaxHeight: 300,
-            //           icon: const Icon(Icons.keyboard_arrow_down_rounded),
-            //           elevation: 16,
-            //           isDense: true,
-            //           style: CommonStyles.size14W400Grey86(context),
-            //           onChanged: (String? value) {
-            //             // This is called when the user selects an item.
-            //             setState(() {
-            //               _language = value!;
-            //             });
-            //           },
-            //           items: List.generate(1, (index) {
-            //             return DropdownMenuItem<String>(
-            //               value: 'Tiếng Việt',
-            //               child: Text(
-            //                 'Tiếng Việt',
-            //                 style: CommonStyles.size14W400Black1D(context),
-            //               ),
-            //             );
-            //           }).toList(),
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 40),
-              child: GestureDetector(
-                onTap: () async {
-                  setState(() {
-                    showCupertinoDialog(
-                        context: context,
-                        builder: (context) => CupertinoAlertDialog(
-                              content: Text(
-                                'Bạn có chắc muốn đăng xuất chứ?',
-                                style: CommonStyles.size14W400Grey33(context),
-                              ),
-                              actions: [
-                                CupertinoDialogAction(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                    child: Text(
-                                      'Trở lại',
-                                      style: CommonStyles.size14W400Grey86(
+              child: Column(
+                children: [
+                  _settingComponent(),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     Row(
+                  //       children: [
+                  //         SvgPicture.asset('assets/icons/ic_language.svg'),
+                  //         const SizedBox(
+                  //           width: 14,
+                  //         ),
+                  //         Text(
+                  //           'Ngôn ngữ',
+                  //           style: CommonStyles.size14W400Black1D(context),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     DropdownButtonHideUnderline(
+                  //       child: ButtonTheme(
+                  //         alignedDropdown: true,
+                  //         child: DropdownButton<String>(
+                  //           value: _language,
+                  //           menuMaxHeight: 300,
+                  //           icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                  //           elevation: 16,
+                  //           isDense: true,
+                  //           style: CommonStyles.size14W400Grey86(context),
+                  //           onChanged: (String? value) {
+                  //             // This is called when the user selects an item.
+                  //             setState(() {
+                  //               _language = value!;
+                  //             });
+                  //           },
+                  //           items: List.generate(1, (index) {
+                  //             return DropdownMenuItem<String>(
+                  //               value: 'Tiếng Việt',
+                  //               child: Text(
+                  //                 'Tiếng Việt',
+                  //                 style: CommonStyles.size14W400Black1D(context),
+                  //               ),
+                  //             );
+                  //           }).toList(),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 40),
+                    child: GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          showCupertinoDialog(
+                              context: context,
+                              builder: (context) => CupertinoAlertDialog(
+                                    content: Text(
+                                      'Bạn có chắc muốn đăng xuất chứ?',
+                                      style: CommonStyles.size14W400Grey33(
                                           context),
-                                    )),
-                                CupertinoDialogAction(
-                                    onPressed: () => setState(() {
-                                          _clearData();
-                                        }),
-                                    child: Text(
-                                      'Đồng ý',
-                                      style: CommonStyles.size14W700Blue007A(
-                                          context),
-                                    )),
-                              ],
-                            ));
-                  });
-                },
-                child: Row(
-                  children: [
-                    SvgPicture.asset('assets/icons/ic_logout.svg'),
-                    const SizedBox(
-                      width: 14,
+                                    ),
+                                    actions: [
+                                      CupertinoDialogAction(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          child: Text(
+                                            'Trở lại',
+                                            style:
+                                                CommonStyles.size14W400Grey86(
+                                                    context),
+                                          )),
+                                      CupertinoDialogAction(
+                                          onPressed: () => setState(() {
+                                                _clearData();
+                                              }),
+                                          child: Text(
+                                            'Đồng ý',
+                                            style:
+                                                CommonStyles.size14W700Blue007A(
+                                                    context),
+                                          )),
+                                    ],
+                                  ));
+                        });
+                      },
+                      child: Row(
+                        children: [
+                          SvgPicture.asset('assets/icons/ic_logout.svg'),
+                          const SizedBox(
+                            width: 14,
+                          ),
+                          Text(
+                            'Đăng xuất',
+                            style: CommonStyles.size14W400RedFF(context),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                      'Đăng xuất',
-                      style: CommonStyles.size14W400RedFF(context),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -386,7 +384,11 @@ class _UserScreenState extends State<UserScreen> {
               children: [
                 Row(
                   children: [
-                    SvgPicture.asset(item.img.toString()),
+                    SvgPicture.asset(
+                      item.img.toString(),
+                      colorFilter: const ColorFilter.mode(
+                          Color(0xff292D32), BlendMode.srcIn),
+                    ),
                     const SizedBox(
                       width: 14,
                     ),

@@ -174,6 +174,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
         appBar: widget.showNavigation && widget.showAppBar
             ? AppBar(
                 backgroundColor: const Color(0xff515154),
+                elevation: 0,
                 title: Text(
                   widget.index == 0
                       ? 'Trang chủ'
@@ -334,7 +335,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
                                     const Icon(
                                       Icons.keyboard_arrow_down_rounded,
                                       size: 30,
-                                      color: Color(0xff424245),
+                                      color: Color(0xff86868B),
                                     )
                                   ],
                                 ),
@@ -401,7 +402,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
             Column(
               children: [
                 if (widget.showNavigation && widget.showAppBar)
-                  _buildCategoryBar(),
+                  if (widget.index == 0) _buildCategoryBar(),
                 Expanded(
                   child: Stack(
                     children: [
@@ -774,7 +775,7 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withOpacity(0.3),
             blurRadius: 25,
             offset: const Offset(0, -20),
           ),
@@ -813,6 +814,9 @@ class _CommonNavigateBarState extends State<CommonNavigateBar>
                           widget.index == item.id
                               ? item.img.toString()
                               : item.imgUnselect.toString(),
+                          color: widget.index == item.id
+                              ? const Color(0xff0066CC)
+                              : const Color(0xff86868B),
                           width: 25,
                           height: 25,
                         ),

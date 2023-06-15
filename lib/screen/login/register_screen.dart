@@ -374,8 +374,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    width: 1,
-                    color: Color(0xffEBEBEB),
+                    width: 2,
+                    color: Color(0xff0066CC),
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -492,8 +492,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    width: 1,
-                    color: Color(0xffEBEBEB),
+                    width: 2,
+                    color: Color(0xff0066CC),
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -547,8 +547,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    width: 1,
-                    color: Color(0xffEBEBEB),
+                    width: 2,
+                    color: Color(0xff0066CC),
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -573,7 +573,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 5),
               child: Text(
-                'Username:',
+                'Tên đăng nhập:',
                 style: CommonStyles.size14W400Black1D(context),
               ),
             ),
@@ -590,8 +590,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    width: 1,
-                    color: Color(0xffEBEBEB),
+                    width: 2,
+                    color: Color(0xff0066CC),
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -637,8 +637,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    width: 1,
-                    color: Color(0xffEBEBEB),
+                    width: 2,
+                    color: Color(0xff0066CC),
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -702,8 +702,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    width: 1,
-                    color: Color(0xffEBEBEB),
+                    width: 2,
+                    color: Color(0xff0066CC),
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -743,8 +743,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    width: 1,
-                    color: Color(0xffEBEBEB),
+                    width: 2,
+                    color: Color(0xff0066CC),
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -927,7 +927,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   style: CommonStyles.size14W700White(context),
                 ),
               ),
-            )
+            ),
+            const SizedBox(
+              height: 60,
+            ),
           ],
         ),
       ),

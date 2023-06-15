@@ -189,7 +189,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 5),
           child: Text(
-            'Email',
+            'Email:',
             style: CommonStyles.size14W400Black1D(context),
           ),
         ),
@@ -207,8 +207,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                width: 1,
-                color: Color(0xffEBEBEB),
+                width: 2,
+                color: Color(0xff0066CC),
               ),
               borderRadius: BorderRadius.circular(8),
             ),

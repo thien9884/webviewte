@@ -544,7 +544,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       padding: EdgeInsets.symmetric(
                           vertical: Responsive.isMobile(context) ? 4 : 8),
                       child: Image.network(
-                          item.defaultPictureModel?.imageUrl ?? ''),
+                        item.defaultPictureModel?.imageUrl ?? '',
+                        height: 170,
+                        width: double.infinity,
+                      ),
                     ),
                     Expanded(
                       child: Column(

@@ -263,8 +263,8 @@ class _AccountInfoState extends State<AccountInfo> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                width: 1,
-                color: Color(0xffEBEBEB),
+                width: 2,
+                color: Color(0xff0066CC),
               ),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -299,8 +299,8 @@ class _AccountInfoState extends State<AccountInfo> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                width: 1,
-                color: Color(0xffEBEBEB),
+                width: 2,
+                color: Color(0xff0066CC),
               ),
               borderRadius: BorderRadius.circular(8),
             ),
@@ -335,8 +335,8 @@ class _AccountInfoState extends State<AccountInfo> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                width: 1,
-                color: Color(0xffEBEBEB),
+                width: 2,
+                color: Color(0xff0066CC),
               ),
               borderRadius: BorderRadius.circular(8),
             ),
