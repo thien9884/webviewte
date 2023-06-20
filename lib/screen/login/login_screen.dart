@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _setLogin() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    sPref.setIsLogin(true);
+    await sPref.setIsLogin(true);
     if (_savePassword) {
       sPref.setUserName(_emailController.text);
       sPref.setPassword(_passwordController.text);
@@ -123,11 +123,11 @@ class _LoginScreenState extends State<LoginScreen> {
           if (state is LoginLoading) {
             EasyLoading.show();
           } else if (state is LoginLoaded) {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const NavigationScreen(
-                      isSelected: 2,
-                    )));
+            context
+                .read<ShopdunkBloc>()
+                .add(const RequestLogoutEvent(isMoveToLogin: false));
             _setLogin();
+
             if (EasyLoading.isShow) {
               EasyLoading.dismiss();
             }

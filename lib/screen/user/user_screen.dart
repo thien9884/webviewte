@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,18 +43,17 @@ class _UserScreenState extends State<UserScreen> {
     BlocProvider.of<CustomerBloc>(context).add(const RequestGetAvatar());
   }
 
-  _clearData() async {
+  _clearData(BuildContext context) async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    sPref.remove(SharedPrefKeys.customerId);
+    await sPref.remove(SharedPrefKeys.customerId);
+    await sPref.remove(SharedPrefKeys.token);
+    await sPref.setIsLogin(false);
+    await sPref.setRememberMe(false);
     DioClient.logOut();
-    sPref.setRememberMe(false);
-    sPref.setIsLogin(false);
 
     if (context.mounted) {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => const NavigationScreen(
-                isSelected: 2,
-              )));
+      context.read<ShopdunkBloc>().add(const RequestLogoutEvent(isMoveToLogin: true));
+      Navigator.pop(context);
     }
   }
 
@@ -303,9 +303,7 @@ class _UserScreenState extends State<UserScreen> {
                                                     context),
                                           )),
                                       CupertinoDialogAction(
-                                          onPressed: () => setState(() {
-                                                _clearData();
-                                              }),
+                                          onPressed: () async => await _clearData(context),
                                           child: Text(
                                             'Đồng ý',
                                             style:

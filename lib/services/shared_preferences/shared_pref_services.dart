@@ -9,7 +9,7 @@ class SharedPrefKeys {
   static const String password = 'password';
   static const String rememberMe = 'rememberMe';
   static const String checkBox = 'checkBox';
-  static const String isLogin = 'isLogin';
+  static const String isLogin = 'loginSuccess';
   static const String listCategories = 'listCategory';
   static const String listIphone= 'listIphone';
   static const String listIpad = 'listIpad';

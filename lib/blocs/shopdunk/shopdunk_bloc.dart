@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webviewtest/blocs/base_blocs.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
@@ -143,6 +145,8 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
         categoryId,
       );
     });
+
+    on<RequestLogoutEvent>(_handleLogout);
   }
 
   _handleGetNews(RequestGetNews event, Emitter emit) async {
@@ -449,5 +453,10 @@ class ShopdunkBloc extends BaseBloc<ShopdunkEvent, ShopdunkState> {
         ),
       );
     }
+  }
+
+  FutureOr<void> _handleLogout(RequestLogoutEvent event, Emitter<ShopdunkState> emit) async {
+    emit(const CategoriesInitial());
+    emit(LogoutSuccess(isLogin: event.isMoveToLogin));
   }
 }

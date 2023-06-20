@@ -23,7 +23,7 @@ class LoginBloc extends BaseBloc<LoginEvent, LoginState> {
       sPref.setToken(user?.accessToken ?? '');
       sPref.setRememberMe(loginModel.rememberMe);
       sPref.setCustomerId(user?.customerId ?? 0);
-      print(user?.accessToken);
+      print('Token: ${user?.accessToken}');
       emit(
         LoginLoaded(userModel: user ?? UserModel(), isLogin: user != null),
       );

@@ -116,17 +116,9 @@ class _NavigationScreenState extends State<NavigationScreen>
 
   _getListNavigationBar() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    final isLogin = sPref.isLogin;
-
     _listCategories = Categories.decode(sPref.listCategories);
     _newsGroup = NewsGroup.decode(sPref.listNewsGroup)
         .lastWhere((element) => element.id == 1);
-    if (isLogin) {
-      pages[2] = const UserScreen();
-    } else {
-      pages[2] = const LoginScreen();
-    }
-    print(_isLogin);
     setState(() {});
   }
 
@@ -159,6 +151,8 @@ class _NavigationScreenState extends State<NavigationScreen>
             AlertUtils.displayErrorAlert(context, state.message);
           } else if (state is HideBottomSuccess) {
             _isVisible = state.isHide;
+          } else if (state is LogoutSuccess) {
+            pages[2] = state.isLogin ? const LoginScreen() : const UserScreen();
           }
         });
   }
@@ -788,19 +782,7 @@ class _NavigationScreenState extends State<NavigationScreen>
 
           return GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () async {
-              SharedPreferencesService sPref =
-                  await SharedPreferencesService.instance;
-              final isLogin = sPref.isLogin;
-              setState(() {
-                _isSelected = item.id;
-                if (isLogin) {
-                  pages[2] = const UserScreen();
-                } else {
-                  pages[2] = const LoginScreen();
-                }
-              });
-            },
+            onTap: () => setState(() => _isSelected = item.id),
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.15,
               child: Column(

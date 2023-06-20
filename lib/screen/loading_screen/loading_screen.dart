@@ -48,80 +48,83 @@ class _LoadingScreenState extends State<LoadingScreen> {
   final List<TopBanner> _listHomeBannerImg = [];
 
   // Sync data
-  _getCategories() async {
+  Future<void> _getCategories() async {
     EasyLoading.show();
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetCategories());
   }
 
-  _getListIpad() async {
+  Future<void> _getListIpad() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'ipad');
     BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetIpad(idIpad: _listCategories[index].id));
   }
 
-  _getListIphone() async {
+  Future<void> _getListIphone() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'iphone');
     BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetIphone(idIphone: _listCategories[index].id));
   }
 
-  _getListMac() async {
+  Future<void> _getListMac() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'mac');
     BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetMac(idMac: _listCategories[index].id));
   }
 
-  _getListWatch() async {
+  Future<void> _getListWatch() async {
     int index = _listCategories
         .indexWhere((element) => element.seName == 'apple-watch');
     BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetAppleWatch(idWatch: _listCategories[index].id));
   }
 
-  _getListSound() async {
+  Future<void> _getListSound() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'am-thanh');
     BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetSound(idSound: _listCategories[index].id));
   }
 
-  _getListAccessories() async {
+  Future<void> _getListAccessories() async {
     int index =
         _listCategories.indexWhere((element) => element.seName == 'phu-kien');
     BlocProvider.of<ShopdunkBloc>(context)
         .add(RequestGetAccessories(idAccessories: _listCategories[index].id));
   }
 
-  _getNews() async {
+  Future<void> _getNews() async {
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetNews());
   }
 
-  _getTopBanner() async {
+  Future<void> _getTopBanner() async {
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetTopBanner(156));
   }
 
-  _getHomeBanner() async {
+  Future<void> _getHomeBanner() async {
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetHomeBanner(6));
   }
 
-  _getTopics() async {
+  Future<void> _getTopics() async {
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetFooterBanner());
   }
 
   _getListProduct() async {
-    await _getListIpad();
-    await _getListIphone();
-    await _getListMac();
-    await _getListWatch();
-    await _getListSound();
-    await _getListAccessories();
-    await _getNews();
-    await _getTopBanner();
-    await _getHomeBanner();
-    await _getTopics();
+    await Future.wait([
+    _getListIpad(),
+    _getListIphone(),
+    _getListMac(),
+    _getListWatch(),
+    _getListSound(),
+    _getListAccessories(),
+    _getNews(),
+    _getTopBanner(),
+    _getHomeBanner(),
+    _getTopics()
+    ]);
+
   }
 
   _clearData() async {
@@ -157,34 +160,39 @@ class _LoadingScreenState extends State<LoadingScreen> {
         _newsGroup.isNotEmpty &&
         _latestNews.isNotEmpty &&
         _listTopics.isNotEmpty) {
-      String listCategories = jsonEncode(_listCategories);
-      String listIpad = jsonEncode(_listIpad);
-      String listIphone = jsonEncode(_listIphone);
-      String listMac = jsonEncode(_listMac);
-      String listAppleWatch = jsonEncode(_listAppleWatch);
-      String listSound = jsonEncode(_listSound);
-      String listAccessories = jsonEncode(_listAccessories);
-      String listNewsGroup = jsonEncode(_newsGroup);
-      String listLatestNews = jsonEncode(_latestNews);
-      String listTopBanner = jsonEncode(_listTopBannerImg);
-      String listHomeBanner = jsonEncode(_listHomeBannerImg);
-      String listTopics = jsonEncode(_listTopics);
-      await sPref.setListCategories(listCategories);
-      await sPref.setListIpad(listIpad);
-      await sPref.setListIphone(listIphone);
-      await sPref.setListMac(listMac);
-      await sPref.setListAppleWatch(listAppleWatch);
-      await sPref.setListSound(listSound);
-      await sPref.setListAccessories(listAccessories);
-      await sPref.setListNewsGroup(listNewsGroup);
-      await sPref.setListLatestNews(listLatestNews);
-      await sPref.setListTopBanner(listTopBanner);
-      await sPref.setListHomeBanner(listHomeBanner);
-      await sPref.setListTopics(listTopics);
-
+      //:TODO - Use isolates
+      // String listCategories = jsonEncode(_listCategories);
+      // String listIpad = jsonEncode(_listIpad);
+      // String listIphone = jsonEncode(_listIphone);
+      // String listMac = jsonEncode(_listMac);
+      // String listAppleWatch = jsonEncode(_listAppleWatch);
+      // String listSound = jsonEncode(_listSound);
+      // String listAccessories = jsonEncode(_listAccessories);
+      // String listNewsGroup = jsonEncode(_newsGroup);
+      // String listLatestNews = jsonEncode(_latestNews);
+      // String listTopBanner = jsonEncode(_listTopBannerImg);
+      // String listHomeBanner = jsonEncode(_listHomeBannerImg);
+      // String listTopics = jsonEncode(_listTopics);
+      // await sPref.setListCategories(listCategories);
+      // await sPref.setListIpad(listIpad);
+      // await sPref.setListIphone(listIphone);
+      // await sPref.setListMac(listMac);
+      // await sPref.setListAppleWatch(listAppleWatch);
+      // await sPref.setListSound(listSound);
+      // await sPref.setListAccessories(listAccessories);
+      // await sPref.setListNewsGroup(listNewsGroup);
+      // await sPref.setListLatestNews(listLatestNews);
+      // await sPref.setListTopBanner(listTopBanner);
+      // await sPref.setListHomeBanner(listHomeBanner);
+      // await sPref.setListTopics(listTopics);
       if (context.mounted) {
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const NavigationScreen()));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) {
+              context.read<ShopdunkBloc>().add(RequestLogoutEvent(isMoveToLogin: !sPref.isLogin));
+              return const NavigationScreen();
+            }),
+            (route) => false);
       }
       if (EasyLoading.isShow) EasyLoading.dismiss();
     }
@@ -194,8 +202,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
     final userName = sPref.userName;
     final password = sPref.password;
-
-    if (userName.isNotEmpty && password.isNotEmpty) {
+    print('Is login: ${sPref.isLogin}');
+    if (userName.isNotEmpty && password.isNotEmpty && sPref.isLogin) {
       if (context.mounted) {
         BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
           loginModel: LoginModel(
@@ -207,16 +215,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
         ));
       }
     } else {
-      if (context.mounted) {
-        BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
-          loginModel: LoginModel(
-            rememberMe: true,
-            guest: true,
-            username: 'userName',
-            password: 'password',
-          ),
-        ));
-      }
+      // if (context.mounted) {
+      //   BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
+      //     loginModel: LoginModel(
+      //       rememberMe: true,
+      //       guest: true,
+      //       username: 'userName',
+      //       password: 'password',
+      //     ),
+      //   ));
+      // }
     }
   }
 

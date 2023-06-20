@@ -25,6 +25,16 @@ class CategoriesInitial extends ShopdunkState {
   List<Object?> get props => [];
 }
 
+class LogoutSuccess extends ShopdunkState {
+  // Login flag
+  final bool isLogin;
+  // Constructor
+  const LogoutSuccess({required this.isLogin});
+
+  @override
+  List<Object?> get props => [isLogin];
+}
+
 // GET CATEGORIES STATES
 class NewsLoading extends ShopdunkState {
   const NewsLoading();

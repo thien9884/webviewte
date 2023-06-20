@@ -8,6 +8,17 @@ abstract class ShopdunkEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class RequestLogoutEvent extends ShopdunkEvent {
+  // Login flag
+  final bool isMoveToLogin;
+
+  // Constructor
+  const RequestLogoutEvent({required this.isMoveToLogin});
+
+  @override
+  List<Object?> get props => [isMoveToLogin];
+}
+
 class RequestGetNews extends ShopdunkEvent {
   const RequestGetNews();
 
