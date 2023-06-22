@@ -358,24 +358,21 @@ class _SearchProductsScreenState extends State<SearchProductsScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Expanded(
-                                  flex: 9,
-                                  child: Text(
-                                    '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
-                                    style:
-                                    CommonStyles.size13W700Blue00(context),
-                                  ),
+                                Text(
+                                  '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
+                                  style:
+                                  CommonStyles.size13W700Blue00(context),
                                 ),
-                                Flexible(
-                                  flex: 8,
-                                  child: Text(
-                                    '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                    style:
-                                    CommonStyles.size10W400Grey86(context)
-                                        .copyWith(
-                                        decoration:
-                                        TextDecoration.lineThrough),
-                                  ),
+                                const SizedBox(
+                                  width: 4,
+                                ),
+                                Text(
+                                  '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
+                                  style:
+                                  CommonStyles.size10W400Grey86(context)
+                                      .copyWith(
+                                      decoration:
+                                      TextDecoration.lineThrough),
                                 ),
                               ],
                             ),

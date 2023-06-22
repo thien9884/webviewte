@@ -21,7 +21,7 @@ class NotifScreen extends StatefulWidget {
 }
 
 class _NotifScreenState extends State<NotifScreen> {
-  int size = 5;
+  int size = 10;
   int? _totalSize;
   String _messageError = '';
   List<RewardPointsNoti> _listNoti = [];
@@ -37,9 +37,9 @@ class _NotifScreenState extends State<NotifScreen> {
     if (!_isLoading) {
       setState(() {
         _isLoading = true;
-        size += 5;
+        size += 10;
       });
-      if (_totalSize != null && _totalSize! + 5 >= size) {
+      if (_totalSize != null && _totalSize! + 10 >= size) {
         BlocProvider.of<NotiBloc>(context).add(RequestGetNoti(size));
       }
     }

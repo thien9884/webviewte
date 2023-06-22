@@ -31,8 +31,19 @@ import 'package:webviewtest/services/shared_preferences/shared_pref_services.dar
 
 class NavigationScreen extends StatefulWidget {
   final int isSelected;
+  final String? listCategories;
+  final String? listTopics;
+  final String? listNewsGroup;
+  final String? listLatestNews;
 
-  const NavigationScreen({this.isSelected = 0, Key? key}) : super(key: key);
+  const NavigationScreen(
+      {this.listCategories,
+      this.listNewsGroup,
+      this.listTopics,
+      this.listLatestNews,
+      this.isSelected = 0,
+      Key? key})
+      : super(key: key);
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
@@ -44,7 +55,7 @@ class _NavigationScreenState extends State<NavigationScreen>
   String url = '';
   final TextEditingController _searchController = TextEditingController();
   List<ProductsModel> _listAllProduct = [];
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   // Categories
   List<Categories> _listCategories = [];
@@ -52,7 +63,6 @@ class _NavigationScreenState extends State<NavigationScreen>
   bool _showSearch = false;
   bool _showDrawer = false;
   bool _isVisible = true;
-  bool _isLogin = false;
   bool _accountExpand = false;
   NewsGroup _newsGroup = NewsGroup();
   final List<Footer> _listFooter = [];
@@ -116,9 +126,19 @@ class _NavigationScreenState extends State<NavigationScreen>
 
   _getListNavigationBar() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
-    _listCategories = Categories.decode(sPref.listCategories);
-    _newsGroup = NewsGroup.decode(sPref.listNewsGroup)
+    _listCategories =
+        Categories.decode(widget.listCategories ?? sPref.listCategories);
+    _newsGroup = NewsGroup.decode(widget.listNewsGroup ?? sPref.listNewsGroup)
         .lastWhere((element) => element.id == 1);
+    if (widget.listCategories != null &&
+        widget.listTopics != null &&
+        widget.listLatestNews != null &&
+        widget.listNewsGroup != null) {
+      sPref.setListCategories(widget.listCategories!);
+      sPref.setListTopics(widget.listTopics!);
+      sPref.setListLatestNews(widget.listLatestNews!);
+      sPref.setListNewsGroup(widget.listNewsGroup!);
+    }
     setState(() {});
   }
 

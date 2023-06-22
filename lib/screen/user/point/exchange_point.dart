@@ -402,7 +402,7 @@ class _ExchangePointScreenState extends State<ExchangePointScreen> {
                         ),
                         Expanded(
                           child: Text(
-                            'Áp dụng cho đơn hàng từ 2 triệu đồng\n200.000VND = 20000 điểm thưởng',
+                            'Áp dụng cho đơn hàng từ 2 triệu đồng\n200.000VND = 200 điểm thưởng',
                             style: CommonStyles.size14W400Black1D(context),
                             maxLines: 2,
                           ),

@@ -28,7 +28,7 @@ class LoginLoaded extends LoginState {
   const LoginLoaded({required this.userModel, required this.isLogin});
 
   @override
-  List<Object?> get props => [userModel];
+  List<Object?> get props => [userModel, isLogin];
 }
 
 class LoginLoadError extends LoginState {
