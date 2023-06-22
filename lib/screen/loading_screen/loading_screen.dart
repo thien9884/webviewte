@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart' as dom;
 import 'package:webviewtest/blocs/login/login_bloc.dart';
 import 'package:webviewtest/blocs/login/login_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
@@ -16,8 +14,6 @@ import 'package:webviewtest/model/banner/banner_model.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
-import 'package:webviewtest/model/product/products_model.dart';
-import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
@@ -33,19 +29,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
   List<Categories> _listCategories = [];
   List<LatestNews> _latestNews = [];
   List<NewsGroup> _newsGroup = [];
-  List<ProductsModel> _listIphone = [];
-  List<ProductsModel> _listIpad = [];
-  List<ProductsModel> _listMac = [];
-  List<ProductsModel> _listAppleWatch = [];
-  List<ProductsModel> _listSound = [];
-  List<ProductsModel> _listAccessories = [];
-  String _topBanner = '';
   String _messageError = '';
-  final List<TopBanner> _listTopBannerImg = [];
   List<Topics> _listTopics = [];
-
-  String _homeBanner = '';
-  final List<TopBanner> _listHomeBannerImg = [];
 
   // Sync data
   Future<void> _getCategories() async {
@@ -53,78 +38,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetCategories());
   }
 
-  Future<void> _getListIpad() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'ipad');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetIpad(idIpad: _listCategories[index].id));
-  }
-
-  Future<void> _getListIphone() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'iphone');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetIphone(idIphone: _listCategories[index].id));
-  }
-
-  Future<void> _getListMac() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'mac');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetMac(idMac: _listCategories[index].id));
-  }
-
-  Future<void> _getListWatch() async {
-    int index = _listCategories
-        .indexWhere((element) => element.seName == 'apple-watch');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetAppleWatch(idWatch: _listCategories[index].id));
-  }
-
-  Future<void> _getListSound() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'am-thanh');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetSound(idSound: _listCategories[index].id));
-  }
-
-  Future<void> _getListAccessories() async {
-    int index =
-        _listCategories.indexWhere((element) => element.seName == 'phu-kien');
-    BlocProvider.of<ShopdunkBloc>(context)
-        .add(RequestGetAccessories(idAccessories: _listCategories[index].id));
-  }
-
-  Future<void> _getNews() async {
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetNews());
-  }
-
-  Future<void> _getTopBanner() async {
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetTopBanner(156));
-  }
-
-  Future<void> _getHomeBanner() async {
-    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetHomeBanner(6));
-  }
-
   Future<void> _getTopics() async {
     BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetFooterBanner());
   }
 
-  _getListProduct() async {
-    await Future.wait([
-    _getListIpad(),
-    _getListIphone(),
-    _getListMac(),
-    _getListWatch(),
-    _getListSound(),
-    _getListAccessories(),
-    _getNews(),
-    _getTopBanner(),
-    _getHomeBanner(),
-    _getTopics()
-    ]);
-
+  Future<void> _getNews() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetNews());
   }
 
   _clearData() async {
@@ -149,50 +68,26 @@ class _LoadingScreenState extends State<LoadingScreen> {
     await _clearData();
 
     if (_listCategories.isNotEmpty &&
-        _listIpad.isNotEmpty &&
-        _listIphone.isNotEmpty &&
-        _listMac.isNotEmpty &&
-        _listAppleWatch.isNotEmpty &&
-        _listSound.isNotEmpty &&
-        _listAccessories.isNotEmpty &&
-        _listTopBannerImg.isNotEmpty &&
-        _listHomeBannerImg.isNotEmpty &&
+        _listTopics.isNotEmpty &&
         _newsGroup.isNotEmpty &&
-        _latestNews.isNotEmpty &&
-        _listTopics.isNotEmpty) {
+        _latestNews.isNotEmpty) {
       //:TODO - Use isolates
-      // String listCategories = jsonEncode(_listCategories);
-      // String listIpad = jsonEncode(_listIpad);
-      // String listIphone = jsonEncode(_listIphone);
-      // String listMac = jsonEncode(_listMac);
-      // String listAppleWatch = jsonEncode(_listAppleWatch);
-      // String listSound = jsonEncode(_listSound);
-      // String listAccessories = jsonEncode(_listAccessories);
-      // String listNewsGroup = jsonEncode(_newsGroup);
-      // String listLatestNews = jsonEncode(_latestNews);
-      // String listTopBanner = jsonEncode(_listTopBannerImg);
-      // String listHomeBanner = jsonEncode(_listHomeBannerImg);
-      // String listTopics = jsonEncode(_listTopics);
-      // await sPref.setListCategories(listCategories);
-      // await sPref.setListIpad(listIpad);
-      // await sPref.setListIphone(listIphone);
-      // await sPref.setListMac(listMac);
-      // await sPref.setListAppleWatch(listAppleWatch);
-      // await sPref.setListSound(listSound);
-      // await sPref.setListAccessories(listAccessories);
-      // await sPref.setListNewsGroup(listNewsGroup);
-      // await sPref.setListLatestNews(listLatestNews);
-      // await sPref.setListTopBanner(listTopBanner);
-      // await sPref.setListHomeBanner(listHomeBanner);
-      // await sPref.setListTopics(listTopics);
+      String listCategories = jsonEncode(_listCategories);
+      String listTopics = jsonEncode(_listTopics);
+      String listNewsGroup = jsonEncode(_newsGroup);
+      String listLatestNews = jsonEncode(_latestNews);
+      await sPref.setListCategories(listCategories);
+      await sPref.setListTopics(listTopics);
+      await sPref.setListNewsGroup(listNewsGroup);
+      await sPref.setListLatestNews(listLatestNews);
       if (context.mounted) {
-        Navigator.pushAndRemoveUntil(
-            context,
+        Navigator.pushAndRemoveUntil(context,
             MaterialPageRoute(builder: (context) {
-              context.read<ShopdunkBloc>().add(RequestLogoutEvent(isMoveToLogin: !sPref.isLogin));
-              return const NavigationScreen();
-            }),
-            (route) => false);
+          context
+              .read<ShopdunkBloc>()
+              .add(RequestLogoutEvent(isMoveToLogin: !sPref.isLogin));
+          return const NavigationScreen();
+        }), (route) => false);
       }
       if (EasyLoading.isShow) EasyLoading.dismiss();
     }
@@ -215,16 +110,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
         ));
       }
     } else {
-      // if (context.mounted) {
-      //   BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
-      //     loginModel: LoginModel(
-      //       rememberMe: true,
-      //       guest: true,
-      //       username: 'userName',
-      //       password: 'password',
-      //     ),
-      //   ));
-      // }
+      if (context.mounted) {
+        BlocProvider.of<LoginBloc>(context).add(RequestPostLogin(
+          loginModel: LoginModel(
+            rememberMe: true,
+            guest: true,
+            username: 'userName',
+            password: 'password',
+          ),
+        ));
+      }
     }
   }
 
@@ -232,6 +127,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
   void initState() {
     _getToken();
     _getCategories();
+    _getTopics();
+    _getNews();
     super.initState();
   }
 
@@ -254,80 +151,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
                 .indexWhere((element) => element.seName == 'phu-kien');
             _listCategories[indexSound].name = 'Âm thanh';
             _listCategories[indexAccessories].name = 'Phụ kiện';
-            _getListProduct();
+            _saveData();
           } else if (state is CategoriesLoadError) {
-            if (_messageError.isEmpty) {
-              _messageError = state.message;
-              AlertUtils.displayErrorAlert(context, _messageError);
-            }
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          }
-
-          if (state is IpadLoading) {
-          } else if (state is IpadLoaded) {
-            _listIpad = state.ipad;
-            _saveData();
-          } else if (state is IpadLoadError) {
-            if (_messageError.isEmpty) {
-              _messageError = state.message;
-              AlertUtils.displayErrorAlert(context, _messageError);
-            }
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          }
-
-          if (state is IphoneLoading) {
-          } else if (state is IphoneLoaded) {
-            _listIphone = state.iphone;
-            _saveData();
-          } else if (state is IphoneLoadError) {
-            if (_messageError.isEmpty) {
-              _messageError = state.message;
-              AlertUtils.displayErrorAlert(context, _messageError);
-            }
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          }
-
-          if (state is MacLoading) {
-          } else if (state is MacLoaded) {
-            _listMac = state.mac;
-            _saveData();
-          } else if (state is MacLoadError) {
-            if (_messageError.isEmpty) {
-              _messageError = state.message;
-              AlertUtils.displayErrorAlert(context, _messageError);
-            }
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          }
-
-          if (state is AppleWatchLoading) {
-          } else if (state is AppleWatchLoaded) {
-            _listAppleWatch = state.watch;
-            _saveData();
-          } else if (state is AppleWatchLoadError) {
-            if (_messageError.isEmpty) {
-              _messageError = state.message;
-              AlertUtils.displayErrorAlert(context, _messageError);
-            }
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          }
-
-          if (state is SoundLoading) {
-          } else if (state is SoundLoaded) {
-            _listSound = state.sound;
-            _saveData();
-          } else if (state is SoundLoadError) {
-            if (_messageError.isEmpty) {
-              _messageError = state.message;
-              AlertUtils.displayErrorAlert(context, _messageError);
-            }
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          }
-
-          if (state is AccessoriesLoading) {
-          } else if (state is AccessoriesLoaded) {
-            _listAccessories = state.accessories;
-            _saveData();
-          } else if (state is AccessoriesLoadError) {
             if (_messageError.isEmpty) {
               _messageError = state.message;
               AlertUtils.displayErrorAlert(context, _messageError);
@@ -367,79 +192,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
             if (EasyLoading.isShow) EasyLoading.dismiss();
           }
 
-          if (state is TopBannerLoading) {
-          } else if (state is TopBannerLoaded) {
-            _topBanner = state.listTopics.topics?.first.body ?? '';
-            var document = parse(
-                _topBanner.replaceAll('src="', 'src="http://shopdunk.com'));
-            var imgList = document.querySelectorAll("img");
-            var linkList = document.querySelectorAll("a");
-            List<String> imageList = [];
-            List<String> getLinkList = [];
-            List<TopBanner> topBanner = [];
-            for (dom.Element img in imgList) {
-              imageList.add(img.attributes['src']!);
-            }
-            for (dom.Element img in linkList) {
-              getLinkList.add(img.attributes['href']!);
-            }
-            for (int i = 0; i < imageList.length; i++) {
-              topBanner.add(
-                TopBanner(
-                  img: imageList[i].toString(),
-                  link: getLinkList[i].toString(),
-                ),
-              );
-            }
-            _listTopBannerImg.clear();
-            _listTopBannerImg.addAll(topBanner);
-            _saveData();
-          } else if (state is TopBannerLoadError) {
-            if (_messageError.isEmpty) {
-              _messageError = state.message;
-              AlertUtils.displayErrorAlert(context, _messageError);
-            }
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          }
-
-          if (state is HomeBannerLoading) {
-          } else if (state is HomeBannerLoaded) {
-            _homeBanner = state.listTopics.topics?.first.body ?? '';
-            var document = parse(
-                _homeBanner.replaceAll('src="', 'src="http://shopdunk.com'));
-            var imgList = document.querySelectorAll("img");
-            var linkList = document.querySelectorAll("a");
-            List<String> imageList = [];
-            List<String> getLinkList = [];
-            List<TopBanner> homeBanner = [];
-            for (dom.Element img in imgList) {
-              imageList.add(img.attributes['src']!);
-            }
-            for (dom.Element img in linkList) {
-              getLinkList.add(img.attributes['href']!);
-            }
-            for (int i = 0; i < imageList.length; i++) {
-              homeBanner.add(
-                TopBanner(
-                  img: imageList[i].toString(),
-                  link: getLinkList[i].toString(),
-                ),
-              );
-            }
-            _listHomeBannerImg.clear();
-            _listHomeBannerImg.addAll(homeBanner);
-            _saveData();
-          } else if (state is HomeBannerLoadError) {
-            if (_messageError.isEmpty) {
-              _messageError = state.message;
-              AlertUtils.displayErrorAlert(context, _messageError);
-            }
-            if (EasyLoading.isShow) EasyLoading.dismiss();
-          }
-
           if (state is FooterLoading) {
           } else if (state is FooterLoaded) {
             _listTopics = state.listTopics.topics ?? [];
+            _saveData();
           } else if (state is FooterLoadError) {
             if (_messageError.isEmpty) {
               _messageError = state.message;

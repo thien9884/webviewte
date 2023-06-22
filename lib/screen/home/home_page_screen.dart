@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_bloc.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_event.dart';
 import 'package:webviewtest/blocs/shopdunk/shopdunk_state.dart';
 import 'package:webviewtest/common/custom_material_page_route.dart';
 import 'package:webviewtest/common/responsive.dart';
+import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
@@ -19,6 +21,8 @@ import 'package:webviewtest/screen/news/news_detail.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 import 'dart:io' show Platform;
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart' as dom;
 
 TopBanner payloadFromJson(String str) => TopBanner.fromJson(json.decode(str));
 
@@ -68,6 +72,15 @@ class _HomePageScreenState extends State<HomePageScreen> {
   late ScrollController _hideButtonController;
   bool _isVisible = false;
   List<TopBanner> _listHomeBannerImg = [];
+  List<ProductsModel> _listIphone = [];
+  List<ProductsModel> _listIpad = [];
+  List<ProductsModel> _listMac = [];
+  List<ProductsModel> _listAppleWatch = [];
+  List<ProductsModel> _listSound = [];
+  List<ProductsModel> _listAccessories = [];
+  String _messageError = '';
+  String _topBanner = '';
+  String _homeBanner = '';
 
   // Categories
   List<Categories> _listCategories = [];
@@ -112,6 +125,115 @@ class _HomePageScreenState extends State<HomePageScreen> {
     });
   }
 
+  _getListProduct() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+    _listCategories = Categories.decode(sPref.listCategories);
+    _latestNews = LatestNews.decode(sPref.listLatestNews);
+    _newsGroup = NewsGroup.decode(sPref.listNewsGroup);
+    if (sPref.listIpad.isEmpty &&
+        sPref.listIphone.isEmpty &&
+        sPref.listMac.isEmpty &&
+        sPref.listAppleWatch.isEmpty &&
+        sPref.listAccessories.isEmpty &&
+        sPref.listTopBanner.isEmpty &&
+        sPref.listHomeBanner.isEmpty) {
+      await Future.wait([
+        _getListIpad(),
+        _getListIphone(),
+        _getListMac(),
+        _getListWatch(),
+        _getListSound(),
+        _getListAccessories(),
+        _getTopBanner(),
+        _getHomeBanner(),
+      ]);
+    } else {
+      _getListHomeScreen();
+    }
+  }
+
+  Future<void> _getListIpad() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'ipad');
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(RequestGetIpad(idIpad: _listCategories[index].id));
+  }
+
+  Future<void> _getListIphone() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'iphone');
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(RequestGetIphone(idIphone: _listCategories[index].id));
+  }
+
+  Future<void> _getListMac() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'mac');
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(RequestGetMac(idMac: _listCategories[index].id));
+  }
+
+  Future<void> _getListWatch() async {
+    int index = _listCategories
+        .indexWhere((element) => element.seName == 'apple-watch');
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(RequestGetAppleWatch(idWatch: _listCategories[index].id));
+  }
+
+  Future<void> _getListSound() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'am-thanh');
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(RequestGetSound(idSound: _listCategories[index].id));
+  }
+
+  Future<void> _getListAccessories() async {
+    int index =
+        _listCategories.indexWhere((element) => element.seName == 'phu-kien');
+    BlocProvider.of<ShopdunkBloc>(context)
+        .add(RequestGetAccessories(idAccessories: _listCategories[index].id));
+  }
+
+  Future<void> _getTopBanner() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetTopBanner(156));
+  }
+
+  Future<void> _getHomeBanner() async {
+    BlocProvider.of<ShopdunkBloc>(context).add(const RequestGetHomeBanner(6));
+  }
+
+  _saveData() async {
+    SharedPreferencesService sPref = await SharedPreferencesService.instance;
+
+    if (_listIpad.isNotEmpty &&
+        _listIphone.isNotEmpty &&
+        _listMac.isNotEmpty &&
+        _listAppleWatch.isNotEmpty &&
+        _listSound.isNotEmpty &&
+        _listAccessories.isNotEmpty &&
+        _listTopBannerImg.isNotEmpty &&
+        _listHomeBannerImg.isNotEmpty) {
+      String listIpad = jsonEncode(_listIpad);
+      String listIphone = jsonEncode(_listIphone);
+      String listMac = jsonEncode(_listMac);
+      String listAppleWatch = jsonEncode(_listAppleWatch);
+      String listSound = jsonEncode(_listSound);
+      String listAccessories = jsonEncode(_listAccessories);
+      String listTopBanner = jsonEncode(_listTopBannerImg);
+      String listHomeBanner = jsonEncode(_listHomeBannerImg);
+      await sPref.setListIpad(listIpad);
+      await sPref.setListIphone(listIphone);
+      await sPref.setListMac(listMac);
+      await sPref.setListAppleWatch(listAppleWatch);
+      await sPref.setListSound(listSound);
+      await sPref.setListAccessories(listAccessories);
+      await sPref.setListTopBanner(listTopBanner);
+      await sPref.setListHomeBanner(listHomeBanner);
+      if (EasyLoading.isShow) EasyLoading.dismiss();
+      _getListHomeScreen();
+    }
+  }
+
   _getListHomeScreen() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
     List<ProductsModel> listIpad = [];
@@ -120,18 +242,21 @@ class _HomePageScreenState extends State<HomePageScreen> {
     List<ProductsModel> listAppleWatch = [];
     List<ProductsModel> listSound = [];
     List<ProductsModel> listAccessories = [];
-
-    listIpad = ProductsModel.decode(sPref.listIpad);
-    listIphone = ProductsModel.decode(sPref.listIphone);
-    listMac = ProductsModel.decode(sPref.listMac);
-    listAppleWatch = ProductsModel.decode(sPref.listAppleWatch);
-    listSound = ProductsModel.decode(sPref.listSound);
-    listAccessories = ProductsModel.decode(sPref.listAccessories);
-    _listCategories = Categories.decode(sPref.listCategories);
-    _latestNews = LatestNews.decode(sPref.listLatestNews);
     _listTopBannerImg = TopBanner.decode(sPref.listTopBanner);
     _listHomeBannerImg = TopBanner.decode(sPref.listHomeBanner);
-    _newsGroup = NewsGroup.decode(sPref.listNewsGroup);
+
+    if (sPref.listIpad.isNotEmpty &&
+        sPref.listIphone.isNotEmpty &&
+        sPref.listMac.isNotEmpty &&
+        sPref.listAppleWatch.isNotEmpty &&
+        sPref.listAccessories.isNotEmpty) {
+      listIpad = ProductsModel.decode(sPref.listIpad);
+      listIphone = ProductsModel.decode(sPref.listIphone);
+      listMac = ProductsModel.decode(sPref.listMac);
+      listAppleWatch = ProductsModel.decode(sPref.listAppleWatch);
+      listSound = ProductsModel.decode(sPref.listSound);
+      listAccessories = ProductsModel.decode(sPref.listAccessories);
+    }
 
     if (_listCategories.isNotEmpty) {
       int indexIpad =
@@ -147,19 +272,25 @@ class _HomePageScreenState extends State<HomePageScreen> {
       int indexAccessories =
           _listCategories.indexWhere((element) => element.seName == 'phu-kien');
 
-      _listCategories[indexIpad].listProduct = listIpad;
-      _listCategories[indexIphone].listProduct = listIphone;
-      _listCategories[indexMac].listProduct = listMac;
-      _listCategories[indexAppleWatch].listProduct = listAppleWatch;
-      _listCategories[indexSound].listProduct = listSound;
-      _listCategories[indexAccessories].listProduct = listAccessories;
+      _listCategories[indexIpad].listProduct =
+          _listIpad.isEmpty ? listIpad : _listIpad;
+      _listCategories[indexIphone].listProduct =
+          _listIphone.isEmpty ? listIphone : _listIphone;
+      _listCategories[indexMac].listProduct =
+          _listMac.isEmpty ? listMac : _listMac;
+      _listCategories[indexAppleWatch].listProduct =
+          _listAppleWatch.isEmpty ? listAppleWatch : _listAppleWatch;
+      _listCategories[indexSound].listProduct =
+          _listSound.isEmpty ? listSound : _listSound;
+      _listCategories[indexAccessories].listProduct =
+          _listAccessories.isEmpty ? listAccessories : _listAccessories;
     }
     setState(() {});
   }
 
   @override
   void initState() {
-    _getListHomeScreen();
+    _getListProduct();
     _autoSlidePage();
     _getHideBottomValue();
     super.initState();
@@ -175,7 +306,149 @@ class _HomePageScreenState extends State<HomePageScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<ShopdunkBloc, ShopdunkState>(
         builder: (context, state) => _buildHomeUI(context),
-        listener: (context, state) {});
+        listener: (context, state) {
+          if (state is IpadLoading) {
+          } else if (state is IpadLoaded) {
+            _listIpad = state.ipad;
+            _saveData();
+          } else if (state is IpadLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is IphoneLoading) {
+          } else if (state is IphoneLoaded) {
+            _listIphone = state.iphone;
+            _saveData();
+          } else if (state is IphoneLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is MacLoading) {
+          } else if (state is MacLoaded) {
+            _listMac = state.mac;
+            _saveData();
+          } else if (state is MacLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is AppleWatchLoading) {
+          } else if (state is AppleWatchLoaded) {
+            _listAppleWatch = state.watch;
+            _saveData();
+          } else if (state is AppleWatchLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is SoundLoading) {
+          } else if (state is SoundLoaded) {
+            _listSound = state.sound;
+            _saveData();
+          } else if (state is SoundLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is AccessoriesLoading) {
+          } else if (state is AccessoriesLoaded) {
+            _listAccessories = state.accessories;
+            _saveData();
+          } else if (state is AccessoriesLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is TopBannerLoading) {
+          } else if (state is TopBannerLoaded) {
+            _topBanner = state.listTopics.topics?.first.body ?? '';
+            var document = parse(
+                _topBanner.replaceAll('src="', 'src="http://shopdunk.com'));
+            var imgList = document.querySelectorAll("img");
+            var linkList = document.querySelectorAll("a");
+            List<String> imageList = [];
+            List<String> getLinkList = [];
+            List<TopBanner> topBanner = [];
+            for (dom.Element img in imgList) {
+              imageList.add(img.attributes['src']!);
+            }
+            for (dom.Element img in linkList) {
+              getLinkList.add(img.attributes['href']!);
+            }
+            for (int i = 0; i < imageList.length; i++) {
+              topBanner.add(
+                TopBanner(
+                  img: imageList[i].toString(),
+                  link: getLinkList[i].toString(),
+                ),
+              );
+            }
+            _listTopBannerImg.clear();
+            _listTopBannerImg.addAll(topBanner);
+            _saveData();
+          } else if (state is TopBannerLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+
+          if (state is HomeBannerLoading) {
+          } else if (state is HomeBannerLoaded) {
+            _homeBanner = state.listTopics.topics?.first.body ?? '';
+            var document = parse(
+                _homeBanner.replaceAll('src="', 'src="http://shopdunk.com'));
+            var imgList = document.querySelectorAll("img");
+            var linkList = document.querySelectorAll("a");
+            List<String> imageList = [];
+            List<String> getLinkList = [];
+            List<TopBanner> homeBanner = [];
+            for (dom.Element img in imgList) {
+              imageList.add(img.attributes['src']!);
+            }
+            for (dom.Element img in linkList) {
+              getLinkList.add(img.attributes['href']!);
+            }
+            for (int i = 0; i < imageList.length; i++) {
+              homeBanner.add(
+                TopBanner(
+                  img: imageList[i].toString(),
+                  link: getLinkList[i].toString(),
+                ),
+              );
+            }
+            _listHomeBannerImg.clear();
+            _listHomeBannerImg.addAll(homeBanner);
+            _saveData();
+          } else if (state is HomeBannerLoadError) {
+            if (_messageError.isEmpty) {
+              _messageError = state.message;
+              AlertUtils.displayErrorAlert(context, _messageError);
+            }
+            if (EasyLoading.isShow) EasyLoading.dismiss();
+          }
+        });
   }
 
   // home UI
@@ -401,13 +674,21 @@ class _HomePageScreenState extends State<HomePageScreen> {
             var item = listProduct[index];
 
             return GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                CustomMaterialPageRoute(
-                  builder: (context) => ShopDunkWebView(
-                    url: 'app-${item.seName}',
-                  ),
-                ),
-              ),
+              onTap: () async {
+                SharedPreferencesService sPref =
+                    await SharedPreferencesService.instance;
+                String token = sPref.token;
+                if (context.mounted) {
+                  Navigator.of(context).push(
+                    CustomMaterialPageRoute(
+                      builder: (context) => ShopDunkWebView(
+                        url: 'app-${item.seName}',
+                        token: token,
+                      ),
+                    ),
+                  );
+                }
+              },
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,

@@ -76,14 +76,15 @@ class ShopDunkWebView extends StatefulWidget {
   final int index;
   final String? baseUrl;
   final String? url;
+  final String? token;
 
-  const ShopDunkWebView({
-    this.baseUrl,
-    this.url,
-    this.index = 0,
-    this.hideBottom = true,
-    super.key,
-  });
+  const ShopDunkWebView(
+      {this.baseUrl,
+      this.url,
+      this.index = 0,
+      this.hideBottom = true,
+      super.key,
+      this.token});
 
   @override
   State<ShopDunkWebView> createState() => _ShopDunkWebViewState();
@@ -120,28 +121,28 @@ class _ShopDunkWebViewState extends State<ShopDunkWebView> {
             debugPrint('WebView is loading (progress : $progress%)');
           },
           onPageStarted: (String url) {
-            if(widget.baseUrl == null) {
+            if (widget.baseUrl == null) {
               if (url != 'https://shopdunk.com/${widget.url}') {
                 _controller.goBack();
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ShopDunkWebView(
-                      url: url.replaceAll('https://shopdunk.com/', ''),
-                    )));
+                          url: url.replaceAll('https://shopdunk.com/', ''),
+                        )));
               }
             } else {
               if (url != widget.baseUrl) {
                 _controller.goBack();
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ShopDunkWebView(
-                      url: url,
-                    )));
+                          url: url,
+                        )));
               }
             }
             debugPrint('Page started loading: $url');
           },
           onPageFinished: (String url) async {
             if (EasyLoading.isShow) EasyLoading.dismiss();
-            if(widget.baseUrl == null) {
+            if (widget.baseUrl == null) {
               if (url != 'https://shopdunk.com/${widget.url}') {
                 _controller.goBack();
               }
@@ -180,8 +181,10 @@ Page resource error:
           );
         },
       )
-      ..loadRequest(Uri.parse(
-          (widget.baseUrl ?? 'https://shopdunk.com/') + (widget.url ?? '')));
+      ..loadRequest(
+          Uri.parse(
+              (widget.baseUrl ?? 'https://shopdunk.com/') + (widget.url ?? '')),
+          headers: {"Authorization": "Bearer ${widget.token}"});
 
     // #docregion platform_features
     if (controller.platform is AndroidWebViewController) {

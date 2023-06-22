@@ -46,7 +46,7 @@ dependencies:
   dio: ^4.0.6
   flutter_rating_bar: ^4.0.1
   intl: ^0.18.0
-  shared_preferences: ^2.0.17
+  shared_preferences: ^2.1.2
   logger: ^1.1.0
   youtube_player_flutter: ^8.1.2
   flutter_widget_from_html: ^0.10.1
