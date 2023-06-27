@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,6 @@ import 'package:webviewtest/constant/alert_popup.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/customer/info_model.dart';
-import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
 import 'package:webviewtest/services/dio_client.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
@@ -49,7 +47,13 @@ class _UserScreenState extends State<UserScreen> {
     await sPref.remove(SharedPrefKeys.token);
     await sPref.setIsLogin(false);
     await sPref.setRememberMe(false);
+    final checkBox = sPref.checkBox;
     DioClient.logOut();
+
+    if(!checkBox) {
+      sPref.remove(SharedPrefKeys.userName);
+      sPref.remove(SharedPrefKeys.password);
+    }
 
     if (context.mounted) {
       context.read<ShopdunkBloc>().add(const RequestLogoutEvent(isMoveToLogin: true));
@@ -227,6 +231,7 @@ class _UserScreenState extends State<UserScreen> {
             _emailUser(),
             Container(
               padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(top: 16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -280,7 +285,7 @@ class _UserScreenState extends State<UserScreen> {
                   //   ],
                   // ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 40),
+                    padding: const EdgeInsets.only(top: 10, bottom: 20),
                     child: GestureDetector(
                       onTap: () async {
                         setState(() {

@@ -71,13 +71,11 @@ class _LoginScreenState extends State<LoginScreen> {
   _setLogin() async {
     SharedPreferencesService sPref = await SharedPreferencesService.instance;
     await sPref.setIsLogin(true);
+    sPref.setUserName(_emailController.text);
+    sPref.setPassword(_passwordController.text);
     if (_savePassword) {
-      sPref.setUserName(_emailController.text);
-      sPref.setPassword(_passwordController.text);
-      sPref.setCheckBox(_savePassword);
+      sPref.setCheckBox(true);
     } else {
-      sPref.remove(SharedPrefKeys.userName);
-      sPref.remove(SharedPrefKeys.password);
       sPref.remove(SharedPrefKeys.checkBox);
     }
   }
