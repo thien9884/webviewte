@@ -76,17 +76,18 @@ class _LoadingScreenState extends State<LoadingScreen> {
       String listTopics = jsonEncode(_listTopics);
       String listNewsGroup = jsonEncode(_newsGroup);
       String listLatestNews = jsonEncode(_latestNews);
-      await sPref.setListCategories(listCategories);
-      await sPref.setListTopics(listTopics);
-      await sPref.setListNewsGroup(listNewsGroup);
-      await sPref.setListLatestNews(listLatestNews);
       if (context.mounted) {
         Navigator.pushAndRemoveUntil(context,
             MaterialPageRoute(builder: (context) {
           context
               .read<ShopdunkBloc>()
               .add(RequestLogoutEvent(isMoveToLogin: !sPref.isLogin));
-          return const NavigationScreen();
+          return NavigationScreen(
+            listCategories: listCategories,
+            listNewsGroup: listNewsGroup,
+            listLatestNews: listLatestNews,
+            listTopics: listTopics,
+          );
         }), (route) => false);
       }
       if (EasyLoading.isShow) EasyLoading.dismiss();

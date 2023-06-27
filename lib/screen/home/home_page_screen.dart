@@ -203,8 +203,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
   }
 
   _saveData() async {
-    SharedPreferencesService sPref = await SharedPreferencesService.instance;
-
     if (_listIpad.isNotEmpty &&
         _listIphone.isNotEmpty &&
         _listMac.isNotEmpty &&
@@ -213,22 +211,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
         _listAccessories.isNotEmpty &&
         _listTopBannerImg.isNotEmpty &&
         _listHomeBannerImg.isNotEmpty) {
-      String listIpad = jsonEncode(_listIpad);
-      String listIphone = jsonEncode(_listIphone);
-      String listMac = jsonEncode(_listMac);
-      String listAppleWatch = jsonEncode(_listAppleWatch);
-      String listSound = jsonEncode(_listSound);
-      String listAccessories = jsonEncode(_listAccessories);
-      String listTopBanner = jsonEncode(_listTopBannerImg);
-      String listHomeBanner = jsonEncode(_listHomeBannerImg);
-      await sPref.setListIpad(listIpad);
-      await sPref.setListIphone(listIphone);
-      await sPref.setListMac(listMac);
-      await sPref.setListAppleWatch(listAppleWatch);
-      await sPref.setListSound(listSound);
-      await sPref.setListAccessories(listAccessories);
-      await sPref.setListTopBanner(listTopBanner);
-      await sPref.setListHomeBanner(listHomeBanner);
       if (EasyLoading.isShow) EasyLoading.dismiss();
       _getListHomeScreen();
     }
@@ -242,8 +224,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
     List<ProductsModel> listAppleWatch = [];
     List<ProductsModel> listSound = [];
     List<ProductsModel> listAccessories = [];
-    _listTopBannerImg = TopBanner.decode(sPref.listTopBanner);
-    _listHomeBannerImg = TopBanner.decode(sPref.listHomeBanner);
 
     if (sPref.listIpad.isNotEmpty &&
         sPref.listIphone.isNotEmpty &&
@@ -532,7 +512,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                       child: SizedBox(
                         child: Image.network(
                           item.img ?? '',
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
                         ),
                       ),
                     );
@@ -742,24 +722,21 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Expanded(
-                                  flex: 9,
-                                  child: Text(
-                                    '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
-                                    style:
-                                        CommonStyles.size13W700Blue00(context),
-                                  ),
+                                Text(
+                                  '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
+                                  style:
+                                      CommonStyles.size13W700Blue00(context),
                                 ),
-                                Flexible(
-                                  flex: 8,
-                                  child: Text(
-                                    '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                    style:
-                                        CommonStyles.size10W400Grey86(context)
-                                            .copyWith(
-                                                decoration:
-                                                    TextDecoration.lineThrough),
-                                  ),
+                                const SizedBox(
+                                  width: 4,
+                                ),
+                                Text(
+                                  '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
+                                  style:
+                                      CommonStyles.size10W400Grey86(context)
+                                          .copyWith(
+                                              decoration:
+                                                  TextDecoration.lineThrough),
                                 ),
                               ],
                             ),
