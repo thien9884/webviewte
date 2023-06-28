@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:webviewtest/model/category/category_model.dart';
 import 'package:webviewtest/model/login/login_model.dart';
 import 'package:webviewtest/model/news/news_model.dart';
 import 'package:webviewtest/screen/navigation_screen/navigation_screen.dart';
+import 'package:webviewtest/services/dio_client.dart';
 import 'package:webviewtest/services/shared_preferences/shared_pref_services.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -130,6 +132,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
     _getCategories();
     _getTopics();
     _getNews();
+    Timer(const Duration(seconds: 20), () {
+      _messageError = 'stop loading';
+      if (EasyLoading.isShow) EasyLoading.dismiss();
+      DioClient.timeOutDuration;
+    });
     super.initState();
   }
 
