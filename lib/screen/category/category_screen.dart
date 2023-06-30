@@ -17,7 +17,6 @@ import 'package:webviewtest/constant/constant.dart';
 import 'package:webviewtest/constant/list_constant.dart';
 import 'package:webviewtest/constant/text_style_constant.dart';
 import 'package:webviewtest/model/category_model/category_group_model.dart';
-import 'package:webviewtest/model/product/products_model.dart';
 import 'package:webviewtest/model/subcategory/subcategory_model.dart';
 import 'package:webviewtest/screen/home/home_page_screen.dart';
 import 'package:webviewtest/screen/webview/shopdunk_webview.dart';
@@ -50,8 +49,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
   var priceFormat = NumberFormat.decimalPattern('vi_VN');
   bool _isExpand = false;
   String _sortBy = ListCustom.listSortProduct[0].name;
-  final List<ProductsModel> _listAllProduct = [];
-  final List<ProductsModel> _listSortProduct = [];
+  final List<ProductCategoryModel> _listAllProduct = [];
+  final List<ProductCategoryModel> _listSortProduct = [];
   List<String> _listImage = [];
   CategoryGroupModel _categoryGroupModel = CategoryGroupModel();
   final dataKey = GlobalKey();
@@ -187,9 +186,18 @@ class _CategoryScreenState extends State<CategoryScreen> {
             _listAllProduct.clear();
             _listSortProduct.clear();
             _categoryGroupModel = state.categoryGroupModel;
-            _listAllProduct.addAll(state.categoryGroupModel.productModel ?? []);
-            _listSortProduct
-                .addAll(state.categoryGroupModel.productModel ?? []);
+            _listAllProduct.addAll(state
+                .categoryGroupModel.productCategoryModel!
+                .where((element) => element.showOnHomePage == true)
+                .toList());
+            _listSortProduct.addAll(state
+                .categoryGroupModel.productCategoryModel!
+                .where((element) => element.showOnHomePage == true)
+                .toList());
+            _listAllProduct.sort(
+                (a, b) => a.displayOrder!.compareTo(b.displayOrder!.toInt()));
+            _listSortProduct.sort(
+                (a, b) => a.displayOrder!.compareTo(b.displayOrder!.toInt()));
             print(_listSortProduct);
 
             if (EasyLoading.isShow) EasyLoading.dismiss();
@@ -260,7 +268,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Widget _buildCategoryUI() {
     return CommonNavigateBar(
         index: 0,
-        child: _categoryGroupModel.productModel != null
+        child: _categoryGroupModel.productCategoryModel != null
             ? Container(
                 color: const Color(0xfff5f5f7),
                 child: CustomScrollView(
@@ -437,8 +445,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           break;
                         case Constant.price91:
                           _listAllProduct.sort((a, b) =>
-                              a.productPrice!.priceValue!.compareTo(
-                                  b.productPrice!.priceValue!.toDouble()));
+                              a.price!.compareTo(b.price!.toDouble()));
                           break;
                         case Constant.newest:
                           break;
@@ -454,8 +461,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           break;
                         case Constant.price19:
                           _listAllProduct.sort((a, b) =>
-                              b.productPrice!.priceValue!.compareTo(
-                                  a.productPrice!.priceValue!.toDouble()));
+                              b.price!.compareTo(a.price!.toDouble()));
                           break;
                         default:
                           _listAllProduct;
@@ -521,30 +527,33 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      alignment: Alignment.centerRight,
-                      margin: EdgeInsets.only(
-                          top: Responsive.isMobile(context) ? 5 : 10,
-                          right: Responsive.isMobile(context) ? 5 : 10),
-                      child: item.productTags!.isNotEmpty
-                          ? Image.network(
-                              "https://shopdunk.com/images/uploaded/icon/${item.productTags?.first.seName}.png",
-                              height: 25,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, obj, trace) =>
-                                  const SizedBox(
-                                height: 25,
-                              ),
-                            )
-                          : const SizedBox(
-                              height: 25,
-                            ),
+                    // Container(
+                    //   alignment: Alignment.centerRight,
+                    //   margin: EdgeInsets.only(
+                    //       top: Responsive.isMobile(context) ? 5 : 10,
+                    //       right: Responsive.isMobile(context) ? 5 : 10),
+                    //   child: item.productTags != null && item.productTags!.isNotEmpty
+                    //       ? Image.network(
+                    //           "https://shopdunk.com/images/uploaded/icon/${item.productTags?.first.seName}.png",
+                    //           height: 25,
+                    //           fit: BoxFit.cover,
+                    //           errorBuilder: (context, obj, trace) =>
+                    //               const SizedBox(
+                    //             height: 25,
+                    //           ),
+                    //         )
+                    //       : const SizedBox(
+                    //           height: 25,
+                    //         ),
+                    // ),
+                    const SizedBox(
+                      height: 25,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(
                           vertical: Responsive.isMobile(context) ? 4 : 8),
                       child: Image.network(
-                        item.defaultPictureModel?.imageUrl ?? '',
+                        item.images?.first.src ?? '',
                         height: 170,
                         width: double.infinity,
                       ),
@@ -574,20 +583,18 @@ class _CategoryScreenState extends State<CategoryScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  '${priceFormat.format(item.productPrice?.priceValue ?? 0)}₫',
-                                  style:
-                                      CommonStyles.size13W700Blue00(context),
+                                  '${priceFormat.format(item.price ?? 0)}₫',
+                                  style: CommonStyles.size13W700Blue00(context),
                                 ),
                                 const SizedBox(
                                   width: 4,
                                 ),
                                 Text(
-                                  '${priceFormat.format(item.productPrice?.oldPriceValue ?? item.productPrice?.priceValue)}₫',
-                                  style:
-                                      CommonStyles.size10W400Grey86(context)
-                                          .copyWith(
-                                              decoration:
-                                                  TextDecoration.lineThrough),
+                                  '${priceFormat.format(item.oldPrice ?? item.price)}₫',
+                                  style: CommonStyles.size10W400Grey86(context)
+                                      .copyWith(
+                                          decoration:
+                                              TextDecoration.lineThrough),
                                 ),
                               ],
                             ),
@@ -700,7 +707,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 ),
                 if (totalPage > 6 &&
                     _pagesSelected <=
-                        (_categoryGroupModel.productModel!.length - 5))
+                        (_categoryGroupModel.productCategoryModel!.length - 5))
                   GestureDetector(
                     onTap: () {
                       if (_categoryGroupModel.total != null &&
